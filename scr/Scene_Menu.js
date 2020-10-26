@@ -109,7 +109,7 @@ class Scene_Menu extends Phaser.Scene
             "Slide - C",
             "Air Jump - Z+C" ], { color: 'black', fontSize: 12, align: 'right' }).setOrigin(1, 1));
 
-        this.add.text(5, 5, '15520429', { fontSize: '16px', fill: '#f00' });
+        this.add.text(5, 5, '', { fontSize: '16px', fill: '#f00' });
 
         this.credit_container.add(this.add.text(10, 50, [
             "Graphics:",
