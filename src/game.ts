@@ -1,41 +1,14 @@
-function getKeyState(key)
-{
-    key.isPressed = !key.previous_down && key.isDown;
-    key.isReleased = key.previous_down && !key.isDown;
-    key.previous_down = key.isDown;
-}
+import * as Phaser from 'phaser';
+import Scene_Menu from './Scene_Menu';
 
-function wrap(value, min, max) 
+export default class Demo extends Phaser.Scene
 {
-    var _temp = max - min;
-    if (_temp == 0)
-        return value;
-    while (value < min)
-        value += _temp;
-    while (value > max)
-        value -= _temp;
-    return value;
-};
-
-Number.prototype.clamp = function(min, max) 
-{
-    return Math.min(Math.max(this, min), max);
-};
-
-Phaser.GameObjects.Sprite.prototype.change_state = function(state, flag = 0)
-{
-    this.state = state;
-    this.flag = flag;
-};
-
-class Scene_Boot extends Phaser.Scene 
-{
-    constructor() 
+    constructor ()
     {
-        super({ key: "Scene_Boot" });
+        super('demo');
     }
 
-    preload() 
+    preload ()
     {
         this.load.image('trigger', 'assets/trigger.png');
 		this.load.image('star', 'assets/star.png');
@@ -74,16 +47,15 @@ class Scene_Boot extends Phaser.Scene
 		this.load.audio('mus_level1', 'assets/audio/Forest Drama.mp3');
 		this.load.audio('mus_level2', 'assets/audio/Wicked Dreams.mp3');
 
+        this.load.image('logo', 'assets/phaser3-logo.png');
+        this.load.image('libs', 'assets/libs.png');
+        this.load.glsl('starfield', 'assets/starfield.glsl.js');
+		this.load.glsl('transition_diamond', 'assets/transition_diamond.glsl.js');
+		this.load.glsl('transition_smooth', 'assets/transition_smooth.glsl.js');
 
-        /*
-        Loader Events:
-            complete - when done loading everything
-            progress - loader number progress in decimal
-        */
-
-        this.load.on("progress", (percent) => { this.add.graphics({ fillStyle: { color: 0xffffff }}).fillRect(0, this.game.renderer.height / 2 - 20, this.game.renderer.width * percent, 40); })
-        this.load.on("complete", () => { this.scene.start("Scene_Menu"); });
-    }
+        this.load.on("progress", (percent) => { this.add.graphics({ fillStyle: { color: 0xffffff }}).fillRect(0, this.cameras.main.height / 2 - 10, this.cameras.main.width * percent, 20); })
+		this.load.on("complete", () => { this.scene.start("Scene_Menu"); });
+	}
 
     create() 
     {
@@ -111,7 +83,7 @@ class Scene_Boot extends Phaser.Scene
 	    this.anims.create({ key: 'fx_ring', frames: this.anims.generateFrameNumbers('fx_ring', { start: 0, end: 19 }), duration: 250, });
 	    this.anims.create({ key: 'fx_attack', frames: this.anims.generateFrameNumbers('fx_attack', { start: 0, end: 3 }), duration: 125, });
 
-	//Slime animations
+	    //Slime animations
 	    this.anims.create({ key: 'slime_idle', frames: this.anims.generateFrameNumbers('slime', { start: 0, end: 3 }), frameRate: 10, repeat: -1 });
 	    this.anims.create({ key: 'slime_move', frames: this.anims.generateFrameNumbers('slime', { start: 4, end: 7 }), frameRate: 10, repeat: -1 });
 	    this.anims.create({ key: 'slime_attack', frames: this.anims.generateFrameNumbers('slime', { start: 8, end: 12 }), frameRate: 10, });
@@ -120,103 +92,55 @@ class Scene_Boot extends Phaser.Scene
 		
 	    this.anims.create({ key: 'enemy_death', frames: this.anims.generateFrameNumbers('enemy_death', { start: 0, end: 5 }), frameRate: 10 });
 
-    //Piranha Plant
+        //Piranha Plant
     	this.anims.create({ key: 'piranha_plant_idle', frames: this.anims.generateFrameNumbers('piranha_plant', { start: 0, end: 4 }), frameRate: 10, repeat: -1 });
 	    this.anims.create({ key: 'piranha_plant_attack', frames: this.anims.generateFrameNumbers('piranha_plant', { start: 5, end: 8 }), frameRate: 10, });
 
-	//
+	    //
 	    this.anims.create({ key: 'cherry', frames: this.anims.generateFrameNumbers('cherry', { start: 0, end: 4 }), frameRate: 10, yoyo: true, repeat: -1 });
 		this.anims.create({ key: 'key', frames: this.anims.generateFrameNumbers('key', { start: 0, end: 7 }), frameRate: 10, repeat: -1 });
 	    this.anims.create({ key: 'bee', frames: this.anims.generateFrameNumbers('bee', { start: 0, end: 7 }), frameRate: 10, repeat: -1 });
 		this.anims.create({ key: 'door', frames: this.anims.generateFrameNumbers('door', { start: 0, end: 4 }), frameRate: 10 });
-		
-		let shd_transition1 = new Phaser.Class
-        ({ 
-            Extends: Phaser.Renderer.WebGL.Pipelines.TextureTintPipeline, initialize:
-            function shd_transition(game)
-            {
-                Phaser.Renderer.WebGL.Pipelines.TextureTintPipeline.call(this, { game: game, renderer: game.renderer,
-                    fragShader: [
-                        "precision mediump float;",
 
-                        "const float smooth_area = 0.1;",
-                        "const bool decrease = false;",
-                        "const bool left_to_right = true;",
-                        "uniform float     time;",
-                        "uniform sampler2D uMainSampler;",
-                        "varying vec2 outTexCoord;",
+        this.add.shader('starfield', 0, 0, this.cameras.main.width, this.cameras.main.height).setOrigin(0);
 
-                        "void main( void ) {",
-                            "float t = time;",
-                            "t = clamp(t, 0.0, 1.0);",
-                            "t = left_to_right ? 1.-t : t;",
-                            "t = (1.0 + smooth_area*2.) * t - smooth_area;",
-                            "float a = smoothstep(t-smooth_area, t+smooth_area, outTexCoord.x);",
-                            "a = decrease ? a: 1.-a;",
-                            "gl_FragColor = texture2D(uMainSampler, outTexCoord) * a;",
-                        "}"
-                    ].join('\n')
-                });
-            }
-        });
+        this.add.image(400, 300, 'libs');
 
-        let shd_transition2 = new Phaser.Class
-        ({ 
-            Extends: Phaser.Renderer.WebGL.Pipelines.TextureTintPipeline, initialize:
-            function shd_transition(game)
-            {
-                Phaser.Renderer.WebGL.Pipelines.TextureTintPipeline.call(this, { game: game, renderer: game.renderer,
-                    fragShader: [
-                        "precision mediump float;",
+        const logo = this.add.image(400, 70, 'logo');
 
-                        "const float count = 10.;",
-                        "const float smoothness = 0.5;",
-
-                        "uniform float     time;",
-                        "uniform sampler2D uMainSampler;",
-                        "varying vec2 outTexCoord;",
-
-                        "void main( void ) {",
-                            "float t = time;",
-                            "float pr = smoothstep(-smoothness, 0.0, outTexCoord.x - time * (1.0 + smoothness));",
-                            "float s = step(pr, fract(count * outTexCoord.x));",
-                            "gl_FragColor = mix(texture2D(uMainSampler, outTexCoord), vec4(0.0), s);",
-                        "}"
-                    ].join('\n')
-                });
-            }
-        });
-
-        let shd_transition3 = new Phaser.Class
-        ({ 
-            Extends: Phaser.Renderer.WebGL.Pipelines.TextureTintPipeline, initialize:
-            function shd_transition3(game)
-            {
-                Phaser.Renderer.WebGL.Pipelines.TextureTintPipeline.call(this, { game: game, renderer: game.renderer,
-                    fragShader: [
-                        "precision mediump float;",
-
-                        "const float divisions = 5.;",
-                        "uniform float     time;",
-                        "uniform sampler2D uMainSampler;",
-                        "varying vec2 outTexCoord;",
-
-                        "void main( void ) {",
-                            "float t = fract(min(time, 0.9999))*3.-1.;",
-                            "vec2 f_st = fract(outTexCoord*divisions);",
-                            "vec2 i_st = floor(outTexCoord*divisions);",
-                            "f_st -= 0.5;",
-                            "t = (1.-t+(i_st.x/divisions) - (1.-i_st.y/divisions));",
-                            "float a = (step(t, 1.-abs(f_st.x+f_st.y))*step(t, 1.-abs((f_st.x)-(f_st.y))));",
-                            "gl_FragColor = texture2D(uMainSampler, outTexCoord) * (1.-a);",
-                        "}"
-                    ].join('\n')
-                });
-            }
-        });
-
-        this.game.renderer.addPipeline('Transition1', new shd_transition1(this.game));
-        this.game.renderer.addPipeline('Transition2', new shd_transition2(this.game));
-        this.game.renderer.addPipeline('Transition3', new shd_transition3(this.game));
+        this.tweens.add({
+            targets: logo,
+            y: 350,
+            duration: 1500,
+            ease: 'Sine.inOut',
+            yoyo: true,
+            repeat: -1
+        })
     }
 }
+
+const config = {
+    type: Phaser.AUTO,
+    backgroundColor: '#000000',
+    zoom: 1,
+	width: 320,
+	height: 160,
+	pixelArt: true,
+	antialias: false,
+	physics: {
+		default: 'arcade',
+		arcade: {
+			gravity: { y: 500 },
+			debug: false,
+		}
+	},
+    scene: [ 
+		Demo,
+		Scene_Menu,
+	],
+    scale: {
+        autoCenter: Phaser.Scale.CENTER_BOTH,
+    },
+};
+
+const game = new Phaser.Game(config);

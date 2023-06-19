@@ -11,6 +11,5 @@ node_modules/
 
 # Build
 /npm-debug.log
-/game.js
-/game.js.map
-.github
+.game.js
+.game.js.map

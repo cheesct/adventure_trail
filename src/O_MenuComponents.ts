@@ -1,5 +1,10 @@
-class Menu_Button extends Phaser.GameObjects.Sprite
+import * as Phaser from 'phaser';
+
+export class MenuButton extends Phaser.GameObjects.Sprite
 {
+	private text: Phaser.GameObjects.Text;
+    public action: VoidFunction;
+
 	constructor(scene, x, y, text = "", action = () => { }) 
     {
         super(scene, x, y, 'button_idle');
