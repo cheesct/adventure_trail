@@ -23,16 +23,16 @@ void main(void)
     float yDistance = abs(yFraction - 0.5);
     vec2 uv = gl_FragCoord.xy / resolution.xy;
     uv.y = 1.-uv.y;
-    float numOfAttribute = 4.;
+    float numOfElement = 4.;
     if (flag == 0)
     {
         uv.y = 0.;
-        numOfAttribute = 3.;
+        numOfElement = 3.;
     }
     else if (flag == 2)
     {
         uv.x = 0.;
-        numOfAttribute = 3.;
+        numOfElement = 3.;
     }
     else if (flag == 3)
     {
@@ -42,7 +42,7 @@ void main(void)
     {
         uv.x = 1.-uv.x;
         uv.y = 0.;
-        numOfAttribute = 3.;
+        numOfElement = 3.;
     }
     else if (flag == 5)
     {
@@ -53,7 +53,7 @@ void main(void)
     {
         uv.x = 0.;
         uv.y = 1.-uv.y;
-        numOfAttribute = 3.;
+        numOfElement = 3.;
     }
     else if (flag == 7)
     {
@@ -61,14 +61,14 @@ void main(void)
     }
     if (inversion)
     {
-        if (xDistance + yDistance + uv.x + uv.y < progress * numOfAttribute)
+        if (xDistance + yDistance + uv.x + uv.y < progress * numOfElement)
         {
             discard;
         }
     }
     else
     {
-        if (xDistance + yDistance + uv.x + uv.y > progress * numOfAttribute)
+        if (xDistance + yDistance + uv.x + uv.y > progress * numOfElement)
         {
             discard;
         }

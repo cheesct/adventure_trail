@@ -30,8 +30,8 @@ export default class Scene_Menu extends Phaser.Scene
 
     transitioning(transition_to)
     {
-        let transition = this.add.shader('transition_diamond', 0, 0, this.cameras.main.width, this.cameras.main.height).setOrigin(0)
-        let singleton = Singleton.getInstance()
+        const transition = this.add.shader("transition_diamond", 0, 0, this.cameras.main.width, this.cameras.main.height).setOrigin(0)
+        const singleton = Singleton.getInstance()
         singleton.transition_name = "transition_diamond"
         singleton.transition_flag = Helper.randomRangeInt(0, 7)
         transition.setUniform("flag.value", singleton.transition_flag)
@@ -145,10 +145,10 @@ export default class Scene_Menu extends Phaser.Scene
 
         this.credit_container.visible = false
         this.button_show()
-        let singleton = Singleton.getInstance()
+        const singleton = Singleton.getInstance()
         if (singleton.transition_name)
         {
-            let transition = this.add.shader(singleton.transition_name, 0, 0, this.cameras.main.width, this.cameras.main.height).setOrigin(0)
+            const transition = this.add.shader(singleton.transition_name, 0, 0, this.cameras.main.width, this.cameras.main.height).setOrigin(0)
             transition.setUniform("inversion.value", 1)
             transition.setUniform("flag.value", singleton.transition_flag)
             singleton.transition_name = ""
