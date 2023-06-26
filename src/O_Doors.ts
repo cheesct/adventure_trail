@@ -1,6 +1,6 @@
 import * as Phaser from 'phaser'
 
-class Door extends Phaser.GameObjects.Sprite 
+export class Door extends Phaser.GameObjects.Sprite 
 {
     private open_animation: string
     private open_key: string

@@ -1,6 +1,6 @@
 import * as Phaser from 'phaser'
 
-class HP extends Phaser.GameObjects.Image
+export class HP extends Phaser.GameObjects.Image
 {
     private max: number
     private current: number
