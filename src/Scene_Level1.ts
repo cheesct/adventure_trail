@@ -107,7 +107,7 @@ export default class Scene_Level1 extends Phaser.Scene
 	    	{ this.Enemies.add(new Slime(this, object.x, object.y)); object.destroy(); });
 
 	    map.createFromObjects('Objects', { name : "Bee" }).forEach((object: Phaser.GameObjects.Sprite) => 
-	    	{ this.Enemies.add(new Bee(this, object.x - 16, object.y)); object.destroy(); });
+	    	{ this.Enemies.add(new Bee(this, object.x, object.y)); object.destroy(); });
 
 	    // The player and its settings
 	    this.player = new Player(this, 16, 112);
@@ -135,11 +135,11 @@ export default class Scene_Level1 extends Phaser.Scene
 	    //this.physics.world.createDebugGraphic();
 		//this.cameras.main.once("camerafadeincomplete", () => { gameReady = true; });
 		
-		this.cameras.main.fadeIn(2000);
+		//this.cameras.main.fadeIn(2000);
 
   	}
 
-  	update()
+  	update(time, delta)
   	{
 		if(this.player.x >= 3180 && !this.transitioning)
 		{
@@ -150,7 +150,7 @@ export default class Scene_Level1 extends Phaser.Scene
 	    this.player.update();
 	    this.cameras.main.scrollX = Helper.clamp(this.player.x - 160, 0, this.physics.world.bounds.width - 320);
 
-	    this.Clouds.getChildren().forEach((cloud: ParallaxScrollingImage) => { cloud.update(this.cameras.main.scrollX); });
+	    this.Clouds.getChildren().forEach((cloud: ParallaxScrollingImage) => { cloud.update(this.cameras.main.scrollX, delta); });
 	    this.Enemies.getChildren().forEach((enemy) => { enemy.update(); });
 	    this.Parallax.getChildren().forEach((parallax: ParallaxStaticTileSprite) => { parallax.update(this.cameras.main.scrollX); });
 	}

@@ -15,16 +15,34 @@ class O_EnemyBase extends Phaser.Physics.Arcade.Sprite
         this.flag = 0
     }
 
+    change_state(state)
+    {
+        if (this.state != state)
+        {
+            this.state = state
+            this.flag = 0
+        }
+    }
+
     update(): void 
     {
     }
 
     death(): void 
     {
+        this.destroy()
     }
 
     hurt(): void 
     {
+        if (--this.HP < 1)
+        {
+            this.death()
+        }
+        else
+        {
+            this.change_state("Hurt")
+        }
     }
 }
 
@@ -91,10 +109,9 @@ export class Bee extends O_EnemyBase
         scene.physics.world.enable(this)
         this.HP = 3
         this.state = ""
-        this.speed = Phaser.Math.Between(0, 1) == 0 ? 25 : -25
-        this.body = new Phaser.Physics.Arcade.Body(scene.physics.world)
+        this.speed = Phaser.Math.Between(0, 1) == 0 ? 25 : -25;
+        (this.body as Phaser.Physics.Arcade.Body).setAllowGravity(false)
         this.body.setSize(24, 24)
-        this.body.setAllowGravity(false)
         this.setCollideWorldBounds(true)
         this.anims.play('bee')
         this.body.velocity.y = this.speed

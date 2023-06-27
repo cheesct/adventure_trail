@@ -1,5 +1,6 @@
 import * as Phaser from 'phaser'
 import Scene_Menu from './Scene_Menu'
+import Scene_Level1 from './Scene_Level1'
 
 export default class Demo extends Phaser.Scene
 {
@@ -127,6 +128,7 @@ const config = {
 	height: 160,
 	pixelArt: true,
 	antialias: false,
+	roundPixels: false,
 	physics: {
 		default: 'arcade',
 		arcade: {
@@ -137,6 +139,7 @@ const config = {
     scene: [ 
 		Demo,
 		Scene_Menu,
+		Scene_Level1,
 	],
     scale: {
         autoCenter: Phaser.Scale.CENTER_BOTH,

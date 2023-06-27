@@ -75,15 +75,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite
             scaleX: { value: 0, ease: 'Linear', duration: 250},
             onComplete: () => { slash.destroy() } })
         attack.destroy()
-        if(!object.hasOwnProperty('HP') || --object.HP < 1)
+        if (typeof object.hurt === 'function')
         {
-            if(typeof object.death === 'function')
-                object.death()
-            else
-                object.destroy()
+            object.hurt()
         }
-        else
-            object.change_state("Hurt")
     }
 
     player_get_hit()
@@ -308,7 +303,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                         break
 
                     case 1:
-                        if (!this.anims.isPlaying || this.body.touching.down)
+                        if (!this.anims.isPlaying || this.body.blocked.down)
                             this.change_state("")
                         break
                 }
@@ -333,7 +328,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                         break
 
                     case 1:
-                        if (this.body.touching.down)
+                        if (this.body.blocked.down)
                             this.body.velocity.x *= 0.95
                         if (!this.anims.isPlaying)
                         {
@@ -345,7 +340,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                 break
 
             case "Death":
-                if (this.body.touching.down)
+                if (this.body.blocked.down)
                     this.body.velocity.x *= 0.9
                 switch(this.flag)
                 {
@@ -397,15 +392,12 @@ export class Player extends Phaser.Physics.Arcade.Sprite
             default:
                 var direction = Number(this.Cursors.right.isDown) - Number(this.Cursors.left.isDown)
                 this.flag = 0
-                if (this.body.touching.down)
+                if (this.body.blocked.down)
                 {
                     this.jump = 1
                     if(Phaser.Input.Keyboard.JustDown(this.X) && !this.attack_cooldown)
                     {
-                        this.setVelocityX(0)
                         this.change_state("Attack")
-                        if(this.anims.getName() != 'hero_idle2')
-                            this.flag = -2
                     }
                     else if(Phaser.Input.Keyboard.JustDown(this.C) && !this.slide_cooldown)
                     {

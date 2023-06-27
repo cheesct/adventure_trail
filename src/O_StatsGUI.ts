@@ -1,4 +1,5 @@
 import * as Phaser from 'phaser'
+import Helper from './helper'
 
 export class HP extends Phaser.GameObjects.Image
 {
@@ -17,7 +18,7 @@ export class HP extends Phaser.GameObjects.Image
 
     add(value)
     {
-        this.current = (this.current + value).clamp(0, this.max)
+        this.current = Helper.clamp(this.current + value, 0, this.max)
         this.setFrame(this.current)
         if(this.current == 0)
             return true
@@ -27,7 +28,7 @@ export class HP extends Phaser.GameObjects.Image
 
     set(value)
     {
-        this.current = (value).clamp(0, this.max)
+        this.current = Helper.clamp(value, 0, this.max)
         this.setFrame(this.current)
     }
 }

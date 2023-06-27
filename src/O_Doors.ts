@@ -10,6 +10,7 @@ export class Door extends Phaser.GameObjects.Sprite
         super(scene, x, y, texture);
         scene.add.existing(this);
         scene.physics.world.enable(this);
+        (this.body as Phaser.Physics.Arcade.Body).setAllowGravity(false)
         this.open_animation = open_animation;
         this.open_key = open_key;
     }

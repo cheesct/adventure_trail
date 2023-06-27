@@ -7,9 +7,8 @@ class O_PickupBase extends Phaser.GameObjects.Sprite
         super(scene, x, y, texture)
         scene.add.existing(this)
         scene.physics.world.enable(this)
-        this.anims.play(texture)
-        this.body = new Phaser.Physics.Arcade.Body(scene.physics.world)
-        this.body.setAllowGravity(false)
+        this.anims.play(texture);
+        (this.body as Phaser.Physics.Arcade.Body).setAllowGravity(false)
     }
 
     pickup(player)

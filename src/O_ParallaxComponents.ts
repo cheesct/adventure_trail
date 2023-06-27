@@ -34,13 +34,11 @@ export class ParallaxScrollingImage extends Phaser.GameObjects.Image
         this.offset = x;
         this.limitLeft = limit_left;
         this.limitRight = limit_right;
-        let rate = 1000/Math.max(Math.abs(speed), 0.01);
-	    let move = Math.sign(speed);
-	    this.scene.time.addEvent({ delay: rate, callback: () => { this.offset +=  move}, loop: true});
     }
 
-    update(camX: number)
+    update(camX: number, delta: number)
     {
-        this.x = Helper.wrap(camX*0.8 + this.offset, camX - this.limitLeft, camX + this.limitRight)
+        this.offset += this.speed * (delta / 1000)
+        this.x = Helper.wrap(this.offset, camX - this.limitLeft, camX + this.limitRight)
     }
 }
