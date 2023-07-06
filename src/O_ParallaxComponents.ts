@@ -38,7 +38,7 @@ export class ParallaxScrollingImage extends Phaser.GameObjects.Image
 
     update(camX: number, delta: number)
     {
-        this.offset += this.speed * (delta / 1000)
+        this.offset += this.speed * delta
         this.x = Helper.wrap(this.offset, camX - this.limitLeft, camX + this.limitRight)
     }
 }

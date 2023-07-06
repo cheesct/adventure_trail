@@ -21,22 +21,6 @@ export default class Scene_Level1 extends Phaser.Scene
     	super({ key: "Scene_Level1" });
   	}
 
-  	create_Cloud(cloud, speed)
-	{
-	    this.Clouds.add(cloud);
-	    cloud.offset = cloud.x;
-	    let rate = 1000/Math.max(Math.abs(speed), 0.01);
-	    let move = Math.sign(speed);
-	    cloud.scene.time.addEvent({ delay: rate, callback: () => { cloud.offset +=  move}, loop: true});
-	}
-
-	create_Parallax(parallax, rate)
-	{
-	    this.Parallax.add(parallax);
-	    parallax.setOrigin(0).setScrollFactor(0);
-	    parallax.rate = rate;
-	}
-
   	preload() 
   	{
 	    this.load.image('level1_props', 'assets/level1/props.png');
@@ -83,8 +67,7 @@ export default class Scene_Level1 extends Phaser.Scene
 	    map.createLayer("Props", tile_props, 0, 2);
 
 	    this.Doors = this.add.group(); 
-	    map.createFromObjects('Objects', { name : "Door" }).forEach((object : Phaser.GameObjects.Sprite) => 
-	    	{ this.Doors.add(new Door(this, object.x - 16, object.y, "door")); object.destroy(); });
+	    map.createFromObjects('Objects', { name : "Door" }).forEach((object: Phaser.GameObjects.Sprite) => { this.Doors.add(new Door(this, object.x, object.y, "door")); object.destroy(); });
 
 	    let ai_layer = map.createLayer("Enemy Trigger", map.addTilesetImage("trigger", "trigger"), 0, 0).setCollisionByExclusion([-1]).setVisible(this.game.config.physics.arcade.debug);
 	    let worldLayer = map.createLayer("Walls", tile_grassland, 0, 0).setCollisionByExclusion([-1]);
@@ -97,27 +80,23 @@ export default class Scene_Level1 extends Phaser.Scene
 	    this.Enemies = this.add.group();
 
 
-	    map.createFromObjects('Objects', { name : "Cherry" }).forEach((object: Phaser.GameObjects.Sprite) => 
-			{ this.Items.add(new Cherry(this, object.x, object.y)); object.destroy(); });
+	    map.createFromObjects('Objects', { name : "Cherry", classType: Cherry  }).forEach((object) => { this.Items.add(object) });
 			
-	    map.createFromObjects('Objects', { name : "Key" }).forEach((object: Phaser.GameObjects.Sprite) => 
-	    	{ this.Items.add(new Key(this, object.x - 16, object.y + 16)); object.destroy(); });
+	    map.createFromObjects('Objects', { name : "Key", classType: Key  }).forEach((object) => { this.Items.add(object) });
 
-	    map.createFromObjects('Objects', { name : "Slime" }).forEach((object: Phaser.GameObjects.Sprite) => 
-	    	{ this.Enemies.add(new Slime(this, object.x, object.y)); object.destroy(); });
+	    map.createFromObjects('Objects', { name : "Slime", classType: Slime  }).forEach((object) => { this.Enemies.add(object) });
 
-	    map.createFromObjects('Objects', { name : "Bee" }).forEach((object: Phaser.GameObjects.Sprite) => 
-	    	{ this.Enemies.add(new Bee(this, object.x, object.y)); object.destroy(); });
+	    map.createFromObjects('Objects', { name : "Bee", classType: Bee  }).forEach((object) => { this.Enemies.add(object) });
 
 	    // The player and its settings
 	    this.player = new Player(this, 16, 112);
 	    //this.player = new Player(this, 1728, 0);
 		//this.player = new Player(this, 2768, 112);
 
-	    // const graphics = this.add
-	    //   .graphics()
-	    //   .setAlpha(0.75)
-	    //   .setDepth(20);
+	    const graphics = this.add
+	      .graphics()
+	      .setAlpha(0.75)
+	      .setDepth(20);
 	    // worldLayer.renderDebug(graphics, {
 	    //   tileColor: null, // Color of non-colliding tiles
 	    //   collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
@@ -132,8 +111,7 @@ export default class Scene_Level1 extends Phaser.Scene
 	    this.physics.add.collider(this.player, this.Doors, (player, door) => { (door as Door).open_door(player) });
 	    this.physics.add.collider(this.Enemies, ai_layer);
 	    this.physics.add.collider(this.Enemies, worldLayer);
-	    //this.physics.world.createDebugGraphic();
-		//this.cameras.main.once("camerafadeincomplete", () => { gameReady = true; });
+	    this.physics.world.createDebugGraphic();
 		
 		//this.cameras.main.fadeIn(2000);
 
@@ -141,13 +119,14 @@ export default class Scene_Level1 extends Phaser.Scene
 
   	update(time, delta)
   	{
+		delta = delta / 1000
 		if(this.player.x >= 3180 && !this.transitioning)
 		{
 			this.cameras.main.once("camerafadeoutcomplete", () => { this.scene.start("Scene_Menu") });
 			this.cameras.main.fadeOut(1000);
 			this.transitioning = true;
 		}
-	    this.player.update();
+	    this.player.update(delta);
 	    this.cameras.main.scrollX = Helper.clamp(this.player.x - 160, 0, this.physics.world.bounds.width - 320);
 
 	    this.Clouds.getChildren().forEach((cloud: ParallaxScrollingImage) => { cloud.update(this.cameras.main.scrollX, delta); });

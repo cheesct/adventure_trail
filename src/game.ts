@@ -68,15 +68,20 @@ export default class Demo extends Phaser.Scene
 	    this.anims.create({ key: 'hero_up', frames: this.anims.generateFrameNumbers('hero', { start: 77, end: 78 }), repeat: -1, frameRate: 8, })
 	    this.anims.create({ key: 'hero_fall', frames: this.anims.generateFrameNumbers('hero', { start: 22, end: 23 }), repeat: -1, frameRate: 8, })
 	    this.anims.create({ key: 'hero_unsealth_sword', frames: this.anims.generateFrameNumbers('hero', { start: 69, end: 73 }), frameRate: 20, })
-	    this.anims.create({ key: 'hero_attack_1_1', frames: this.anims.generateFrameNumbers('hero', { start: 42, end: 43 }), frameRate: 15, })
-	    this.anims.create({ key: 'hero_attack_1_2', frames: this.anims.generateFrameNumbers('hero', { start: 44, end: 47 }), frameRate: 15, })
-	    this.anims.create({ key: 'hero_attack_2_1', frames: this.anims.generateFrameNumbers('hero', { start: 47, end: 49 }), frameRate: 15, })
-	    this.anims.create({ key: 'hero_attack_2_2', frames: this.anims.generateFrameNumbers('hero', { start: 50, end: 52 }), frameRate: 15, })
-	    this.anims.create({ key: 'hero_attack_3_1', frames: this.anims.generateFrameNumbers('hero', { start: 53, end: 54 }), frameRate: 10, })
-	    this.anims.create({ key: 'hero_attack_3_2', frames: this.anims.generateFrameNumbers('hero', { start: 55, end: 58 }), frameRate: 15, })
+	    this.anims.create({ key: 'hero_attack_1_1', frames: this.anims.generateFrameNumbers('hero', { start: 42, end: 43 }), duration: 125, })
+	    this.anims.create({ key: 'hero_attack_1_2', frames: this.anims.generateFrameNumbers('hero', { start: 44, end: 47 }), duration: 250, })
+	    this.anims.create({ key: 'hero_attack_2_1', frames: this.anims.generateFrameNumbers('hero', { start: 47, end: 49 }), duration: 200, })
+	    this.anims.create({ key: 'hero_attack_2_2', frames: this.anims.generateFrameNumbers('hero', { start: 50, end: 52 }), duration: 200, })
+	    this.anims.create({ key: 'hero_attack_3_1', frames: this.anims.generateFrameNumbers('hero', { start: 53, end: 54 }), duration: 125, })
+	    this.anims.create({ key: 'hero_attack_3_2', frames: this.anims.generateFrameNumbers('hero', { start: 55, end: 58 }), duration: 250, })
 	    this.anims.create({ key: 'hero_attack_air', frames: this.anims.generateFrameNumbers('hero', { start: 96, end: 99 }), frameRate: 12, })
-	    this.anims.create({ key: 'hero_slide', frames: this.anims.generateFrameNumbers('hero', { start: 24, end: 28 }), duration: 800, })
-	    this.anims.create({ key: 'hero_hurt', frames: this.anims.generateFrameNumbers('hero', { start: 59, end: 61 }), frameRate: 5, })
+	    this.anims.create({ key: 'hero_attack_air_down_prep', frames: this.anims.generateFrameNumbers('hero', { start: 102, end: 103 }), duration: 200, })
+		this.anims.create({ key: 'hero_attack_air_down_loop', frames: this.anims.generateFrameNumbers('hero', { start: 104, end: 105 }), frameRate: 24, })
+		this.anims.create({ key: 'hero_attack_air_down_land', frames: this.anims.generateFrameNumbers('hero', { start: 106, end: 108 }), duration: 300, })
+		this.anims.create({ key: 'hero_attack_rise', frames: this.anims.generateFrameNumbers('hero', { start: 100, end: 102 }), duration: 300, })
+		this.anims.create({ key: 'hero_slide', frames: this.anims.generateFrameNumbers('hero', { start: 24, end: 26 }), frameRate: 15, })
+	    this.anims.create({ key: 'hero_slide_recover', frames: this.anims.generateFrameNumbers('hero', { start: 27, end: 28 }), duration: 200, })
+		this.anims.create({ key: 'hero_hurt', frames: this.anims.generateFrameNumbers('hero', { start: 59, end: 61 }), frameRate: 5, })
 	    this.anims.create({ key: 'hero_defeat', frames: this.anims.generateFrameNumbers('hero', { start: 62, end: 68 }), frameRate: 8, })
 	    
 	    //effect animation
@@ -133,6 +138,10 @@ const config = {
 		default: 'arcade',
 		arcade: {
 			gravity: { y: 500 },
+			debug: false,
+		},
+		matter: {
+			gravity: { y: 8 },
 			debug: false,
 		}
 	},

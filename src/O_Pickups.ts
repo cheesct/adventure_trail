@@ -36,17 +36,13 @@ export class Cherry extends O_PickupBase
 
 export class Key extends O_PickupBase
 {
-    private start_y: number
-    private float_y: number
     private particles: Phaser.GameObjects.Particles.ParticleEmitter
 
     constructor(scene, x, y)
     {
         super(scene, x, y, 'key')
-        this.start_y = y
-        this.float_y = -4
-        scene.tweens.add({ targets: this, float_y: 4, ease: 'Sine.easeInOut', duration: 1000, yoyo: true, repeat: -1,
-            onUpdate: () => {this.y = this.start_y + this.float_y},}).seek(Phaser.Math.FloatBetween(0, 1))
+        this.y -= 4
+        scene.tweens.add({ targets: this, y: '+=4', ease: 'Sine.easeInOut', duration: 1000, yoyo: true, repeat: -1 })
         this.particles = this.scene.add.particles(this.x, this.y, 'flares', {
             frame: 'white',
             blendMode: 'SCREEN',
