@@ -20,6 +20,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
     public player_attack: Phaser.Physics.Arcade.StaticGroup
     private attack_area: Phaser.GameObjects.GameObject
     private attacked_entities: Array<any>
+    private knock_y: number
 
     private Cursors: Phaser.Types.Input.Keyboard.CursorKeys
     private Z: Phaser.Input.Keyboard.Key
@@ -79,6 +80,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite
         this.attacked_entities.push(object)
         if (typeof object.hurt === 'function')
         {
+            if (this.knock_y != 0)
+            {
+                object.apply_force(new Phaser.Math.Vector2(0, this.knock_y))
+            }
             object.hurt()
         }
     }
@@ -270,7 +275,6 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                     switch(this.flag)
                     {
                         case 0:
-                            this.attack_area = this.player_attack.create(this.x + (this.flipX ? -16 : 16), this.y, "", "", false)
                             this.anims.play('hero_attack_air_down_prep', true)
                             this.body.velocity.y = Math.min(this.body.velocity.y, -150)
                             this.flag += 1
@@ -289,16 +293,14 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                         case 2:
                             if (this.body.blocked.down)
                             {
+                                this.attack_area = this.player_attack.create(this.x + (this.flipX ? -16 : 16), this.y, "", "", false);
+                                (this.attack_area.body as Phaser.Physics.Arcade.StaticBody).setSize(64, 32, true)
                                 this.anims.play('hero_attack_air_down_land', true)
                                 this.scene.cameras.main.shake(50, 0.02)
                                 this.flag += 1
                             }
                             else
                             {
-                                if (this.attack_area instanceof Phaser.GameObjects.Sprite)
-                                    this.attack_area.y = this.y
-                                    if (this.attack_area.body instanceof Phaser.Physics.Arcade.StaticBody)
-                                        (this.attack_area.body as Phaser.Physics.Arcade.StaticBody).y = this.y
                                 var fade = this.scene.add.image(this.x, this.y, 'hero', this.anims.currentFrame.frame.name).setAlpha(0.25).setTint(0xff0000)
                                 fade.flipX = this.flipX
                                 this.scene.tweens.add({ targets: fade, alpha: 0, ease: 'Power1', duration: 400, onComplete: () => { fade.destroy() }})
@@ -319,6 +321,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                         switch(this.flag)
                         {
                             case 0:
+                                this.knock_y = -200
                                 this.attack_area = this.player_attack.create(this.x + (this.flipX ? -16 : 16), this.y, "", "", false)
                                 this.anims.play('hero_attack_rise')
                                 this.body.velocity.y = Math.min(this.body.velocity.y, -200)
@@ -332,9 +335,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                                 }
                                 else
                                 {
-                                    var fade = this.scene.add.image(this.x, this.y, 'hero', this.anims.currentFrame.frame.name).setAlpha(0.4).setTint(0xff0000)
+                                    var fade = this.scene.add.image(this.x, this.y, 'hero', this.anims.currentFrame.frame.name).setAlpha(0.3).setTint(0xff0000)
                                     fade.flipX = this.flipX
-                                    this.scene.tweens.add({ targets: fade, alpha: 0, ease: 'Power1', duration: 250, onComplete: () => { fade.destroy() }})
+                                    this.scene.tweens.add({ targets: fade, alpha: 0, ease: 'Power1', duration: 200, onComplete: () => { fade.destroy() }})
                                 }
                                 break
                         }
@@ -592,6 +595,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
             if (this.attack_area instanceof Phaser.GameObjects.GameObject)
             {
                 this.attack_area.destroy()
+                this.knock_y = 0
             }
             this.attacked_entities = []
             this.state = state

@@ -5,6 +5,9 @@ class O_EnemyBase extends Phaser.Physics.Arcade.Sprite
     protected HP: number
     protected flag: number
     protected speed: number
+    protected selected_movement: Phaser.Math.Vector2
+    protected knocked_y: number
+    protected forced_movement_resist: number
 
     constructor(scene: Phaser.Scene, x: number, y: number, texture: string)
     {
@@ -13,6 +16,9 @@ class O_EnemyBase extends Phaser.Physics.Arcade.Sprite
         scene.physics.world.enable(this)
         this.setCollideWorldBounds(true)
         this.flag = 0
+        this.forced_movement_resist = 0
+        this.knocked_y = 0
+        this.selected_movement = Phaser.Math.Vector2.ZERO
     }
 
     change_state(state)
@@ -44,6 +50,15 @@ class O_EnemyBase extends Phaser.Physics.Arcade.Sprite
             this.change_state("Hurt")
         }
     }
+
+    apply_force(force: Phaser.Math.Vector2): void 
+    {
+        if (force != null && this.forced_movement_resist < 1)
+        {
+            var affected_force = force.lerp(Phaser.Math.Vector2.ZERO, this.forced_movement_resist)
+            this.knocked_y += affected_force.y
+        }
+    }
 }
 
 export class Slime extends O_EnemyBase
@@ -64,6 +79,11 @@ export class Slime extends O_EnemyBase
 
     update()
     {
+        if (this.knocked_y != 0)
+        {
+            this.body.velocity.y = this.knocked_y
+            this.knocked_y = 0
+        }
         switch(this.state)
         {
             case "Hurt":
