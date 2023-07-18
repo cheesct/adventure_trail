@@ -105,13 +105,13 @@ export default class Scene_Level1 extends Phaser.Scene
 
 	//  Collision
 	    this.physics.add.overlap(this.player.player_attack, this.Enemies, (object, attack) => { this.player.attack_hit(attack, object) }, null, this);
-	    this.physics.add.overlap(this.player, this.Enemies, () => { this.player.player_get_hit() }, null, this);
+	    this.physics.add.overlap(this.player, this.Enemies, (player, enemy) => { (player as Player).player_get_hit(enemy) }, null, this);
 	    this.physics.add.overlap(this.player, this.Items, (picker, item) => { (item as Key).pickup(picker) }, null, this);
 	    this.physics.add.collider(this.player, worldLayer);
 	    this.physics.add.collider(this.player, this.Doors, (player, door) => { (door as Door).open_door(player) });
 	    this.physics.add.collider(this.Enemies, ai_layer);
 	    this.physics.add.collider(this.Enemies, worldLayer);
-	    this.physics.world.createDebugGraphic();
+	    //this.physics.world.createDebugGraphic();
 		
 		//this.cameras.main.fadeIn(2000);
 
@@ -130,7 +130,7 @@ export default class Scene_Level1 extends Phaser.Scene
 	    this.cameras.main.scrollX = Helper.clamp(this.player.x - 160, 0, this.physics.world.bounds.width - 320);
 
 	    this.Clouds.getChildren().forEach((cloud: ParallaxScrollingImage) => { cloud.update(this.cameras.main.scrollX, delta); });
-	    this.Enemies.getChildren().forEach((enemy) => { enemy.update(); });
+	    this.Enemies.getChildren().forEach((enemy) => { enemy.update(delta); });
 	    this.Parallax.getChildren().forEach((parallax: ParallaxStaticTileSprite) => { parallax.update(this.cameras.main.scrollX); });
 	}
 }

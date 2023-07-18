@@ -8,19 +8,20 @@ export class Player extends Phaser.Physics.Arcade.Sprite
     private flag: number
     private jump: number
     private hurt: number
-    private combo: number
     private death: boolean
     private key: Array<string>
+    private speed_walk: number
+
+    private speed_slide: number
     private slide_time: number
     private slide_cooldown: number
-    private attack_cooldown: number
-    private speed_walk: number
-    private speed_slide: number
-    private current_slide_speed: number
-    public player_attack: Phaser.Physics.Arcade.StaticGroup
-    private attack_area: Phaser.GameObjects.GameObject
-    private attacked_entities: Array<any>
+
+    private combo: number
     private knock_y: number
+    private attack_area: Phaser.GameObjects.GameObject
+    private attack_cooldown: number
+    private attacked_entities: Array<any>
+    public player_attack: Phaser.Physics.Arcade.StaticGroup
 
     private Cursors: Phaser.Types.Input.Keyboard.CursorKeys
     private Z: Phaser.Input.Keyboard.Key
@@ -43,12 +44,14 @@ export class Player extends Phaser.Physics.Arcade.Sprite
 
         this.jump = 0
         this.hurt = 0
+        this.speed_walk = 85
 
         this.slide_cooldown = 0
-        this.attack_cooldown = 0
-        this.speed_walk = 85
         this.speed_slide = 150
-        this.current_slide_speed = 0
+
+        this.knock_y = 0
+        this.attack_cooldown = 0
+        this.player_attack = this.scene.physics.add.staticGroup()
 
         this.Space = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
         this.Z = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z)
@@ -56,7 +59,6 @@ export class Player extends Phaser.Physics.Arcade.Sprite
         this.C = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.C)
         this.Cursors = scene.input.keyboard.createCursorKeys()
         this.setCollideWorldBounds(true)
-        this.player_attack = this.scene.physics.add.staticGroup()
         this.body.setSize(16, 24)
         this.body.offset.y = 8
     }
@@ -77,20 +79,23 @@ export class Player extends Phaser.Physics.Arcade.Sprite
             scaleY: { value: 0, ease: 'Sine.easeOut', duration: 250}, 
             scaleX: { value: 0, ease: 'Linear', duration: 250},
             onComplete: () => { slash.destroy() } })
-        this.attacked_entities.push(object)
         if (typeof object.hurt === 'function')
         {
             if (this.knock_y != 0)
             {
                 object.apply_force(new Phaser.Math.Vector2(0, this.knock_y))
             }
-            object.hurt()
+            object.hurt(1)
+            if (!object.is_dead)
+            {
+                this.attacked_entities.push(object)
+            }
         }
     }
 
-    player_get_hit()
+    player_get_hit(enemy)
     {
-        if(this.isVulnerable() && !this.death)
+        if(this.isVulnerable() && !this.death && enemy.is_attacking())
         {
             if(!this.HP.add(-1))
                 this.change_state("Hurt")
@@ -253,8 +258,43 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                 switch(this.flag)
                 {
                     case 0:
+                        this.combo = 0
                         this.attack_area = this.player_attack.create(this.x + (this.flipX ? -20 : 20), this.y, "", "", false)
                         this.anims.play('hero_attack_air', true)
+                        this.scene.sound.play('snd_sword_slash')
+                        this.flag = 1
+                        break
+
+                    case 1:
+                        if(Phaser.Input.Keyboard.JustDown(this.X))
+                            this.combo = 1
+                        if (!this.anims.isPlaying)
+                        {
+                            if (this.combo == 1 && this.attacked_entities.length > 0)
+                            {
+                                this.change_state("AttackAir2")
+                            }
+                            else
+                            {
+                                this.change_state("")
+                            }
+                            this.attack_cooldown = 1
+                            this.scene.time.addEvent({ delay: 500, callback: () => { this.attack_cooldown = 0 } })
+                            this.anims.play('hero_idle2', true)
+                        }
+                        break
+                }
+                break
+            
+            case "AttackAir2":
+                this.body.velocity.y = Math.min(this.body.velocity.y, 10)
+                this.body.velocity.x = 0
+                switch(this.flag)
+                {
+                    case 0:
+                        this.combo = 0
+                        this.attack_area = this.player_attack.create(this.x + (this.flipX ? -20 : 20), this.y, "", "", false)
+                        this.anims.play('hero_attack_air_2', true)
                         this.scene.sound.play('snd_sword_slash')
                         this.flag = 1
                         break
@@ -325,6 +365,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                                 this.attack_area = this.player_attack.create(this.x + (this.flipX ? -16 : 16), this.y, "", "", false)
                                 this.anims.play('hero_attack_rise')
                                 this.body.velocity.y = Math.min(this.body.velocity.y, -200)
+                                this.body.velocity.x *= 0.5
                                 this.flag += 1
                                 break
         
@@ -351,9 +392,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                         this.body.offset.y = 16
                         this.scene.sound.play('snd_slide', { rate: 1.5, volume: 0.8 })
                         this.anims.play({ key: 'hero_slide', repeat: -1 }, true)
-                        this.current_slide_speed = this.flipX ? -this.speed_slide : this.speed_slide
-                        this.setVelocityX(this.current_slide_speed)
-                        //this.scene.tweens.add({ targets: this, current_slide_speed: 0, ease: 'Linear', duration: this.anims.duration})
+                        this.setVelocityX(this.flipX ? -this.speed_slide : this.speed_slide)
                         this.flag = 1
                         this.slide_time = 0.3
                         break
@@ -364,11 +403,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                             this.anims.play('hero_slide_recover')
                             this.change_state()
                         }
-                        if (this.body.velocity.x == 0)
-                            this.current_slide_speed = 0
                         else
                         {
-                            this.body.velocity.x = this.current_slide_speed
                             var fade = this.scene.add.image(this.x, this.y, 'hero', this.anims.currentFrame.frame.name).setAlpha(0.1).setTint(0xff0000)
                             fade.flipX = this.flipX
                             this.scene.tweens.add({ targets: fade, alpha: 0, ease: 'Power1', duration: 250, onComplete: () => { fade.destroy() }})
@@ -544,13 +580,13 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                     //     this.jump--
                     //     this.change_state("Boost")
                     // }
-                    else if(Phaser.Input.Keyboard.JustDown(this.X) && !this.attack_cooldown)
+                    else if(Phaser.Input.Keyboard.JustDown(this.X))
                     {
                         if (this.Cursors.down.isDown)
                         {
                             this.change_state("AttackAirDown")
                         }
-                        else
+                        else if (!this.attack_cooldown)
                         {
                             this.change_state("AttackAir")
                         }
@@ -578,9 +614,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite
         return true
     }
 
-    change_state(state: string = "")
+    change_state(state: string = "", force = false)
     {
-        if (this.state != state)
+        if (this.state != state || force)
         {
             if (this.state == "Slide")
             {

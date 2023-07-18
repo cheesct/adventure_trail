@@ -8,6 +8,8 @@ class O_EnemyBase extends Phaser.Physics.Arcade.Sprite
     protected selected_movement: Phaser.Math.Vector2
     protected knocked_y: number
     protected forced_movement_resist: number
+    protected stagger_countdown: number
+    protected is_dead: boolean
 
     constructor(scene: Phaser.Scene, x: number, y: number, texture: string)
     {
@@ -19,29 +21,33 @@ class O_EnemyBase extends Phaser.Physics.Arcade.Sprite
         this.forced_movement_resist = 0
         this.knocked_y = 0
         this.selected_movement = Phaser.Math.Vector2.ZERO
+        this.stagger_countdown = 0
+        this.is_dead = false
     }
 
-    change_state(state)
+    change_state(state, force = false)
     {
-        if (this.state != state)
+        if (this.state != state || force)
         {
             this.state = state
             this.flag = 0
         }
     }
 
-    update(): void 
+    update(delta: number): void 
     {
     }
 
     death(): void 
     {
+        this.is_dead = true
         this.destroy()
     }
 
-    hurt(): void 
+    hurt(damage: number): void 
     {
-        if (--this.HP < 1)
+        this.HP -= damage
+        if (this.HP < 1)
         {
             this.death()
         }
@@ -59,10 +65,16 @@ class O_EnemyBase extends Phaser.Physics.Arcade.Sprite
             this.knocked_y += affected_force.y
         }
     }
+
+    is_attacking(): boolean 
+    {
+        return this.stagger_countdown <= 0
+    }
 }
 
 export class Slime extends O_EnemyBase
 {
+    private hurt_countdown: number
     constructor(scene: Phaser.Scene, x: number, y: number)
     {
         super(scene, x, y, 'slime')
@@ -75,12 +87,22 @@ export class Slime extends O_EnemyBase
         this.body.setSize(16, 10)
         this.body.offset.y = 10
         this.setCollideWorldBounds(true)
+        this.hurt_countdown = 0
     }
 
-    update()
+    update(delta: number)
     {
+        if (this.stagger_countdown >= 0)
+        {
+            this.stagger_countdown -= delta
+        }
+        if (this.hurt_countdown >= 0)
+        {
+            this.hurt_countdown -= delta
+        }
         if (this.knocked_y != 0)
         {
+            this.stagger_countdown = 1
             this.body.velocity.y = this.knocked_y
             this.knocked_y = 0
         }
@@ -88,24 +110,31 @@ export class Slime extends O_EnemyBase
         {
             case "Hurt":
                 this.setVelocityX(0)
-                if(this.flag == 0)
+                switch(this.flag)
                 {
-                    this.scene.sound.play('snd_slime_splat', { rate: 0.8 })
-                    this.anims.play('slime_hurt')
-                    this.flag = 1
-                }
-                if (!this.anims.isPlaying)
-                {
-                    this.state = ""
-                    this.body.velocity.x = this.flipX ? this.speed : -this.speed
+                    case 0:
+                        this.scene.sound.play('snd_slime_splat', { rate: 0.8 })
+                        this.anims.play({ key: 'slime_hurt', repeat: -1 })
+                        this.hurt_countdown = 0.5
+                        this.flag = 1
+                        break
+
+                    case 1:
+                        if (this.hurt_countdown <= 0)
+                        {
+                            this.change_state("")
+                        }
                 }
                 break
 
             default:
                 this.anims.play('slime_move', true)
-                if (this.body.velocity.x === 0)
+                if (this.body.blocked.left || this.body.blocked.right)
                 {
                     this.flipX = !this.flipX
+                }
+                if (this.body.velocity.x === 0)
+                {
                     this.body.velocity.x = this.flipX ? this.speed : -this.speed
                 }
                 break
@@ -114,9 +143,27 @@ export class Slime extends O_EnemyBase
 
     death()
     {
-        this.scene.add.sprite(this.x, this.y, 'slime').anims.play('slime_death')
+        const corpse = this.scene.add.sprite(this.x, this.y, 'slime').anims.play('slime_death')
+        if (this.body.blocked.down)
+        {
+            this.scene.physics.world.enable(corpse)
+        }
         this.scene.sound.play('snd_slime_death')
-        this.destroy()
+        super.death()
+    }
+
+    hurt(damage: number): void 
+    {
+        this.body.velocity.y = Math.min(this.body.velocity.y, -75)
+        this.HP -= damage
+        if (this.HP < 1)
+        {
+            this.death()
+        }
+        else
+        {
+            this.change_state("Hurt", true)
+        }
     }
 }
 
@@ -137,7 +184,7 @@ export class Bee extends O_EnemyBase
         this.body.velocity.y = this.speed
     }
 
-    update()
+    update(delta: number)
     {
         if (this.body.velocity.y === 0)
         {
@@ -152,6 +199,6 @@ export class Bee extends O_EnemyBase
         dying.anims.play('enemy_death')
         dying.on('animationcomplete', () => {dying.destroy()})
         this.scene.sound.play('snd_insect_death')
-        this.destroy()
+        super.death()
     }
 }

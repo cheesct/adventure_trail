@@ -74,7 +74,8 @@ export default class Demo extends Phaser.Scene
 	    this.anims.create({ key: 'hero_attack_2_2', frames: this.anims.generateFrameNumbers('hero', { start: 50, end: 52 }), duration: 200, })
 	    this.anims.create({ key: 'hero_attack_3_1', frames: this.anims.generateFrameNumbers('hero', { start: 53, end: 54 }), duration: 125, })
 	    this.anims.create({ key: 'hero_attack_3_2', frames: this.anims.generateFrameNumbers('hero', { start: 55, end: 58 }), duration: 250, })
-	    this.anims.create({ key: 'hero_attack_air', frames: this.anims.generateFrameNumbers('hero', { start: 96, end: 99 }), frameRate: 12, })
+	    this.anims.create({ key: 'hero_attack_air', frames: this.anims.generateFrameNumbers('hero', { start: 96, end: 99 }), duration: 350, })
+		this.anims.create({ key: 'hero_attack_air_2', frames: this.anims.generateFrameNumbers('hero', { start: 100, end: 102 }), duration: 250, })
 	    this.anims.create({ key: 'hero_attack_air_down_prep', frames: this.anims.generateFrameNumbers('hero', { start: 102, end: 103 }), duration: 200, })
 		this.anims.create({ key: 'hero_attack_air_down_loop', frames: this.anims.generateFrameNumbers('hero', { start: 104, end: 105 }), frameRate: 24, })
 		this.anims.create({ key: 'hero_attack_air_down_land', frames: this.anims.generateFrameNumbers('hero', { start: 106, end: 108 }), duration: 300, })
@@ -93,7 +94,7 @@ export default class Demo extends Phaser.Scene
 	    this.anims.create({ key: 'slime_idle', frames: this.anims.generateFrameNumbers('slime', { start: 0, end: 3 }), frameRate: 10, repeat: -1 })
 	    this.anims.create({ key: 'slime_move', frames: this.anims.generateFrameNumbers('slime', { start: 4, end: 7 }), frameRate: 10, repeat: -1 })
 	    this.anims.create({ key: 'slime_attack', frames: this.anims.generateFrameNumbers('slime', { start: 8, end: 12 }), frameRate: 10, })
-	    this.anims.create({ key: 'slime_hurt', frames: this.anims.generateFrameNumbers('slime', { start: 13, end: 16 }), duration: 600, })
+	    this.anims.create({ key: 'slime_hurt', frames: this.anims.generateFrameNumbers('slime', { start: 13, end: 16 }), duration: 300, })
 		this.anims.create({ key: 'slime_death', frames: this.anims.generateFrameNumbers('slime', { start: 17, end: 20 }), frameRate: 8, })
 		
 	    this.anims.create({ key: 'enemy_death', frames: this.anims.generateFrameNumbers('enemy_death', { start: 0, end: 5 }), frameRate: 10 })
