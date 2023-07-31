@@ -72,7 +72,7 @@ export default class Demo extends Phaser.Scene
 	    this.anims.create({ key: 'hero_attack_1_2', frames: this.anims.generateFrameNumbers('hero', { start: 44, end: 47 }), duration: 250, })
 	    this.anims.create({ key: 'hero_attack_2_1', frames: this.anims.generateFrameNumbers('hero', { start: 47, end: 49 }), duration: 200, })
 	    this.anims.create({ key: 'hero_attack_2_2', frames: this.anims.generateFrameNumbers('hero', { start: 50, end: 52 }), duration: 200, })
-	    this.anims.create({ key: 'hero_attack_3_1', frames: this.anims.generateFrameNumbers('hero', { start: 53, end: 54 }), duration: 125, })
+	    this.anims.create({ key: 'hero_attack_3_1', frames: this.anims.generateFrameNumbers('hero', { start: 53, end: 54 }), duration: 150, })
 	    this.anims.create({ key: 'hero_attack_3_2', frames: this.anims.generateFrameNumbers('hero', { start: 55, end: 58 }), duration: 250, })
 	    this.anims.create({ key: 'hero_attack_air', frames: this.anims.generateFrameNumbers('hero', { start: 96, end: 99 }), duration: 350, })
 		this.anims.create({ key: 'hero_attack_air_2', frames: this.anims.generateFrameNumbers('hero', { start: 100, end: 102 }), duration: 250, })
@@ -108,26 +108,11 @@ export default class Demo extends Phaser.Scene
 		this.anims.create({ key: 'key', frames: this.anims.generateFrameNumbers('key', { start: 0, end: 7 }), frameRate: 10, repeat: -1 })
 	    this.anims.create({ key: 'bee', frames: this.anims.generateFrameNumbers('bee', { start: 0, end: 7 }), frameRate: 10, repeat: -1 })
 		this.anims.create({ key: 'door', frames: this.anims.generateFrameNumbers('door', { start: 0, end: 4 }), frameRate: 10 })
-
-        this.add.shader('starfield', 0, 0, this.cameras.main.width, this.cameras.main.height).setOrigin(0)
-
-        this.add.image(400, 300, 'libs')
-
-        const logo = this.add.image(400, 70, 'logo')
-
-        this.tweens.add({
-            targets: logo,
-            y: 350,
-            duration: 1500,
-            ease: 'Sine.inOut',
-            yoyo: true,
-            repeat: -1
-        })
-    }
+	}
 }
 
 const config = {
-    type: Phaser.AUTO,
+    type: Phaser.WEBGL,
     backgroundColor: '#000000',
     zoom: 1,
 	width: 320,
@@ -139,7 +124,7 @@ const config = {
 		default: 'arcade',
 		arcade: {
 			gravity: { y: 500 },
-			debug: false,
+			debug: true,
 		},
 		matter: {
 			gravity: { y: 8 },
@@ -153,7 +138,7 @@ const config = {
 	],
     scale: {
         autoCenter: Phaser.Scale.CENTER_BOTH,
-    },
+    }
 }
 
 const game = new Phaser.Game(config)

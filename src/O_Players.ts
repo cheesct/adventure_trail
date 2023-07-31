@@ -10,10 +10,12 @@ export class Player extends Phaser.Physics.Arcade.Sprite
     private hurt: number
     private death: boolean
     private key: Array<string>
+
+    private can_stand: boolean
     private speed_walk: number
 
-    private speed_slide: number
     private slide_time: number
+    private slide_speed: number
     private slide_cooldown: number
 
     private combo: number
@@ -44,10 +46,11 @@ export class Player extends Phaser.Physics.Arcade.Sprite
 
         this.jump = 0
         this.hurt = 0
-        this.speed_walk = 85
+        this.can_stand = true
+        this.speed_walk = 75
 
+        this.slide_speed = 150
         this.slide_cooldown = 0
-        this.speed_slide = 150
 
         this.knock_y = 0
         this.attack_cooldown = 0
@@ -392,13 +395,13 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                         this.body.offset.y = 16
                         this.scene.sound.play('snd_slide', { rate: 1.5, volume: 0.8 })
                         this.anims.play({ key: 'hero_slide', repeat: -1 }, true)
-                        this.setVelocityX(this.flipX ? -this.speed_slide : this.speed_slide)
+                        this.setVelocityX(this.flipX ? -this.slide_speed : this.slide_speed)
                         this.flag = 1
                         this.slide_time = 0.3
                         break
 
                     case 1:
-                        if (!this.slide_time && !this.body.blocked.up)
+                        if (!this.slide_time && this.can_stand)
                         {
                             this.anims.play('hero_slide_recover')
                             this.change_state()
@@ -545,7 +548,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                     }
                     else if (direction != 0)
                     {
-                        this.setVelocityX(direction*75)
+                        this.setVelocityX(direction*this.speed_walk)
                         this.anims.play('hero_walk', true)
                         this.flipX = direction < 0
                     }
@@ -593,7 +596,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                     }
                     else if (direction != 0)
                     {
-                        this.setVelocityX(direction*75)
+                        this.setVelocityX(direction*this.speed_walk)
                         this.flipX = direction < 0
                     }
                     else
@@ -605,6 +608,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                 }
                 break
         }
+        this.can_stand = true
     }
 
     isVulnerable()
@@ -612,6 +616,14 @@ export class Player extends Phaser.Physics.Arcade.Sprite
         if(this.death || this.hurt != 0 || ["AttackAirDown", "Attack3", "Boost", "Slide", "Hurt"].includes(this.state as string))
             return false
         return true
+    }
+
+    slide_lock(tile)
+    {
+        if (tile.index >= 0)
+        {
+            this.can_stand = false
+        }
     }
 
     change_state(state: string = "", force = false)

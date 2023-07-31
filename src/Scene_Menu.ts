@@ -7,10 +7,11 @@ export default class Scene_Menu extends Phaser.Scene
 {
     private state: string
     private control: boolean
-    private Selected_Button: number
+    private selected_button_index: number
 
+    private Z: Phaser.Input.Keyboard.Key
     private cursors: Phaser.Types.Input.Keyboard.CursorKeys
-    private keyZ: Phaser.Input.Keyboard.Key
+
     private rectangle: Phaser.GameObjects.Rectangle
     private title: Phaser.GameObjects.Text
     private button: Array<MenuButton>
@@ -26,18 +27,6 @@ export default class Scene_Menu extends Phaser.Scene
         super({ key: "Scene_Menu" })
         this.control = false
         this.state = ""
-    }
-
-    transitioning(transition_to)
-    {
-        const transition = this.add.shader("transition_diamond", 0, 0, this.cameras.main.width, this.cameras.main.height).setOrigin(0)
-        const singleton = Singleton.getInstance()
-        singleton.transition_name = "transition_diamond"
-        singleton.transition_flag = Helper.randomRangeInt(0, 7)
-        transition.setUniform("flag.value", singleton.transition_flag)
-        this.tweens.add({ targets: transition.uniforms.progress, value: 1.0, ease: 'Linear', duration: 1000,
-            onComplete: () => { this.scene.start(transition_to) }
-        })
     }
     
     button_hide()
@@ -55,8 +44,8 @@ export default class Scene_Menu extends Phaser.Scene
     button_show()
     {
         this.help_container.visible = true
-        this.Selected_Button = 0
-        this.button[this.Selected_Button].focus()
+        this.selected_button_index = 0
+        this.button[this.selected_button_index].focus()
         for(var i = 0; i < this.button.length; i++)
         {
             this.button[i].x = -500
@@ -79,6 +68,8 @@ export default class Scene_Menu extends Phaser.Scene
 
     create() 
     {
+        Singleton.sceneAddPostPipeline(this)
+
         //this.sound.stopAll()
         //this.sound.play('mus_menu')
 
@@ -92,12 +83,14 @@ export default class Scene_Menu extends Phaser.Scene
 
         this.button.push(new MenuButton(this, -500, this.cameras.main.height * 0.55, "PLAY", () => { 
             this.control = false
-            this.time.addEvent({ delay: 1000, callback: () =>  { this.transitioning("Scene_Level1") } })
+            this.time.addEvent({ delay: 1000, callback: () =>  { 
+                Singleton.sceneTransOut(this, Helper.randomRangeInt(0, 7), "Scene_Level1") } })
         }))
 
         this.button.push(new MenuButton(this, -500, this.cameras.main.height * 0.72, "STAGE 2", () => { 
             this.control = false
-            this.time.addEvent({ delay: 1000, callback: () =>  { this.transitioning("Scene_Menu") } })
+            this.time.addEvent({ delay: 1000, callback: () =>  { 
+                Singleton.sceneTransOut(this, Helper.randomRangeInt(0, 7), "Scene_Menu") } })
         }))
 
         this.button.push(new MenuButton(this, -500, this.cameras.main.height * 0.89, "CREDIT", () => {
@@ -110,7 +103,7 @@ export default class Scene_Menu extends Phaser.Scene
         this.title = this.add.text(this.cameras.main.width * 0.5, 40, "Adventure Trail", {fontFamily: 'monospace', fontSize: 32, fontStyle: 'bold', color: '#ffffff', align: 'center' }).setOrigin(0.5)
 
         this.cursors = this.input.keyboard.createCursorKeys()
-        this.keyZ = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z)
+        this.Z = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z)
 
         this.credit_container = this.add.container(0, 0)
         this.help_container = this.add.container(0, 0)
@@ -144,17 +137,11 @@ export default class Scene_Menu extends Phaser.Scene
             "to title", ], { color: 'lime', align: 'right' }).setOrigin(1, 1))
 
         this.credit_container.visible = false
-        this.button_show()
-        const singleton = Singleton.getInstance()
-        if (singleton.transition_name)
+        this.button_show();
+
+        if (Singleton.transition_name || true)
         {
-            const transition = this.add.shader(singleton.transition_name, 0, 0, this.cameras.main.width, this.cameras.main.height).setOrigin(0)
-            transition.setUniform("inversion.value", 1)
-            transition.setUniform("flag.value", singleton.transition_flag)
-            singleton.transition_name = ""
-            this.tweens.add({ targets: transition.uniforms.progress, value: 1.0, ease: 'Linear', duration: 1000,
-                onComplete: () => { transition.destroy() }
-            })
+            Singleton.sceneTransIn(this)
         }
     }
 
@@ -172,7 +159,7 @@ export default class Scene_Menu extends Phaser.Scene
         switch(this.state)
         {
             case "Credits":
-                if (Phaser.Input.Keyboard.JustDown(this.keyZ))
+                if (Phaser.Input.Keyboard.JustDown(this.Z))
                 {
                     this.state = ""
                     this.title.visible = true
@@ -187,19 +174,19 @@ export default class Scene_Menu extends Phaser.Scene
                     let direction = Number(Phaser.Input.Keyboard.JustDown(this.cursors.down)) - Number(Phaser.Input.Keyboard.JustDown(this.cursors.up))
                     if(direction != 0)
                     {
-                        let new_selected_button = Phaser.Math.Clamp(this.Selected_Button + direction, 0, this.button.length - 1)
-                        if(new_selected_button != this.Selected_Button)
+                        let new_selected_button_index = Phaser.Math.Clamp(this.selected_button_index + direction, 0, this.button.length - 1)
+                        if(new_selected_button_index != this.selected_button_index)
                         {
-                            this.button[this.Selected_Button].idle()
-                            this.Selected_Button = new_selected_button
-                            this.button[this.Selected_Button].focus()
                             this.sound.play('snd_menu_switch')
+                            this.button[this.selected_button_index].idle()
+                            this.button[new_selected_button_index].focus()
+                            this.selected_button_index = new_selected_button_index
                         }
                     }
-                    else if (Phaser.Input.Keyboard.JustDown(this.keyZ))
+                    else if (Phaser.Input.Keyboard.JustDown(this.Z))
                     {
                         this.sound.play('snd_menu_select')
-                        let button = this.button[this.Selected_Button]
+                        let button = this.button[this.selected_button_index]
                         this.rectangle.y = button.y
                         this.rectangle.setAlpha(1)
                         this.tweens.add({ targets: this.rectangle, alpha: 0.2, ease: 'Linear', duration: 100, })

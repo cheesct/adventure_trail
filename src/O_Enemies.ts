@@ -144,7 +144,7 @@ export class Slime extends O_EnemyBase
     death()
     {
         const corpse = this.scene.add.sprite(this.x, this.y, 'slime').anims.play('slime_death')
-        if (this.body.blocked.down)
+        if (!this.body.blocked.down)
         {
             this.scene.physics.world.enable(corpse)
         }
