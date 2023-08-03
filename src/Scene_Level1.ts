@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser'
 import Helper from './helper'
 import Singleton from './singleton'
+import Waypoint from './O_Waypoint'
 import { Door } from './O_Doors'
 import { Player } from './O_Players'
 import { Bee, Slime } from './O_Enemies'
@@ -13,6 +14,7 @@ export default class Scene_Level1 extends Phaser.Scene
 	private Items: Phaser.GameObjects.Group
     private Clouds: Phaser.GameObjects.Group
 	private Enemies: Phaser.GameObjects.Group
+	private Waypoints: Phaser.GameObjects.Group
 	private Parallax: Phaser.GameObjects.Group
 	private player: Player
 	private transitioning: boolean
@@ -33,7 +35,7 @@ export default class Scene_Level1 extends Phaser.Scene
 	    this.load.image('cloud3', 'assets/level1/cloud3.png')
 	    this.load.image('mountains1', 'assets/level1/mountains1.png')
 	    this.load.image('mountains2', 'assets/level1/mountains2.png')
-	    this.load.tilemapTiledJSON('level1', 'assets/level1/map.json')
+	    this.load.tilemapTiledJSON('level1', 'assets/level1/map1.json')
   	}
 
   	create() 
@@ -44,7 +46,11 @@ export default class Scene_Level1 extends Phaser.Scene
 		this.sound.play('mus_level1', { loop: true, volume: 0.8 })
 
 	    this.Parallax = this.add.group()
+		this.Waypoints = this.add.group()
+	    this.Enemies = this.add.group()
 	    this.Clouds = this.add.group()
+	    this.Items = this.add.group()
+
 	    this.add.tileSprite(0, 0, 320, 112, "sky").setOrigin(0).setScrollFactor(0)
 		this.Parallax.add(new ParallaxStaticTileSprite(this, 0, 82, 320, 32, "mountains2", 0.125))
 		this.Parallax.add(new ParallaxStaticTileSprite(this, 0, 88, 320, 32, "mountains1", 0.25))
@@ -65,6 +71,7 @@ export default class Scene_Level1 extends Phaser.Scene
 
 	    const tile_grassland = map.addTilesetImage("environment", "level1_tiles")
 	    const tile_props = map.addTilesetImage("props", "level1_props")
+		const tile_trigger = map.addTilesetImage("trigger", "trigger")
 
 	    map.createLayer("Background", tile_grassland, 0, 0)
 	    map.createLayer("Props", tile_props, 0, 2)
@@ -72,30 +79,26 @@ export default class Scene_Level1 extends Phaser.Scene
 	    this.Doors = this.add.group()
 	    map.createFromObjects('Objects', { name : "Door" }).forEach((object: Phaser.GameObjects.Sprite) => { this.Doors.add(new Door(this, object.x, object.y, "door")); object.destroy() })
 
-	    let ai_layer = map.createLayer("Enemy trigger", map.addTilesetImage("trigger", "trigger"), 0, 0).setCollisionByExclusion([-1]).setVisible(this.game.config.physics.arcade.debug)
-	    let slide_lock_layer = map.createLayer("Slide lock", map.addTilesetImage("trigger", "trigger"), 0, 0).setCollisionByExclusion([-1]).setVisible(this.game.config.physics.arcade.debug)
-		let worldLayer = map.createLayer("Walls", tile_grassland, 0, 0).setCollisionByExclusion([-1])
+	    let ai_layer = map.createLayer("Enemy trigger", tile_trigger, 0, 0).setCollisionByExclusion([-1]).setVisible(this.game.config.physics.arcade.debug)
+	    let slide_lock_layer = map.createLayer("Slide lock", tile_trigger, 0, 0).setCollisionByExclusion([-1]).setVisible(this.game.config.physics.arcade.debug)
+		let walls_layer = map.createLayer("Walls", tile_grassland, 0, 0).setCollisionByExclusion([-1])
 
 	    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels)
 	    this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels, true, true, true, false)
 
-
-	    this.Items = this.add.group()
-	    this.Enemies = this.add.group()
-
-
-	    map.createFromObjects('Objects', { name : "Cherry", classType: Cherry  }).forEach((object) => { this.Items.add(object) })
-			
+	    map.createFromObjects('Objects', { name : "Cherry", classType: Cherry }).forEach((object) => { this.Items.add(object) })
+	    map.createFromObjects('Objects', { name : "Slime", classType: Slime  }).forEach((object) => { this.Enemies.add(object) })
+	    map.createFromObjects('Objects', { name : "Bee", classType: Bee  }).forEach((object) => { this.Enemies.add(object) })
 	    map.createFromObjects('Objects', { name : "Key", classType: Key  }).forEach((object) => { this.Items.add(object) })
 
-	    map.createFromObjects('Objects', { name : "Slime", classType: Slime  }).forEach((object) => { this.Enemies.add(object) })
+		map.createFromObjects('Objects', { name : "Waypoint", classType: Waypoint }).forEach((object) => { this.Waypoints.add(object) })
 
-	    map.createFromObjects('Objects', { name : "Bee", classType: Bee  }).forEach((object) => { this.Enemies.add(object) })
 
 	    // The player and its settings
-	    //this.player = new Player(this, 16, 112)
+	    this.player = new Player(this, 16, 112)
 	    //this.player = new Player(this, 1728, 0)
-		this.player = new Player(this, 2768, 112)
+		//this.player = new Player(this, 2768, 112)
+		this.player.setPosition(2768, 112)
 
 	    const graphics = this.add
 	      .graphics()
@@ -108,14 +111,15 @@ export default class Scene_Level1 extends Phaser.Scene
 	    // })
 
 	//  Collision
-	    this.physics.add.overlap(this.player.player_attack, this.Enemies, (object, attack) => { this.player.attack_hit(attack, object) }, null, this)
-	    this.physics.add.overlap(this.player, this.Enemies, (player, enemy) => { (player as Player).player_get_hit(enemy) }, null, this)
-	    this.physics.add.overlap(this.player, this.Items, (picker, item) => { (item as Key).pickup(picker) }, null, this)
-		this.physics.add.overlap(this.player, slide_lock_layer, (player, tile) => { (player as Player).slide_lock(tile) }, null, this)
-	    this.physics.add.collider(this.player, worldLayer)
+	    this.physics.add.overlap(this.player.player_attack, this.Enemies, (object, attack) => { this.player.attack_hit(attack, object) })
+	    this.physics.add.overlap(this.player, this.Enemies, (player, enemy) => { (player as Player).player_get_hit(enemy) })
+	    this.physics.add.overlap(this.player, this.Items, (picker, item) => { (item as Key).pickup(picker) })
+		this.physics.add.overlap(this.player, slide_lock_layer, (player, tile) => { (player as Player).slide_lock(tile) })
+		this.physics.add.overlap(this.player, this.Waypoints, (player, waypoint) => { (waypoint as Waypoint).change_scene() })
+	    this.physics.add.collider(this.player, walls_layer)
 	    this.physics.add.collider(this.player, this.Doors, (player, door) => { (door as Door).open_door(player) })
 	    this.physics.add.collider(this.Enemies, ai_layer)
-	    this.physics.add.collider(this.Enemies, worldLayer)
+	    this.physics.add.collider(this.Enemies, walls_layer)
 	    //this.physics.world.createDebugGraphic()
 
 		//this.cameras.main.fadeIn(2000)
@@ -130,11 +134,6 @@ export default class Scene_Level1 extends Phaser.Scene
   	update(time, delta)
   	{
 		delta = delta / 1000
-		if(this.player.x >= 3180 && !this.transitioning)
-		{
-			this.transitioning = true
-			Singleton.sceneTransOut(this, 0, "Scene_Menu")
-		}
 	    this.player.update(delta)
 		this.cameras.main.scrollX = Helper.clamp(this.player.x - 160, 0, this.physics.world.bounds.width - 320)
 	    this.Clouds.getChildren().forEach((cloud: ParallaxScrollingImage) => { cloud.update(this.cameras.main.scrollX, delta) })

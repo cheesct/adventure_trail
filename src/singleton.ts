@@ -2,12 +2,16 @@ import { TransitionDiamondFX } from './O_CustomPipelines'
 
 export default class Singleton
 {
-    public static readonly TransitionDiamond = "TransitionDiamondFX";
+    public static readonly TransitionDiamond = "TransitionDiamondFX"
 
-    private static instance: Singleton;
+    private static instance: Singleton
 
-    public static transition_name: string;
-    public static transition_flag: number = 0;
+    public static transition_name: string
+    public static transition_flag: number = 0
+
+    public static is_waypoint_travel: boolean = false
+    public static waypoint_landing_x: number = 0
+    public static waypoint_landing_y: number = 0
 
     private constructor()
     {
@@ -17,7 +21,7 @@ export default class Singleton
     {
         if (!Singleton.instance)
         {
-            Singleton.instance = new Singleton();
+            Singleton.instance = new Singleton()
         }
         return Singleton.instance;
     }
