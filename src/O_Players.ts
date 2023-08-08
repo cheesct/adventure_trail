@@ -98,7 +98,23 @@ export class Player extends Phaser.Physics.Arcade.Sprite
 
     player_get_hit(enemy)
     {
-        if(this.isVulnerable() && !this.death && enemy.is_attacking())
+        if (!this.death && enemy.is_attacking())
+        {
+            this.player_get_hurt()
+        }
+    }
+
+    player_get_spiked(tile)
+    {
+        if (tile.index > 0)
+        {
+            this.player_get_hurt()
+        }
+    }
+
+    player_get_hurt()
+    {
+        if (this.isVulnerable())
         {
             if(!this.HP.add(-1))
                 this.change_state("Hurt")
@@ -488,8 +504,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                         if (!this.anims.isPlaying)
                         {
                             this.flag = 2
-                            this.scene.cameras.main.once("camerafadeoutcomplete", () => { this.scene.scene.restart() })
                             this.scene.time.addEvent({  delay: 1000, callback: () => { this.scene.cameras.main.fade(1000, 0, 0, 0)} })
+                            this.scene.time.addEvent({  delay: 2000, callback: () => { this.scene.scene.restart()} })
                         }
                         break
                 }
@@ -512,8 +528,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                         if (!this.anims.isPlaying)
                         {
                             this.flag = 2
-                            this.scene.cameras.main.once("camerafadeoutcomplete", () => { this.scene.scene.restart() })
                             this.scene.time.addEvent({  delay: 1000, callback: () => { this.scene.cameras.main.fade(1000, 0, 0, 0)} })
+                            this.scene.time.addEvent({  delay: 2000, callback: () => { this.scene.scene.restart()} })
                         }
                         break
                 }

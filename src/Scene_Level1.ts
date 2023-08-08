@@ -42,8 +42,8 @@ export default class Scene_Level1 extends Phaser.Scene
   	{
 		Singleton.sceneAddPostPipeline(this)
 
-		this.sound.stopAll()
-		this.sound.play('mus_level1', { loop: true, volume: 0.8 })
+		//this.sound.stopAll()
+		//this.sound.play('mus_level1', { loop: true, volume: 0.8 })
 
 	    this.Parallax = this.add.group()
 		this.Waypoints = this.add.group()

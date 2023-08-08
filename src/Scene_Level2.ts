@@ -96,10 +96,11 @@ export default class Scene_Level2 extends Phaser.Scene
 	    // })
 
 	//  Collision
-	    this.physics.add.overlap(this.player.player_attack, this.Enemies, (object, attack) => { this.player.attack_hit(attack, object) }, null, this)
-	    this.physics.add.overlap(this.player, this.Enemies, (player, enemy) => { (player as Player).player_get_hit(enemy) }, null, this)
-	    this.physics.add.overlap(this.player, this.Items, (picker, item) => { (item as Key).pickup(picker) }, null, this)
-		this.physics.add.overlap(this.player, slide_lock_layer, (player, tile) => { (player as Player).slide_lock(tile) }, null, this)
+	    this.physics.add.overlap(this.player.player_attack, this.Enemies, (object, attack) => { this.player.attack_hit(attack, object) })
+	    this.physics.add.overlap(this.player, this.Enemies, (player, enemy) => { (player as Player).player_get_hit(enemy) })
+	    this.physics.add.overlap(this.player, this.Items, (picker, item) => { (item as Key).pickup(picker) })
+		this.physics.add.overlap(this.player, slide_lock_layer, (player, tile) => { (player as Player).slide_lock(tile) })
+		this.physics.add.overlap(this.player, spike_layer, (player, tile) => { (player as Player).player_get_spiked(tile) })
 	    this.physics.add.collider(this.player, walls_layer)
 	    this.physics.add.collider(this.player, this.Doors, (player, door) => { (door as Door).open_door(player) })
 	    this.physics.add.collider(this.Enemies, ai_layer)
@@ -134,19 +135,22 @@ export default class Scene_Level2 extends Phaser.Scene
 	    this.Enemies.getChildren().forEach((enemy) => { enemy.update(delta) })
         
 	    this.lighting.context.globalCompositeOperation = 'copy';
-	    this.lighting.context.fillStyle = '#000000fb';
-    	this.lighting.context.fillRect(0, 0, this.lighting.width, this.lighting.height);
+	    this.lighting.context.fillStyle = '#000000ff';
+		const offset = 5
+		const filler = offset * 2
+    	this.lighting.context.fillRect(this.cameras.main.scrollX - offset, this.cameras.main.scrollY - offset, this.cameras.main.width + filler, this.cameras.main.height + filler);
     	this.lighting.context.globalCompositeOperation = 'destination-out';
 		this.lighting.context.fillStyle = '#ffffff88';
 		if(this.player.state != "DeathSpike")
 		{
 			let tau = 2*Math.PI
+			let flicker = Phaser.Math.FloatBetween(-1, 1)
 			this.lighting.context.beginPath();
-			this.lighting.context.arc(this.player.x, this.player.y, 60, 0, tau);
+			this.lighting.context.arc(this.player.x, this.player.y, 50, 0, tau);
 			this.lighting.context.fill();
-			this.lighting.context.arc(this.player.x, this.player.y, 75 + Phaser.Math.FloatBetween(-0.5, 0.5), 0, tau);
+			this.lighting.context.arc(this.player.x, this.player.y, 70 + flicker * 0.5, 0, tau);
 			this.lighting.context.fill();
-			this.lighting.context.arc(this.player.x, this.player.y, 80, 0, tau);
+			this.lighting.context.arc(this.player.x, this.player.y, 80 + flicker, 0, tau);
 			this.lighting.context.fill();
 		}
 		this.lighting.context.fillStyle = '#ffffff11';

@@ -112,6 +112,21 @@ export default class Demo extends Phaser.Scene
 	}
 }
 
+//https://fit.lqdtu.edu.vn/files/FileMonHoc/1250588_CoSoDuLIeuHuongDoiTuong.pdf
+//https://home.cs.colorado.edu/~kena/classes/5448/f12/presentation-materials/udayashankar.pdf
+//https://slideplayer.com/slide/14354406/
+//https://www.tutorialride.com/object-based-databases/object-based-databases-tutorial.htm
+//https://cuuduongthancong.com/sjdt/co-so-du-lieu-phan-tan-va-huong-doi-tuong//dh-bach-khoa-hcm
+//https://luanvan.net.vn/luan-van/co-so-du-lieu-huong-doi-tuong-thoi-gian-va-xu-ly-truy-van-trong-co-so-du-lieu-huong-doi-tuong-thoi-gian-51597/
+//https://tailieu.vn/doc/bai-giang-co-so-du-lieu-huong-doi-tuong-doan-van-ban-1724478.html
+//https://www.slideshare.net/anhhuycan83/slide-cosodulieuchuong8csdlhuongdoituong
+//https://dthujs.vn/index.php/dthujs/article/view/1202/1096?lang=en_US
+//http://luanan.nlv.gov.vn/luanan?a=d&d=TTbGLiazQydu2007.1.24&e=-------vi-20--1--img-txIN-------
+//https://www.tutorialride.com/object-based-databases/object-based-databases-tutorial.htm
+//https://xemtailieu.net/tai-lieu/co-so-du-lieu-huong-doi-tuong-1345203.html
+//https://123docz.net/document/13361077-ebook-co-so-du-lieu-huong-doi-tuong-hoang-bao-hung.htm
+//https://123docz.net/document/1391623-co-so-du-lieu-huong-doi-tuong.htm
+
 const config = {
     type: Phaser.WEBGL,
     backgroundColor: '#000000',
