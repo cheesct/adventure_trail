@@ -95,9 +95,9 @@ export default class Scene_Level1 extends Phaser.Scene
 
 
 	    // The player and its settings
-	    //this.player = new Player(this, 16, 112)
+	    this.player = new Player(this, 16, 112)
 	    //this.player = new Player(this, 1728, 0)
-		this.player = new Player(this, 2768, 112)
+		//this.player = new Player(this, 2768, 112)
 		//this.player.setPosition(2768, 112)
 
 	    const graphics = this.add

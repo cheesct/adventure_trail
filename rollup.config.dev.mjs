@@ -16,7 +16,7 @@ export default {
     //  You can also use 'umd' if you need to ingest your game into another system.
     //  If using Phaser 3.21 or **below**, add: `intro: 'var global = window;'` to the output object.
     output: {
-        file: './dist/game.js',
+        file: './game-dev.js',
         name: 'MyGame',
         format: 'iife',
         sourcemap: true
@@ -61,7 +61,7 @@ export default {
         //  See https://www.npmjs.com/package/rollup-plugin-serve for config options
         serve({
             open: false,
-            contentBase: 'dist',
+            //contentBase: 'dist',
             host: 'localhost',
             port: 10001,
             headers: {

@@ -116,7 +116,7 @@ export default class Demo extends Phaser.Scene
 const config = {
     type: Phaser.WEBGL,
     backgroundColor: '#000000',
-    zoom: 1,
+    zoom: 4,
 	width: 320,
 	height: 160,
 	pixelArt: true,
@@ -126,7 +126,7 @@ const config = {
 		default: 'arcade',
 		arcade: {
 			gravity: { y: 500 },
-			debug: true,
+			debug: false,
 		},
 		matter: {
 			gravity: { y: 8 },

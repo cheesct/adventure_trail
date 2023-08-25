@@ -16,8 +16,8 @@ export default {
     //  You can also use 'umd' if you need to ingest your game into another system.
     //  If using Phaser 3.21 or **below**, add: `intro: 'var global = window;'` to the output object.
     output: {
-        file: './dist/game.js',
-        name: 'MyGame',
+        file: './game.js',
+        name: 'LocNgoGame',
         format: 'iife',
         sourcemap: false
     },
