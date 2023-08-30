@@ -14,6 +14,7 @@ export default class Scene_Level2 extends Phaser.Scene
 	private Enemies: Phaser.GameObjects.Group
 	private player: Player
 	private transitioning: boolean
+	private transition: Phaser.GameObjects.Shader
 
     private lighting: any
     private darkness: any
@@ -36,8 +37,6 @@ export default class Scene_Level2 extends Phaser.Scene
 
   	create() 
   	{
-		Singleton.sceneAddPostPipeline(this)
-
 		this.sound.stopAll()
 		this.sound.play('mus_level2', { loop: true, volume: 0.8 })
 

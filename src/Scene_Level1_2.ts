@@ -17,7 +17,7 @@ export default class Scene_Level1_2 extends Phaser.Scene
 	private Waypoints: Phaser.GameObjects.Group
 	private Parallax: Phaser.GameObjects.Group
 	private player: Player
-	private transitioning: boolean
+	private transition: Phaser.GameObjects.Shader
 
 	constructor() 
 	{
@@ -40,8 +40,6 @@ export default class Scene_Level1_2 extends Phaser.Scene
 
   	create() 
   	{
-		Singleton.sceneAddPostPipeline(this)
-
 		//this.sound.stopAll()
 		//this.sound.play('mus_level1', { loop: true, volume: 0.8 })
 

@@ -22,6 +22,8 @@ export default class Scene_Menu extends Phaser.Scene
     private bg_clouds: Phaser.GameObjects.TileSprite
     private bg_mountains: Phaser.GameObjects.TileSprite
 
+    private transition: Phaser.GameObjects.Shader
+
     constructor() 
     {
         super({ key: "Scene_Menu" })
@@ -68,8 +70,6 @@ export default class Scene_Menu extends Phaser.Scene
 
     create() 
     {
-        Singleton.sceneAddPostPipeline(this)
-
         //this.sound.stopAll()
         //this.sound.play('mus_menu')
 
@@ -84,13 +84,13 @@ export default class Scene_Menu extends Phaser.Scene
         this.button.push(new MenuButton(this, -500, this.cameras.main.height * 0.55, "PLAY", () => { 
             this.control = false
             this.time.addEvent({ delay: 1000, callback: () => { 
-                Singleton.sceneTransOut(this, Helper.randomRangeInt(0, 7), "Scene_Level1") } })
+            Singleton.sceneTransOut(this, Helper.randomRangeInt(0, 7), "Scene_Level1") } })
         }))
 
         this.button.push(new MenuButton(this, -500, this.cameras.main.height * 0.72, "STAGE 2", () => { 
             this.control = false
             this.time.addEvent({ delay: 1000, callback: () => { 
-                Singleton.sceneTransOut(this, Helper.randomRangeInt(0, 7), "Scene_Level2") } })
+            Singleton.sceneTransOut(this, Helper.randomRangeInt(0, 7), "Scene_Level2") } })
         }))
 
         this.button.push(new MenuButton(this, -500, this.cameras.main.height * 0.89, "CREDIT", () => {

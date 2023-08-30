@@ -14,6 +14,8 @@ uniform float progress;
 uniform bool inversion;
 uniform vec2 resolution;
 
+#define iResolution resolution
+
 void main(void)
 {
     gl_FragColor = vec4(0., 0., 0., 1.);
@@ -22,7 +24,6 @@ void main(void)
     float xDistance = abs(xFraction - 0.5);
     float yDistance = abs(yFraction - 0.5);
     vec2 uv = gl_FragCoord.xy / resolution.xy;
-    uv.y = 1.-uv.y;
     float numOfElement = 4.;
     if (flag == 0)
     {

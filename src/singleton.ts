@@ -1,9 +1,5 @@
-import { TransitionDiamondFX } from './O_CustomPipelines'
-
 export default class Singleton
 {
-    public static readonly TransitionDiamond = "TransitionDiamondFX"
-
     private static instance: Singleton
 
     public static transition_name: string
@@ -26,32 +22,33 @@ export default class Singleton
         return Singleton.instance;
     }
 
-    public static sceneAddPostPipeline(scene: Phaser.Scene)
+    public static sceneTransIn(scene)
     {
-        const renderer = scene.renderer as Phaser.Renderer.WebGL.WebGLRenderer
-        renderer.pipelines.addPostPipeline('TransitionDiamondFX', TransitionDiamondFX)
-        scene.cameras.main.setPostPipeline(renderer.pipelines.getPostPipeline(TransitionDiamondFX))
+        if (!scene.transition)
+        {
+            scene.transition = scene.add.shader("transition_diamond", scene.cameras.main.scrollX + scene.cameras.main.centerX, scene.cameras.main.scrollY + scene.cameras.main.centerY, scene.cameras.main.width, scene.cameras.main.height).setScrollFactor(0)
+            scene.transition.depth = 10
+        }
+        Singleton.transition_name = "1"
+        scene.transition.uniforms.flag.value = Singleton.transition_flag
+		scene.transition.uniforms.progress.value = 0
+        scene.transition.uniforms.inversion.value = true
+        scene.tweens.add({ targets: scene.transition.uniforms.progress, value: 1.0, ease: 'Linear', duration: 1000 })
     }
 
-    public static sceneTransIn(scene: Phaser.Scene)
+    public static sceneTransOut(scene, flag: number, to: string)
     {
+        if (!scene.transition)
+        {
+            scene.transition = scene.add.shader("transition_diamond", scene.cameras.main.scrollX + scene.cameras.main.centerX, scene.cameras.main.scrollY + scene.cameras.main.centerY, scene.cameras.main.width, scene.cameras.main.height).setScrollFactor(0)
+            scene.transition.depth = 10
+        }
         Singleton.transition_name = null
-        const transition = (scene.cameras.main.getPostPipeline("TransitionDiamondFX") as TransitionDiamondFX)
-        transition.flag = Singleton.transition_flag
-        transition.inversion = true
-        transition.progress = 0
-        scene.tweens.add({ targets: transition, progress: 1.0, ease: 'Linear', duration: 1000 })
-    }
-
-    public static sceneTransOut(scene: Phaser.Scene, flag: number, to: string)
-    {
-        const transition = (scene.cameras.main.getPostPipeline("TransitionDiamondFX") as TransitionDiamondFX)
-        Singleton.transition_name = Singleton.TransitionDiamond
         Singleton.transition_flag = flag
-        transition.flag = Singleton.transition_flag
-        transition.inversion = false
-        transition.progress = 0
-        scene.tweens.add({ targets: transition, progress: 1.0, ease: 'Linear', duration: 1000,
+        scene.transition.uniforms.flag.value = flag
+		scene.transition.uniforms.progress.value = 0
+        scene.transition.uniforms.inversion.value = false
+        scene.tweens.add({ targets: scene.transition.uniforms.progress, value: 1.0, ease: 'Linear', duration: 1000,
             onComplete: () => { scene.scene.start(to) }
         })
     }

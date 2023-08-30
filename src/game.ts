@@ -127,10 +127,6 @@ const config = {
 		arcade: {
 			gravity: { y: 500 },
 			debug: false,
-		},
-		matter: {
-			gravity: { y: 8 },
-			debug: false,
 		}
 	},
     scene: [ 

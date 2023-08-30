@@ -6,7 +6,7 @@ import typescript from '@rollup/plugin-typescript';
 
 export default {
 
-    //  Our games entry point (edit as required)
+    //  Our game entry point (edit as required)
     input: [
         './src/game.ts'
     ],
