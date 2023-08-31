@@ -24,12 +24,9 @@ export default class Singleton
 
     public static sceneTransIn(scene)
     {
-        if (!scene.transition)
-        {
-            scene.transition = scene.add.shader("transition_diamond", scene.cameras.main.scrollX + scene.cameras.main.centerX, scene.cameras.main.scrollY + scene.cameras.main.centerY, scene.cameras.main.width, scene.cameras.main.height).setScrollFactor(0)
-            scene.transition.depth = 10
-        }
-        Singleton.transition_name = "1"
+        scene.transition = scene.add.shader("transition_diamond", scene.cameras.main.scrollX + scene.cameras.main.centerX, scene.cameras.main.scrollY + scene.cameras.main.centerY, scene.cameras.main.width, scene.cameras.main.height).setScrollFactor(0)
+        scene.transition.depth = 10
+        Singleton.transition_name = null
         scene.transition.uniforms.flag.value = Singleton.transition_flag
 		scene.transition.uniforms.progress.value = 0
         scene.transition.uniforms.inversion.value = true
@@ -38,12 +35,7 @@ export default class Singleton
 
     public static sceneTransOut(scene, flag: number, to: string)
     {
-        if (!scene.transition)
-        {
-            scene.transition = scene.add.shader("transition_diamond", scene.cameras.main.scrollX + scene.cameras.main.centerX, scene.cameras.main.scrollY + scene.cameras.main.centerY, scene.cameras.main.width, scene.cameras.main.height).setScrollFactor(0)
-            scene.transition.depth = 10
-        }
-        Singleton.transition_name = null
+        Singleton.transition_name = "1"
         Singleton.transition_flag = flag
         scene.transition.uniforms.flag.value = flag
 		scene.transition.uniforms.progress.value = 0

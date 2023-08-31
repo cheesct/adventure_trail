@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser'
 import Helper from './helper'
 import Singleton from './singleton'
+import Waypoint from './O_Waypoint'
 import { Door } from './O_Doors'
 import { Player } from './O_Players'
 import { Bee, Slime } from './O_Enemies'
@@ -12,8 +13,8 @@ export default class Scene_Level2 extends Phaser.Scene
 	private Doors: Phaser.GameObjects.Group
 	private Items: Phaser.GameObjects.Group
 	private Enemies: Phaser.GameObjects.Group
+	private Waypoints: Phaser.GameObjects.Group
 	private player: Player
-	private transitioning: boolean
 	private transition: Phaser.GameObjects.Shader
 
     private lighting: any
@@ -26,10 +27,6 @@ export default class Scene_Level2 extends Phaser.Scene
 
   	preload() 
   	{
-	    this.load.spritesheet('level2_lava', 'assets/level2/lava.png', { frameWidth: 32, frameHeight: 32 })
-		this.load.spritesheet('level2_water', 'assets/level2/water.png', { frameWidth: 32, frameHeight: 32 })
-		this.load.spritesheet('level2_waterfall', 'assets/level2/waterfall.png', { frameWidth: 16, frameHeight: 16 })
-
 	    this.load.image('level2_props', 'assets/level2/props.png')
 	    this.load.image('level2_tiles', 'assets/level2/tiles.png')
 	    this.load.tilemapTiledJSON('level2', 'assets/level2/map2.json')
@@ -40,9 +37,7 @@ export default class Scene_Level2 extends Phaser.Scene
 		this.sound.stopAll()
 		this.sound.play('mus_level2', { loop: true, volume: 0.8 })
 
-		this.anims.create({ key: 'level2_lava', frames: this.anims.generateFrameNumbers('level2_lava', { start: 0, end: 2 }), repeat: -1, frameRate: 8 })
-		this.anims.create({ key: 'level2_water', frames: this.anims.generateFrameNumbers('level2_water', { start: 0, end: 2 }), repeat: -1, frameRate: 8 })
-		this.anims.create({ key: 'level2_waterfall', frames: this.anims.generateFrameNumbers('level2_waterfall', { start: 0, end: 2 }), repeat: -1, frameRate: 8 })
+		this.Waypoints = this.add.group()
 
 	    const map = this.make.tilemap({key: "level2"})
 
@@ -66,13 +61,11 @@ export default class Scene_Level2 extends Phaser.Scene
 	    this.Items = this.add.group()
 	    this.Enemies = this.add.group()
 
-	    map.createFromObjects('Objects', { name : "Cherry", classType: Cherry  }).forEach((object) => { this.Items.add(object) })
-			
-	    map.createFromObjects('Objects', { name : "Key", classType: Key  }).forEach((object) => { this.Items.add(object) })
-
+	    map.createFromObjects('Objects', { name : "Cherry", classType: Cherry }).forEach((object) => { this.Items.add(object) })
 	    map.createFromObjects('Objects', { name : "Slime", classType: Slime  }).forEach((object) => { this.Enemies.add(object) })
-
 	    map.createFromObjects('Objects', { name : "Bee", classType: Bee  }).forEach((object) => { this.Enemies.add(object) })
+	    map.createFromObjects('Objects', { name : "Key", classType: Key  }).forEach((object) => { this.Items.add(object) })
+		map.createFromObjects('Objects', { name : "Waypoint", classType: Waypoint }).forEach((object) => { this.Waypoints.add(object) })
 
 	    // The player and its settings
 	    this.player = new Player(this, 16, 80)
@@ -100,6 +93,7 @@ export default class Scene_Level2 extends Phaser.Scene
 	    this.physics.add.overlap(this.player, this.Items, (picker, item) => { (item as Key).pickup(picker) })
 		this.physics.add.overlap(this.player, slide_lock_layer, (player, tile) => { (player as Player).slide_lock(tile) })
 		this.physics.add.overlap(this.player, spike_layer, (player, tile) => { (player as Player).player_get_spiked(tile) })
+		this.physics.add.overlap(this.player, this.Waypoints, (player, waypoint) => { (waypoint as Waypoint).change_scene() })
 	    this.physics.add.collider(this.player, walls_layer)
 	    this.physics.add.collider(this.player, this.Doors, (player, door) => { (door as Door).open_door(player) })
 	    this.physics.add.collider(this.Enemies, ai_layer)
@@ -124,11 +118,6 @@ export default class Scene_Level2 extends Phaser.Scene
   	update(time, delta)
   	{
 		delta = delta / 1000
-		if(this.player.x >= 3976 && !this.transitioning)
-		{
-			this.transitioning = true
-			Singleton.sceneTransOut(this, 0, "Scene_Menu")
-		}
 	    this.player.update(delta)
 		this.cameras.main.scrollX = Helper.clamp(this.player.x - this.cameras.main.width/2, 0, this.physics.world.bounds.width - this.cameras.main.width)
 	    this.Enemies.getChildren().forEach((enemy) => { enemy.update(delta) })

@@ -117,22 +117,24 @@ export class Player extends Phaser.Physics.Arcade.Sprite
         if (this.isVulnerable())
         {
             if(!this.HP.add(-1))
+            {
                 this.change_state("Hurt")
+            }
             else
+            {
                 this.change_state("Death")
+            }
         }
     }
 
     update(delta)
     {
-        if(this.hurt <= 0)
-            
         if(!this.death)
         {
             if(this.y > this.scene.physics.world.bounds.height)
+            {
                 this.change_state("DeathSpike")
-            /*else if(this.keySpace.isDown)
-                this.change_state("Death")*/
+            }
         }
         if (this.hurt > 0)
         {

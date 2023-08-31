@@ -14,8 +14,8 @@ export default class Scene_Level1 extends Phaser.Scene
 	private Items: Phaser.GameObjects.Group
     private Clouds: Phaser.GameObjects.Group
 	private Enemies: Phaser.GameObjects.Group
-	private Waypoints: Phaser.GameObjects.Group
 	private Parallax: Phaser.GameObjects.Group
+	private Waypoints: Phaser.GameObjects.Group
 	private player: Player
 	private transition: Phaser.GameObjects.Shader
 
@@ -43,8 +43,8 @@ export default class Scene_Level1 extends Phaser.Scene
 		//this.sound.stopAll()
 		//this.sound.play('mus_level1', { loop: true, volume: 0.8 })
 
-	    this.Parallax = this.add.group()
 		this.Waypoints = this.add.group()
+	    this.Parallax = this.add.group()
 	    this.Enemies = this.add.group()
 	    this.Clouds = this.add.group()
 	    this.Items = this.add.group()
@@ -88,15 +88,12 @@ export default class Scene_Level1 extends Phaser.Scene
 	    map.createFromObjects('Objects', { name : "Slime", classType: Slime  }).forEach((object) => { this.Enemies.add(object) })
 	    map.createFromObjects('Objects', { name : "Bee", classType: Bee  }).forEach((object) => { this.Enemies.add(object) })
 	    map.createFromObjects('Objects', { name : "Key", classType: Key  }).forEach((object) => { this.Items.add(object) })
-
 		map.createFromObjects('Objects', { name : "Waypoint", classType: Waypoint }).forEach((object) => { this.Waypoints.add(object) })
 
 
 	    // The player and its settings
 	    this.player = new Player(this, 16, 112)
-	    //this.player = new Player(this, 1728, 0)
 		//this.player = new Player(this, 2768, 112)
-		//this.player.setPosition(2768, 112)
 
 	    const graphics = this.add
 	      .graphics()

@@ -28,7 +28,10 @@ export default class Demo extends Phaser.Scene
 	    this.load.spritesheet('enemy_death', 'assets/enemy_death.png', { frameWidth: 37, frameHeight: 39 })
 	    this.load.spritesheet('hero', 'assets/adventurer.png', { frameWidth: 50, frameHeight: 37 })
 	    this.load.spritesheet('hp_bar', 'assets/hp_bar.png', { frameWidth: 71, frameHeight: 16 })
-		
+	    this.load.spritesheet('level2_lava', 'assets/level2/lava.png', { frameWidth: 32, frameHeight: 32 })
+		this.load.spritesheet('level2_water', 'assets/level2/water.png', { frameWidth: 32, frameHeight: 32 })
+		this.load.spritesheet('level2_waterfall', 'assets/level2/waterfall.png', { frameWidth: 16, frameHeight: 16 })
+
 	    this.load.atlas('flares', 'assets/fx_flares.png', 'assets/fx_flares.json')
 
 		this.load.audio('snd_jump', 'assets/audio/jump.mp3')
@@ -100,16 +103,17 @@ export default class Demo extends Phaser.Scene
 		this.anims.create({ key: 'slime_death', frames: this.anims.generateFrameNumbers('slime', { start: 17, end: 20 }), frameRate: 8, })
 		
 	    this.anims.create({ key: 'enemy_death', frames: this.anims.generateFrameNumbers('enemy_death', { start: 0, end: 5 }), frameRate: 10 })
-
-        //Piranha Plant
-    	this.anims.create({ key: 'piranha_plant_idle', frames: this.anims.generateFrameNumbers('piranha_plant', { start: 0, end: 4 }), frameRate: 10, repeat: -1 })
-	    this.anims.create({ key: 'piranha_plant_attack', frames: this.anims.generateFrameNumbers('piranha_plant', { start: 5, end: 8 }), frameRate: 10, })
-
+		
 	    //
 	    this.anims.create({ key: 'cherry', frames: this.anims.generateFrameNumbers('cherry', { start: 0, end: 4 }), frameRate: 10, yoyo: true, repeat: -1 })
 		this.anims.create({ key: 'key', frames: this.anims.generateFrameNumbers('key', { start: 0, end: 7 }), frameRate: 10, repeat: -1 })
 	    this.anims.create({ key: 'bee', frames: this.anims.generateFrameNumbers('bee', { start: 0, end: 7 }), frameRate: 10, repeat: -1 })
 		this.anims.create({ key: 'door', frames: this.anims.generateFrameNumbers('door', { start: 0, end: 4 }), frameRate: 10 })
+
+		//level graphics
+		this.anims.create({ key: 'level2_lava', frames: this.anims.generateFrameNumbers('level2_lava', { start: 0, end: 2 }), repeat: -1, frameRate: 8 })
+		this.anims.create({ key: 'level2_water', frames: this.anims.generateFrameNumbers('level2_water', { start: 0, end: 2 }), repeat: -1, frameRate: 8 })
+		this.anims.create({ key: 'level2_waterfall', frames: this.anims.generateFrameNumbers('level2_waterfall', { start: 0, end: 2 }), repeat: -1, frameRate: 8 })
 	}
 }
 
