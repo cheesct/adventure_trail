@@ -31,6 +31,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite
     private C: Phaser.Input.Keyboard.Key
     private Space: Phaser.Input.Keyboard.Key
 
+    private current_jumpPad: any
+    private is_jumpPad_jump: boolean
+
     constructor(scene, x, y) 
     {
         super(scene, x, y, 'hero')
@@ -51,6 +54,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite
 
         this.slide_speed = 150
         this.slide_cooldown = 0
+
+        this.is_jumpPad_jump = false
 
         this.knock_y = 0
         this.attack_cooldown = 0
@@ -543,6 +548,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                 if (this.body.blocked.down)
                 {
                     this.jump = 9
+                    this.is_jumpPad_jump = false
                     if(Phaser.Input.Keyboard.JustDown(this.X) && !this.attack_cooldown)
                     {
                         if (this.Cursors.up.isDown)
@@ -619,14 +625,27 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                     }
                     else
                         this.setVelocityX(0)
-                    if (this.body.velocity.y > 0 && this.anims.getName() != 'hero_fall')
+                    if (this.body.velocity.y > 0)
+                    {
+                        if (this.current_jumpPad != null)
+                        {
+                            this.anims.play('hero_up', true)
+                            this.setVelocityY(this.current_jumpPad.boost)
+                            this.current_jumpPad.jump_pad_boost()
+                            this.is_jumpPad_jump = true
+                        }
+                        else if (this.anims.getName() != 'hero_fall')
+                        {
                             this.anims.play('hero_fall', true)
-                    else if (this.body.velocity.y < 0 && this.Z.isUp)
+                        }
+                    }
+                    else if (this.body.velocity.y < 0 && this.Z.isUp && !this.is_jumpPad_jump)
                             this.body.velocity.y *= 0.8
                 }
                 break
         }
         this.can_stand = true
+        this.current_jumpPad = null
     }
 
     isVulnerable()
@@ -642,6 +661,11 @@ export class Player extends Phaser.Physics.Arcade.Sprite
         {
             this.can_stand = false
         }
+    }
+
+    set_jumpPad(pad)
+    {
+        this.current_jumpPad = pad
     }
 
     change_state(state: string = "", force = false)

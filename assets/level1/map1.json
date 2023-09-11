@@ -55,6 +55,7 @@
          "encoding":"base64",
          "height":10,
          "id":14,
+         "locked":true,
          "name":"Enemy trigger",
          "opacity":1,
          "type":"tilelayer",
@@ -69,6 +70,7 @@
          "encoding":"base64",
          "height":10,
          "id":26,
+         "locked":true,
          "name":"Slide lock",
          "opacity":1,
          "type":"tilelayer",
@@ -368,10 +370,10 @@
          "y":0
         }],
  "nextlayerid":27,
- "nextobjectid":30,
+ "nextobjectid":31,
  "orientation":"orthogonal",
  "renderorder":"right-down",
- "tiledversion":"1.10.1",
+ "tiledversion":"1.10.2",
  "tileheight":16,
  "tilesets":[
         {
