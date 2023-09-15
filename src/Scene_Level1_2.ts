@@ -79,7 +79,6 @@ export default class Scene_Level1_2 extends Phaser.Scene
 	    map.createLayer("Props", tile_props, 0, 2)
 
 	    map.createFromObjects('Objects', { name : "Door" }).forEach((object: Phaser.GameObjects.Sprite) => { this.Doors.add(new Door(this, object.x, object.y, "door")); object.destroy() })
-		map.createFromObjects('Objects', { name : "JumpPad" }).forEach((object: Phaser.GameObjects.Sprite) => { this.JumpPads.add(new JumpPad(this, object.x, object.y, object.data.list)); object.destroy() })
 
 	    let ai_layer = map.createLayer("Enemy trigger", tile_trigger).setCollisionByExclusion([-1]).setVisible(this.game.config.physics.arcade.debug)
 	    let slide_lock_layer = map.createLayer("Slide lock", tile_trigger).setCollisionByExclusion([-1]).setVisible(this.game.config.physics.arcade.debug)
@@ -96,6 +95,7 @@ export default class Scene_Level1_2 extends Phaser.Scene
 	    map.createFromObjects('Objects', { name : "Slime", classType: Slime  }).forEach((object) => { this.Enemies.add(object) })
 	    map.createFromObjects('Objects', { name : "Bee", classType: Bee  }).forEach((object) => { this.Enemies.add(object) })
 	    map.createFromObjects('Objects', { name : "Key", classType: Key  }).forEach((object) => { this.Items.add(object) })
+		map.createFromObjects('Objects', { name : "JumpPad", classType: JumpPad }).forEach((object) => { this.JumpPads.add(object) })
 		map.createFromObjects('Objects', { name : "Waypoint", classType: Waypoint }).forEach((object) => { this.Waypoints.add(object) })
 
 

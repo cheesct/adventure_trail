@@ -121,7 +121,7 @@ export default class Demo extends Phaser.Scene
 const config = {
     type: Phaser.WEBGL,
     backgroundColor: '#000000',
-    zoom: 4,
+    zoom: 1,
 	width: 320,
 	height: 160,
 	pixelArt: true,

@@ -630,8 +630,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                         if (this.current_jumpPad != null)
                         {
                             this.anims.play('hero_up', true)
-                            this.setVelocityY(this.current_jumpPad.boost)
-                            this.current_jumpPad.jump_pad_boost()
+                            this.setVelocityY(this.current_jumpPad.get_boost())
+                            this.current_jumpPad.play_animation()
                             this.is_jumpPad_jump = true
                         }
                         else if (this.anims.getName() != 'hero_fall')
