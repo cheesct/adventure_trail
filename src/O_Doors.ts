@@ -7,7 +7,7 @@ export class Door extends Phaser.GameObjects.Sprite
 
     constructor(scene, x, y, texture, open_animation = "door", open_key = "key") 
     {
-        super(scene, x, y, texture);
+        super(scene, x, y, "door");
         scene.add.existing(this);
         scene.physics.world.enable(this);
         (this.body as Phaser.Physics.Arcade.Body).setAllowGravity(false).setImmovable(true)

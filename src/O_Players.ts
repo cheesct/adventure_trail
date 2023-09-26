@@ -59,7 +59,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
 
         this.knock_y = 0
         this.attack_cooldown = 0
-        this.player_attack = this.scene.physics.add.staticGroup()
+        this.player_attack = scene.PlayerAttacks
 
         this.Space = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
         this.Z = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z)
