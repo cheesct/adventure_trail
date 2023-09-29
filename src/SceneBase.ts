@@ -117,7 +117,7 @@ export default class SceneBase extends Phaser.Scene
 		
 		map.createFromObjects('Objects', { name : "Waypoint", classType: Waypoint }).forEach((object) => { this.Waypoints.add(object) })
 		map.createFromObjects('Objects', { name : "JumpPad", classType: JumpPad }).forEach((object) => { this.JumpPads.add(object) })
-		map.createFromObjects('Objects', { name : "Player", classType: Cherry }).forEach((object) => { this.Players.add(object) })
+		map.createFromObjects('Objects', { name : "Player", classType: Player }).forEach((object) => { this.Players.add(object) })
 	    map.createFromObjects('Objects', { name : "Cherry", classType: Cherry }).forEach((object) => { this.Items.add(object) })
 	    map.createFromObjects('Objects', { name : "Slime", classType: Slime  }).forEach((object) => { this.Enemies.add(object) })
 		map.createFromObjects('Objects', { name : "Door", classType: Door }).forEach((object) => { this.Doors.add(object) })
