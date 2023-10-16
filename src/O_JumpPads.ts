@@ -10,6 +10,7 @@ export class JumpPad extends Phaser.GameObjects.Sprite
         scene.physics.world.enable(this);
         (this.body as Phaser.Physics.Arcade.Body).setAllowGravity(false).setImmovable(true).setSize(40, 8)
         this.animation = "bounceshroom"
+        this.play_animation()
     }
 
     play_animation()

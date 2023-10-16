@@ -1,7 +1,7 @@
 import * as Phaser from 'phaser'
 import Scene_Menu from './Scene_Menu'
 import Scene_Level1 from './Scene_Level1'
-import Scene_Level1_2 from './Scene_Level1_2'
+import Scene_Level1b from './Scene_Level1b'
 import Scene_Level2 from './Scene_Level2'
 
 export default class Demo extends Phaser.Scene
@@ -109,6 +109,7 @@ export default class Demo extends Phaser.Scene
 		this.anims.create({ key: 'key', frames: this.anims.generateFrameNumbers('key', { start: 0, end: 7 }), frameRate: 10, repeat: -1 })
 	    this.anims.create({ key: 'bee', frames: this.anims.generateFrameNumbers('bee', { start: 0, end: 7 }), frameRate: 10, repeat: -1 })
 		this.anims.create({ key: 'door', frames: this.anims.generateFrameNumbers('door', { start: 0, end: 4 }), frameRate: 10 })
+		this.anims.create({ key: 'door_close', frames: this.anims.generateFrameNumbers('door', { start: 4, end: 0 }), frameRate: 10 })
 		this.anims.create({ key: 'bounceshroom', frames: this.anims.generateFrameNumbers('bounceshroom', { start: 0, end: 7 }), duration: 600 })
 
 		//level graphics
@@ -119,7 +120,7 @@ export default class Demo extends Phaser.Scene
 }
 
 const config = {
-    type: Phaser.WEBGL,
+    type: Phaser.AUTO,
     backgroundColor: '#000000',
     zoom: 1,
 	width: 320,
@@ -131,19 +132,25 @@ const config = {
 		default: 'arcade',
 		arcade: {
 			gravity: { y: 500 },
-			debug: false,
+			debug: true,
 		}
 	},
     scene: [ 
 		Demo,
 		Scene_Menu,
 		Scene_Level1,
-		Scene_Level1_2,
+		Scene_Level1b,
 		Scene_Level2,
 	],
     scale: {
         autoCenter: Phaser.Scale.CENTER_BOTH,
-    }
+    },
+	callbacks: {
+		preBoot: function (game) {
+			// @ts-ignore
+			game.music = Phaser.Sound.SoundManagerCreator.create(game);
+		}
+	}
 }
 
 const game = new Phaser.Game(config)

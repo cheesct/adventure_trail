@@ -1,3 +1,5 @@
+import * as Phaser from 'phaser'
+
 export default class Singleton
 {
     private static instance: Singleton
@@ -9,16 +11,16 @@ export default class Singleton
     public static waypoint_landing_x: number = 0
     public static waypoint_landing_y: number = 0
 
+    public static readonly DEPTH_BACK_DROP: number = -10
+    public static readonly DEPTH_BACK_LONG: number = -5
+    public static readonly DEPTH_BACK_NEAR: number = -2
+
     private constructor()
     {
     }
 
     public static getInstance(): Singleton
     {
-        if (!Singleton.instance)
-        {
-            Singleton.instance = new Singleton()
-        }
         return Singleton.instance;
     }
 
@@ -35,13 +37,20 @@ export default class Singleton
 
     public static sceneTransOut(scene, flag: number, to: string)
     {
-        Singleton.transition_name = "1"
-        Singleton.transition_flag = flag
-        scene.transition.uniforms.flag.value = flag
-		scene.transition.uniforms.progress.value = 0
-        scene.transition.uniforms.inversion.value = false
-        scene.tweens.add({ targets: scene.transition.uniforms.progress, value: 1.0, ease: 'Linear', duration: 1000,
-            onComplete: () => { scene.scene.start(to) }
-        })
+        if (scene.game.config.renderType == Phaser.WEBGL)
+        {
+            Singleton.transition_name = "1"
+            Singleton.transition_flag = flag
+            scene.transition.uniforms.flag.value = flag
+            scene.transition.uniforms.progress.value = 0
+            scene.transition.uniforms.inversion.value = false
+            scene.tweens.add({ targets: scene.transition.uniforms.progress, value: 1.0, ease: 'Linear', duration: 1000,
+                onComplete: () => { scene.scene.start(to) }
+            })
+        }
+        else
+        {
+            
+        }
     }
 }
