@@ -1,4 +1,5 @@
 import * as Phaser from 'phaser'
+import LevelBase from './LevelBase'
 
 class O_EnemyBase extends Phaser.Physics.Arcade.Sprite
 {
@@ -201,4 +202,125 @@ export class Bee extends O_EnemyBase
         this.scene.sound.play('snd_insect_death')
         super.death()
     }
+}
+
+export class PiranhaPlant extends O_EnemyBase 
+{
+    private sensor_zone: Phaser.GameObjects.Zone
+    private attack_zone: Phaser.GameObjects.Zone
+
+    private attack_group: Phaser.Physics.Arcade.StaticGroup
+    
+    private sensored_player: any
+
+    private attack_countdown: number
+    private need_initialize: boolean
+
+    constructor(scene, x: number, y: number)
+    {
+        super(scene, x, y, 'piranha_plant')
+        scene.add.existing(this)
+        scene.physics.world.enable(this)
+        this.HP = 3
+        this.state = "";
+        (this.body as Phaser.Physics.Arcade.Body).setAllowGravity(false)
+        this.body.setSize(24, 32)
+        this.setCollideWorldBounds(true)
+        this.anims.play('piranha_plant_idle')
+        this.attack_group = scene.EnemyAttacks
+        this.attack_countdown = 0
+        this.need_initialize = true
+    }
+
+    update(delta: number)
+    {
+        if (this.need_initialize)
+        {
+            this.sensor_zone = this.scene.add.zone(this.x, this.y, 96, 32);
+            (this.scene as LevelBase).EnemySensors.add(this.sensor_zone)
+            this.scene.physics.add.overlap(this.sensor_zone, (this.scene as LevelBase).Players, (zone, player) => { this.sensored_player = player })
+            this.need_initialize = false
+        }
+        if (this.stagger_countdown >= 0)
+        {
+            this.stagger_countdown -= delta
+        }
+        if (this.attack_countdown >= 0)
+        {
+            this.attack_countdown -= delta
+        }
+        switch (this.state)
+        {
+            case "Attack":
+                switch (this.flag)
+                {
+                    case 0:
+                        this.flag = 1
+                        this.anims.play('piranha_plant_warning')
+                        break
+                    
+                    case 1:
+                        if (!this.anims.isPlaying)
+                        {
+                            this.flag = 2
+                            this.anims.play('piranha_plant_attack')
+                        }
+                        break
+                    
+                    case 2:
+                        if (!this.anims.isPlaying)
+                        {
+                            this.attack_countdown = 1
+                            this.change_state("")
+                        }
+                        break
+                }
+                break
+            
+            case "Hurt":
+                switch (this.flag)
+                {
+                    case 0:
+                        this.flag = 1
+                        this.anims.pause()
+                        this.setTintFill()
+                        this.stagger_countdown = 0.2
+                        break
+                    
+                    case 1:
+                        if (this.stagger_countdown <= 0)
+                        {
+                            this.clearTint()
+                            this.anims.resume()
+                            this.change_state("")
+                        }
+                        break
+                }
+                break
+
+            default:
+                if (!this.flag)
+                {
+                    this.flag = 1
+                    this.anims.play('piranha_plant_idle')
+                }
+                if (this.sensored_player && this.attack_countdown <= 0)
+                {
+                    this.change_state("Attack")
+                }
+                break
+        }
+        this.sensored_player = null
+    }
+
+    death()
+    {
+        var dying = this.scene.add.sprite(this.x, this.y, "enemy_death")
+        dying.anims.play('enemy_death')
+        dying.on('animationcomplete', () => {dying.destroy()})
+        this.scene.sound.play('snd_insect_death')
+        this.sensor_zone.destroy()
+        super.death()
+    }
+
 }

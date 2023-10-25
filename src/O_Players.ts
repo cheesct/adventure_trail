@@ -308,7 +308,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                             }
                             else
                             {
-                                (this.attack_area.body as Phaser.Physics.Arcade.StaticBody).y = this.y
+                                (this.attack_area.body as Phaser.Physics.Arcade.StaticBody).y = this.y;
+                                (this.attack_area.body as Phaser.Physics.Arcade.StaticBody).updateCenter()
                                 var fade = this.scene.add.image(this.x, this.y, 'hero', this.anims.currentFrame.frame.name).setAlpha(0.25).setTint(0xff0000)
                                 fade.flipX = this.flipX
                                 this.scene.tweens.add({ targets: fade, alpha: 0, ease: 'Power1', duration: 400, onComplete: () => { fade.destroy() }})
@@ -611,13 +612,17 @@ export class Player extends Phaser.Physics.Arcade.Sprite
     {
         if (this.attacked_entities.includes(object))
             return
+        
+        let impact_x = (Math.max(attack.body.x, object.body.x) + Math.min(attack.body.x + attack.body.width, attack.body.x + attack.body.width)) * 0.5
+        let impact_y = (Math.max(attack.body.x, object.body.x) + Math.min(attack.body.x + attack.body.width, attack.body.x + attack.body.width)) * 0.5
+
         this.scene.cameras.main.shake(40, 0.02)
         this.scene.sound.play('snd_sword_hit', { rate: Phaser.Math.FloatBetween(1, 1.25) })
 
-        var effect = this.scene.add.sprite(attack.body.x, attack.body.y, 'fx_attack').setAngle(Math.random() * 360).setScale(0.5)
+        var effect = this.scene.add.sprite(attack.body.center.x, attack.body.center.y, 'fx_attack').setAngle(Math.random() * 360).setScale(0.5)
         effect.anims.play("fx_attack").on('animationcomplete', () => { effect.destroy() })
         
-        var slash = this.scene.add.sprite(attack.body.x, attack.body.y, 'fx_slash', 5).setAngle(Math.random() * 360).setScale(2, 1)
+        var slash = this.scene.add.sprite(attack.body.center.x, attack.body.center.y, 'fx_slash', 5).setAngle(Math.random() * 360).setScale(2, 1)
         this.scene.tweens.add({ targets: slash, 
             scaleY: { value: 0, ease: 'Sine.easeOut', duration: 250}, 
             scaleX: { value: 0, ease: 'Linear', duration: 250},

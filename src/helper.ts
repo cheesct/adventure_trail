@@ -2,7 +2,7 @@ export default class Helper
 {
     static clamp(val: number, min: number, max: number)
     {
-        if (min >= max)
+        if (min > max)
         {
             return val
         }

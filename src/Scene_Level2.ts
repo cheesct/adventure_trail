@@ -36,13 +36,11 @@ export default class Scene_Level2 extends LevelBase
 	    if(!this.lighting)
 	    	this.lighting = this.textures.get('lights')
 	    this.darkness = this.add.image(0, 0, "lights").setOrigin(0).setDepth(1)
-
   	}
 
   	update(time, delta)
   	{
 		super.update(time, delta)
-		
 	    this.lighting.context.globalCompositeOperation = 'copy';
 	    this.lighting.context.fillStyle = '#000000ff';
 		const offset = 10

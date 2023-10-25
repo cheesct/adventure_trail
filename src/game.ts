@@ -18,15 +18,16 @@ export default class Demo extends Phaser.Scene
 	    this.load.spritesheet('key', 'assets/key.png', { frameWidth: 9, frameHeight: 18 })
 	    this.load.spritesheet('bee', 'assets/bee.png', { frameWidth: 29, frameHeight: 30 })
 	    this.load.spritesheet('door', 'assets/door.png', { frameWidth: 12, frameHeight: 36 })
+	    this.load.spritesheet('hero', 'assets/hero.png', { frameWidth: 50, frameHeight: 37 })
 	    this.load.spritesheet('slime', 'assets/slime.png', { frameWidth: 32, frameHeight: 25 })
 	    this.load.spritesheet('cherry', 'assets/cherry.png', { frameWidth: 19, frameHeight: 16 })
-	    this.load.spritesheet('hero', 'assets/adventurer.png', { frameWidth: 50, frameHeight: 37 })
 	    this.load.spritesheet('fx_item', 'assets/fx_item.png', { frameWidth: 32, frameHeight: 32 })
 	    this.load.spritesheet('fx_ring', 'assets/fx_ring.png', { frameWidth: 192, frameHeight: 192 })
 	    this.load.spritesheet('fx_slash', 'assets/fx_slash.png', { frameWidth: 96, frameHeight: 96 })
 		this.load.spritesheet('fx_attack', 'assets/fx_attack.png', { frameWidth: 192, frameHeight: 192 })
 	    this.load.spritesheet('enemy_death', 'assets/enemy_death.png', { frameWidth: 37, frameHeight: 39 })
-	    this.load.spritesheet('bounceshroom', 'assets/bounceshroom.png', { frameWidth: 56, frameHeight: 42 })
+	    this.load.spritesheet('bounce_shroom', 'assets/bounce_shroom.png', { frameWidth: 56, frameHeight: 42 })
+		this.load.spritesheet('piranha_plant', 'assets/piranha_plant.png', { frameWidth: 61, frameHeight: 35 })
 	    this.load.spritesheet('hp_bar', 'assets/hp_bar.png', { frameWidth: 71, frameHeight: 16 })
 	    this.load.spritesheet('level2_lava', 'assets/level2/lava.png', { frameWidth: 32, frameHeight: 32 })
 		this.load.spritesheet('level2_water', 'assets/level2/water.png', { frameWidth: 32, frameHeight: 32 })
@@ -95,22 +96,27 @@ export default class Demo extends Phaser.Scene
 	    this.anims.create({ key: 'fx_ring', frames: this.anims.generateFrameNumbers('fx_ring', { start: 0, end: 19 }), duration: 250, })
 	    this.anims.create({ key: 'fx_attack', frames: this.anims.generateFrameNumbers('fx_attack', { start: 0, end: 3 }), duration: 125, })
 
-	    //Slime animations
+	    //enemy animations
+	    this.anims.create({ key: 'bee', frames: this.anims.generateFrameNumbers('bee', { start: 0, end: 7 }), frameRate: 10, repeat: -1 })
+
 	    this.anims.create({ key: 'slime_idle', frames: this.anims.generateFrameNumbers('slime', { start: 0, end: 3 }), frameRate: 10, repeat: -1 })
 	    this.anims.create({ key: 'slime_move', frames: this.anims.generateFrameNumbers('slime', { start: 4, end: 7 }), frameRate: 10, repeat: -1 })
-	    this.anims.create({ key: 'slime_attack', frames: this.anims.generateFrameNumbers('slime', { start: 8, end: 12 }), frameRate: 10, })
 	    this.anims.create({ key: 'slime_hurt', frames: this.anims.generateFrameNumbers('slime', { start: 13, end: 16 }), duration: 300, })
 		this.anims.create({ key: 'slime_death', frames: this.anims.generateFrameNumbers('slime', { start: 17, end: 20 }), frameRate: 8, })
+	    this.anims.create({ key: 'slime_attack', frames: this.anims.generateFrameNumbers('slime', { start: 8, end: 12 }), frameRate: 10, })
 		
+		this.anims.create({ key: 'piranha_plant_idle', frames: this.anims.generateFrameNumbers('piranha_plant', { start: 0, end: 4 }), frameRate: 10, repeat: -1 })
+		this.anims.create({ key: 'piranha_plant_attack', frames: this.anims.generateFrameNumbers('piranha_plant', { frames: [ 6 ] }), duration: 200 })
+		this.anims.create({ key: 'piranha_plant_warning', frames: this.anims.generateFrameNumbers('piranha_plant', { frames: [ 5 ] }), duration: 300 })
+
 	    this.anims.create({ key: 'enemy_death', frames: this.anims.generateFrameNumbers('enemy_death', { start: 0, end: 5 }), frameRate: 10 })
 		
 	    //
 	    this.anims.create({ key: 'cherry', frames: this.anims.generateFrameNumbers('cherry', { start: 0, end: 4 }), frameRate: 10, yoyo: true, repeat: -1 })
 		this.anims.create({ key: 'key', frames: this.anims.generateFrameNumbers('key', { start: 0, end: 7 }), frameRate: 10, repeat: -1 })
-	    this.anims.create({ key: 'bee', frames: this.anims.generateFrameNumbers('bee', { start: 0, end: 7 }), frameRate: 10, repeat: -1 })
 		this.anims.create({ key: 'door', frames: this.anims.generateFrameNumbers('door', { start: 0, end: 4 }), frameRate: 10 })
 		this.anims.create({ key: 'door_close', frames: this.anims.generateFrameNumbers('door', { start: 4, end: 0 }), frameRate: 10 })
-		this.anims.create({ key: 'bounceshroom', frames: this.anims.generateFrameNumbers('bounceshroom', { start: 0, end: 7 }), duration: 600 })
+		this.anims.create({ key: 'bounce_shroom', frames: this.anims.generateFrameNumbers('bounce_shroom', { start: 0, end: 7 }), duration: 500 })
 
 		//level graphics
 		this.anims.create({ key: 'level2_lava', frames: this.anims.generateFrameNumbers('level2_lava', { start: 0, end: 2 }), repeat: -1, frameRate: 8 })

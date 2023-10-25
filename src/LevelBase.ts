@@ -5,14 +5,13 @@ import Waypoint from './O_Waypoint'
 import { Door } from './O_Doors'
 import { Player } from './O_Players'
 import { JumpPad } from './O_JumpPads'
-import { Bee, Slime } from './O_Enemies'
+import { Bee, Slime, PiranhaPlant } from './O_Enemies'
 import { Key, Cherry } from './O_Pickups'
 
 export default class LevelBase extends Phaser.Scene
 {
 	protected Doors: Phaser.GameObjects.Group
 	protected Items: Phaser.GameObjects.Group
-	protected Players: Phaser.GameObjects.Group
 	protected Enemies: Phaser.GameObjects.Group
 	protected JumpPads: Phaser.GameObjects.Group
 	protected Waypoints: Phaser.GameObjects.Group
@@ -22,7 +21,10 @@ export default class LevelBase extends Phaser.Scene
 	protected transition: Phaser.GameObjects.Shader
 	protected player: Player
 
+	public Players: Phaser.GameObjects.Group
     public PlayerAttacks: Phaser.Physics.Arcade.StaticGroup
+	public EnemySensors: Phaser.Physics.Arcade.StaticGroup
+	public EnemyAttacks: Phaser.Physics.Arcade.StaticGroup
 	public ObjectOffset: number = 0
 
   	create() 
@@ -51,6 +53,8 @@ export default class LevelBase extends Phaser.Scene
 	    this.ParallaxStatic = this.add.layer()
 		this.ParallaxScrolling = this.add.layer()
 		this.PlayerAttacks = this.physics.add.staticGroup()
+		this.EnemyAttacks = this.physics.add.staticGroup()
+		this.EnemySensors = this.physics.add.staticGroup()
 
 		const is_debug = this.game.config.physics.arcade.debug
 		const map = this.make.tilemap({key: map_key})
@@ -81,17 +85,20 @@ export default class LevelBase extends Phaser.Scene
 
 		map.createFromObjects('Objects', { name : "Waypoint", classType: Waypoint }).forEach((object) => { this.Waypoints.add(object) })
 		map.createFromObjects('Objects', { name : "JumpPad", classType: JumpPad }).forEach((object) => { this.JumpPads.add(object) })
-		map.createFromObjects('Objects', { name : "Player", classType: Player }).forEach((object: Player) => { this.player = object; this.Players.add(object) })
-	    map.createFromObjects('Objects', { name : "Cherry", classType: Cherry }).forEach((object) => { this.Items.add(object) })
-	    map.createFromObjects('Objects', { name : "Slime", classType: Slime  }).forEach((object) => { this.Enemies.add(object) })
 		map.createFromObjects('Objects', { name : "Door", classType: Door }).forEach((object) => { this.Doors.add(object) })
-	    map.createFromObjects('Objects', { name : "Bee", classType: Bee  }).forEach((object) => { this.Enemies.add(object) })
-	    map.createFromObjects('Objects', { name : "Key", classType: Key  }).forEach((object) => { this.Items.add(object) })
+		map.createFromObjects('Objects', { name : "Player", classType: Player }).forEach((object: Player) => { this.player = object; this.Players.add(object) })
+	    
+		map.createFromObjects('Objects', { name : "PiranhaPlant", classType: PiranhaPlant }).forEach((object) => { this.Enemies.add(object) })
+	    map.createFromObjects('Objects', { name : "Slime", classType: Slime }).forEach((object) => { this.Enemies.add(object) })
+	    map.createFromObjects('Objects', { name : "Bee", classType: Bee }).forEach((object) => { this.Enemies.add(object) })
+
+		map.createFromObjects('Objects', { name : "Cherry", classType: Cherry }).forEach((object) => { this.Items.add(object) })
+	    map.createFromObjects('Objects', { name : "Key", classType: Key }).forEach((object) => { this.Items.add(object) })
 
 	    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels)
 	    this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels, true, true, true, false)
 
-		this.physics.add.overlap(this.PlayerAttacks, this.Enemies, (attack, enemy) => { this.player.attack_hit(attack, enemy) })
+		this.physics.add.overlap(this.PlayerAttacks, this.Enemies, (enemy, attack) => { this.player.attack_hit(attack, enemy) })
 		this.physics.add.overlap(this.Players, this.Waypoints, (player, waypoint) => { this.change_scene(waypoint) })
 		this.physics.add.overlap(this.Players, this.JumpPads, (player, pad) => { (player as Player).set_jumpPad(pad) })
 		this.physics.add.overlap(this.Players, this.Enemies, (player, enemy) => { (player as Player).player_get_hit(enemy) })
