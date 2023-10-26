@@ -51,8 +51,8 @@ export default class Demo extends Phaser.Scene
 		this.load.audio('snd_menu_switch', 'assets/audio/menu_switch.mp3')
 		this.load.audio('snd_menu_select', 'assets/audio/menu_select.mp3')
 		this.load.audio('mus_menu', 'assets/audio/Title.mp3')
-		this.load.audio('mus_level1', 'assets/audio/Forest Drama.mp3')
-		this.load.audio('mus_level2', 'assets/audio/Wicked Dreams.mp3')
+		this.load.audio('mus_level1', 'assets/audio/level1.mp3')
+		this.load.audio('mus_level2', 'assets/audio/level2.mp3')
 
         this.load.image('logo', 'assets/phaser3-logo.png')
         this.load.image('libs', 'assets/libs.png')

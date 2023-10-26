@@ -22,9 +22,10 @@ export default class LevelBase extends Phaser.Scene
 	protected player: Player
 
 	public Players: Phaser.GameObjects.Group
-    public PlayerAttacks: Phaser.Physics.Arcade.StaticGroup
+	public EnemyBullets: Phaser.Physics.Arcade.Group
 	public EnemySensors: Phaser.Physics.Arcade.StaticGroup
 	public EnemyAttacks: Phaser.Physics.Arcade.StaticGroup
+    public PlayerAttacks: Phaser.Physics.Arcade.StaticGroup
 	public ObjectOffset: number = 0
 
   	create() 
@@ -37,9 +38,10 @@ export default class LevelBase extends Phaser.Scene
 	    this.player.update(delta)
 		this.cameras.main.scrollX = Helper.clamp(this.player.x - this.cameras.main.width/2, 0, this.physics.world.bounds.width - this.cameras.main.width)
 	    this.cameras.main.scrollY = Helper.clamp(this.player.y - this.cameras.main.height/2, 0, this.physics.world.bounds.height - this.cameras.main.height)
-	    this.Enemies.getChildren().forEach((enemy) => { enemy.update(delta) })
-	    this.ParallaxStatic.getChildren().forEach((parallax) => { parallax.update(this.cameras.main.scrollX) })
-		this.ParallaxScrolling.getChildren().forEach((parallax) => { parallax.update(this.cameras.main.scrollX, delta) })
+	    this.Enemies.getChildren().forEach((x) => { x.update(delta) })
+		this.EnemyAttacks.getChildren().forEach((x) => { x.update(delta) })
+	    this.ParallaxStatic.getChildren().forEach((x) => { x.update(this.cameras.main.scrollX) })
+		this.ParallaxScrolling.getChildren().forEach((x) => { x.update(this.cameras.main.scrollX, delta) })
 	}
 
 	initialize_map(map_key, tileset_walls, tileset_props, tileset_backs)
@@ -55,6 +57,7 @@ export default class LevelBase extends Phaser.Scene
 		this.PlayerAttacks = this.physics.add.staticGroup()
 		this.EnemyAttacks = this.physics.add.staticGroup()
 		this.EnemySensors = this.physics.add.staticGroup()
+		this.EnemyBullets = this.physics.add.group({ allowGravity: false })
 
 		const is_debug = this.game.config.physics.arcade.debug
 		const map = this.make.tilemap({key: map_key})
@@ -98,7 +101,7 @@ export default class LevelBase extends Phaser.Scene
 	    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels)
 	    this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels, true, true, true, false)
 
-		this.physics.add.overlap(this.PlayerAttacks, this.Enemies, (enemy, attack) => { this.player.attack_hit(attack, enemy) })
+		this.physics.add.overlap(this.Enemies, this.PlayerAttacks, (enemy, attack) => { this.player.attack_hit(attack, enemy) })
 		this.physics.add.overlap(this.Players, this.Waypoints, (player, waypoint) => { this.change_scene(waypoint) })
 		this.physics.add.overlap(this.Players, this.JumpPads, (player, pad) => { (player as Player).set_jumpPad(pad) })
 		this.physics.add.overlap(this.Players, this.Enemies, (player, enemy) => { (player as Player).player_get_hit(enemy) })
@@ -108,6 +111,8 @@ export default class LevelBase extends Phaser.Scene
 		this.physics.add.collider(this.Players, walls)
 		this.physics.add.collider(this.Enemies, turners)
 		this.physics.add.collider(this.Enemies, walls)
+		this.physics.add.collider(this.EnemyBullets, walls, (bullet, wall) => { bullet.destroy() })
+		this.physics.add.collider(this.EnemyBullets, this.Doors, (bullet, door) => { door.destroy() })
 		if (spikes)
 		{
 			this.physics.add.overlap(this.Players, spikes, (player, tile) => { (player as Player).player_get_spiked(tile) })

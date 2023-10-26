@@ -236,7 +236,7 @@ export class PiranhaPlant extends O_EnemyBase
     {
         if (this.need_initialize)
         {
-            this.sensor_zone = this.scene.add.zone(this.x, this.y, 96, 32);
+            this.sensor_zone = this.scene.add.zone(this.x, this.y, 128, 32);
             (this.scene as LevelBase).EnemySensors.add(this.sensor_zone)
             this.scene.physics.add.overlap(this.sensor_zone, (this.scene as LevelBase).Players, (zone, player) => { this.sensored_player = player })
             this.need_initialize = false
@@ -263,6 +263,9 @@ export class PiranhaPlant extends O_EnemyBase
                         if (!this.anims.isPlaying)
                         {
                             this.flag = 2
+                            const bullet = new O_EnemyAttackProjectile(this.scene, this.x, this.y, "");
+                            (this.scene as LevelBase).EnemyBullets.add(bullet)
+                            bullet.fired(0, 50)
                             this.anims.play('piranha_plant_attack')
                         }
                         break
@@ -321,6 +324,44 @@ export class PiranhaPlant extends O_EnemyBase
         this.scene.sound.play('snd_insect_death')
         this.sensor_zone.destroy()
         super.death()
+    }
+}
+
+class O_EnemyAttackProjectile extends Phaser.Physics.Arcade.Sprite
+{
+    private life: number
+
+    constructor(scene: Phaser.Scene, x: number, y: number, texture: string)
+    {
+        super(scene, x, y, texture)
+        scene.add.existing(this)
+        scene.physics.world.enable(this)
+        this.life = 2
+    }
+
+    update(delta: number)
+    {
+        if (this.life <= 0)
+        {
+            this.destroy()
+            return
+        }
+        if (!this.scene.physics.world.bounds.contains(this.x, this.y))
+        {
+            this.destroy()
+            return
+        }
+        this.life -= delta
+    }
+
+    impact(angle: number, speed: number)
+    {
+        this.scene.physics.velocityFromAngle(angle, speed, this.body.velocity)
+    }
+
+    fired(angle: number, speed: number)
+    {
+        this.scene.physics.velocityFromAngle(angle, speed, this.body.velocity)
     }
 
 }
