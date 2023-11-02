@@ -105,6 +105,7 @@ export default class LevelBase extends Phaser.Scene
 		this.physics.add.overlap(this.Players, this.Waypoints, (player, waypoint) => { this.change_scene(waypoint) })
 		this.physics.add.overlap(this.Players, this.JumpPads, (player, pad) => { (player as Player).set_jumpPad(pad) })
 		this.physics.add.overlap(this.Players, this.Enemies, (player, enemy) => { (player as Player).player_get_hit(enemy) })
+		this.physics.add.overlap(this.Players, this.EnemyBullets, (player, bullet) => { (player as Player).player_get_shot(bullet) })
 		this.physics.add.overlap(this.Players, this.Items, (picker, item) => { (item as Key).pickup(picker) })
 		this.physics.add.overlap(this.Players, slidings, (player, tile) => { (player as Player).slide_lock(tile) })
 		this.physics.add.collider(this.Players, this.Doors, (player, door) => { (door as Door).open_door(player) })

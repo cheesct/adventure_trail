@@ -28,6 +28,8 @@ export default class Demo extends Phaser.Scene
 	    this.load.spritesheet('enemy_death', 'assets/enemy_death.png', { frameWidth: 37, frameHeight: 39 })
 	    this.load.spritesheet('bounce_shroom', 'assets/bounce_shroom.png', { frameWidth: 56, frameHeight: 42 })
 		this.load.spritesheet('piranha_plant', 'assets/piranha_plant.png', { frameWidth: 61, frameHeight: 35 })
+		this.load.spritesheet('piranha_plant_projectile', 'assets/piranha_plant_projectile.png', { frameWidth: 16, frameHeight: 8 })
+		this.load.spritesheet('piranha_plant_projectile_blast', 'assets/piranha_plant_projectile_blast.png', { frameWidth: 16, frameHeight: 16 })
 	    this.load.spritesheet('hp_bar', 'assets/hp_bar.png', { frameWidth: 71, frameHeight: 16 })
 	    this.load.spritesheet('level2_lava', 'assets/level2/lava.png', { frameWidth: 32, frameHeight: 32 })
 		this.load.spritesheet('level2_water', 'assets/level2/water.png', { frameWidth: 32, frameHeight: 32 })
@@ -108,6 +110,8 @@ export default class Demo extends Phaser.Scene
 		this.anims.create({ key: 'piranha_plant_idle', frames: this.anims.generateFrameNumbers('piranha_plant', { start: 0, end: 4 }), frameRate: 10, repeat: -1 })
 		this.anims.create({ key: 'piranha_plant_attack', frames: this.anims.generateFrameNumbers('piranha_plant', { frames: [ 6 ] }), duration: 200 })
 		this.anims.create({ key: 'piranha_plant_warning', frames: this.anims.generateFrameNumbers('piranha_plant', { frames: [ 5 ] }), duration: 300 })
+		this.anims.create({ key: 'piranha_plant_projectile', frames: this.anims.generateFrameNumbers('piranha_plant_projectile', { start: 0, end: 7 } ), duration: 800, repeat: -1 })
+		this.anims.create({ key: 'piranha_plant_projectile_blast', frames: this.anims.generateFrameNumbers('piranha_plant_projectile_blast', { start: 0, end: 3 } ), duration: 300, })
 
 	    this.anims.create({ key: 'enemy_death', frames: this.anims.generateFrameNumbers('enemy_death', { start: 0, end: 5 }), frameRate: 10 })
 		

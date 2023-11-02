@@ -263,9 +263,8 @@ export class PiranhaPlant extends O_EnemyBase
                         if (!this.anims.isPlaying)
                         {
                             this.flag = 2
-                            const bullet = new O_EnemyAttackProjectile(this.scene, this.x, this.y, "");
-                            (this.scene as LevelBase).EnemyBullets.add(bullet)
-                            bullet.fired(0, 50)
+                            const bullet = new O_PiranhaPlantProjectile(this.scene, this.x, this.y, "")
+                            bullet.fired(this.flipX ? 0 : 180, 80)
                             this.anims.play('piranha_plant_attack')
                         }
                         break
@@ -331,11 +330,12 @@ class O_EnemyAttackProjectile extends Phaser.Physics.Arcade.Sprite
 {
     private life: number
 
-    constructor(scene: Phaser.Scene, x: number, y: number, texture: string)
+    constructor(scene, x: number, y: number, texture: string)
     {
         super(scene, x, y, texture)
         scene.add.existing(this)
         scene.physics.world.enable(this)
+        scene.EnemyBullets.add(this)
         this.life = 2
     }
 
@@ -354,14 +354,28 @@ class O_EnemyAttackProjectile extends Phaser.Physics.Arcade.Sprite
         this.life -= delta
     }
 
-    impact(angle: number, speed: number)
+    impact()
     {
-        this.scene.physics.velocityFromAngle(angle, speed, this.body.velocity)
+        this.destroy()
     }
 
     fired(angle: number, speed: number)
     {
         this.scene.physics.velocityFromAngle(angle, speed, this.body.velocity)
     }
+}
 
+class O_PiranhaPlantProjectile extends O_EnemyAttackProjectile
+{
+    constructor(scene, x: number, y: number, texture: string)
+    {
+        super(scene, x, y, 'piranha_plant_projectile')
+        this.anims.play('piranha_plant_projectile')
+    }
+
+    fired(angle: number, speed: number)
+    {
+        super.fired(angle, speed)
+        this.angle = angle
+    }
 }

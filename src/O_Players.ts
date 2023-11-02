@@ -643,15 +643,24 @@ export class Player extends Phaser.Physics.Arcade.Sprite
 
     player_get_hit(enemy)
     {
-        if (!this.death && enemy.is_attacking())
+        if (this.isVulnerable() && enemy.is_attacking())
         {
             this.player_get_hurt()
         }
     }
 
+    player_get_shot(bullet)
+    {
+        if (this.isVulnerable())
+        {
+            this.player_get_hurt()
+            bullet.impact()
+        }
+    }
+
     player_get_spiked(tile)
     {
-        if (tile.index > 0)
+        if (tile.index > 0 && this.isVulnerable())
         {
             this.player_get_hurt()
         }
@@ -659,16 +668,13 @@ export class Player extends Phaser.Physics.Arcade.Sprite
 
     player_get_hurt()
     {
-        if (this.isVulnerable())
+        if(!this.HP.add(-1))
         {
-            if(!this.HP.add(-1))
-            {
-                this.change_state("Hurt")
-            }
-            else
-            {
-                this.change_state("Death")
-            }
+            this.change_state("Hurt")
+        }
+        else
+        {
+            this.change_state("Death")
         }
     }
 
