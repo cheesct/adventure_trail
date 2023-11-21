@@ -145,10 +145,10 @@ export class Slime extends O_EnemyBase
     death()
     {
         const corpse = this.scene.add.sprite(this.x, this.y, 'slime').anims.play('slime_death')
-        if (!this.body.blocked.down)
-        {
-            this.scene.physics.world.enable(corpse)
-        }
+        this.scene.physics.world.enable(corpse)
+        this.scene.tweens.add({ targets: corpse, alpha: 0, duration: 1000, delay: 1000,
+                onComplete: () => { corpse.destroy() }
+            })
         this.scene.sound.play('snd_slime_death')
         super.death()
     }
@@ -198,7 +198,7 @@ export class Bee extends O_EnemyBase
     {
         var dying = this.scene.add.sprite(this.x, this.y, "enemy_death")
         dying.anims.play('enemy_death')
-        dying.on('animationcomplete', () => {dying.destroy()})
+        dying.on('animationcomplete', () => { dying.destroy() })
         this.scene.sound.play('snd_insect_death')
         super.death()
     }
@@ -206,39 +206,42 @@ export class Bee extends O_EnemyBase
 
 export class PiranhaPlant extends O_EnemyBase 
 {
-    private sensor_zone: Phaser.GameObjects.Zone
-    private attack_zone: Phaser.GameObjects.Zone
+    private sensor_track: Phaser.GameObjects.Zone
+    private sensor_attack: Phaser.GameObjects.Zone
 
-    private attack_group: Phaser.Physics.Arcade.StaticGroup
-    
-    private sensored_player: any
-
-    private attack_countdown: number
+    private target: any
+    private should_attack: boolean
     private need_initialize: boolean
+    private attack_countdown: number
 
     constructor(scene, x: number, y: number)
     {
         super(scene, x, y, 'piranha_plant')
         scene.add.existing(this)
         scene.physics.world.enable(this)
-        this.HP = 3
+        this.HP = 5
         this.state = "";
         (this.body as Phaser.Physics.Arcade.Body).setAllowGravity(false)
         this.body.setSize(24, 32)
         this.setCollideWorldBounds(true)
         this.anims.play('piranha_plant_idle')
-        this.attack_group = scene.EnemyAttacks
         this.attack_countdown = 0
         this.need_initialize = true
+        this.should_attack = false
+        this.target = null
     }
 
     update(delta: number)
     {
         if (this.need_initialize)
         {
-            this.sensor_zone = this.scene.add.zone(this.x, this.y, 128, 32);
-            (this.scene as LevelBase).EnemySensors.add(this.sensor_zone)
-            this.scene.physics.add.overlap(this.sensor_zone, (this.scene as LevelBase).Players, (zone, player) => { this.sensored_player = player })
+            const level_base = (this.scene as LevelBase)
+            this.sensor_track = this.scene.add.zone(this.x, this.y, 320, 160);
+            level_base.EnemySensors.add(this.sensor_track)
+            this.scene.physics.add.overlap(this.sensor_track, level_base.Players, (zone, player) => { this.target = player })
+            this.sensor_attack = this.scene.add.zone(this.x, this.y, 240, 32);
+            level_base.EnemySensors.add(this.sensor_attack)
+            this.scene.physics.add.overlap(this.sensor_attack, level_base.Players, (zone, player) => { this.should_attack = true })
             this.need_initialize = false
         }
         if (this.stagger_countdown >= 0)
@@ -295,6 +298,7 @@ export class PiranhaPlant extends O_EnemyBase
                             this.clearTint()
                             this.anims.resume()
                             this.change_state("")
+                            this.attack_countdown = 0.05
                         }
                         break
                 }
@@ -306,13 +310,14 @@ export class PiranhaPlant extends O_EnemyBase
                     this.flag = 1
                     this.anims.play('piranha_plant_idle')
                 }
-                if (this.sensored_player && this.attack_countdown <= 0)
+                if (this.should_attack && this.attack_countdown <= 0)
                 {
                     this.change_state("Attack")
+                    this.flipX = this.target.x > this.x
                 }
                 break
         }
-        this.sensored_player = null
+        this.should_attack = false
     }
 
     death()
@@ -321,7 +326,8 @@ export class PiranhaPlant extends O_EnemyBase
         dying.anims.play('enemy_death')
         dying.on('animationcomplete', () => {dying.destroy()})
         this.scene.sound.play('snd_insect_death')
-        this.sensor_zone.destroy()
+        this.sensor_track.destroy()
+        this.sensor_attack.destroy()
         super.death()
     }
 }
@@ -329,6 +335,7 @@ export class PiranhaPlant extends O_EnemyBase
 class O_EnemyAttackProjectile extends Phaser.Physics.Arcade.Sprite
 {
     private life: number
+    private fading: boolean
 
     constructor(scene, x: number, y: number, texture: string)
     {
@@ -337,13 +344,18 @@ class O_EnemyAttackProjectile extends Phaser.Physics.Arcade.Sprite
         scene.physics.world.enable(this)
         scene.EnemyBullets.add(this)
         this.life = 2
+        this.fading = false
     }
 
     update(delta: number)
     {
-        if (this.life <= 0)
+        if (this.life <= 0 && !this.fading)
         {
-            this.destroy()
+            (this.scene as LevelBase).EnemyBullets.remove(this)
+            this.fading = true
+            this.scene.tweens.add({ targets: this, alpha: 0.0, ease: 'Linear', duration: 100,
+                onComplete: () => { this.destroy }
+            })
             return
         }
         if (!this.scene.physics.world.bounds.contains(this.x, this.y))
@@ -377,5 +389,13 @@ class O_PiranhaPlantProjectile extends O_EnemyAttackProjectile
     {
         super.fired(angle, speed)
         this.angle = angle
+    }
+
+    impact()
+    {
+        var dying = this.scene.add.sprite(this.x, this.y, "piranha_plant_projectile_blast")
+        dying.anims.play('piranha_plant_projectile_blast')
+        dying.on('animationcomplete', () => { dying.destroy() })
+        super.impact()
     }
 }

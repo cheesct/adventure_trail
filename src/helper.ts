@@ -24,6 +24,11 @@ export default class Helper
         return Math.floor(Math.random() * (max - min + 1) + min)
     }
 
+    static randomRange(min: number, max: number)
+    {
+        return Math.random() * (max - min) + min;
+    }
+
     static choose(arr: Array<any>)
     {
         if(Array.isArray(arr) && arr.length)
@@ -31,5 +36,13 @@ export default class Helper
             return arr[Helper.randomRangeInt(0, arr.length - 1)]
         }
         return null
+    }
+
+    static middleIntersectRange(l1: number, l2: number, r1: number, r2: number)
+    {
+        let p = l1 + l2 + r1 + r2
+        p -= Math.min(l1, l2, r1, r2)
+        p -= Math.max(l1, l2, r1, r2)
+        return p * 0.5
     }
 }

@@ -121,7 +121,6 @@ export default class Scene_Menu extends Phaser.Scene
 
         this.credit_container.add(this.add.text(10, 50, [
             "Graphics:",
-            "8-BitSpider",
             "foxlybr.itch.io",
             "rvros.itch.io",
             "@ansimuz",
@@ -130,7 +129,7 @@ export default class Scene_Menu extends Phaser.Scene
 
         this.credit_container.add(this.add.text(310, 22, [
             "Stage Music: Eric Matyas",
-            "www.soundimage.org", ], { color: 'black', align: 'right' }).setOrigin(1, 0))
+            "www.soundimage.org", "ThePixel", ], { color: 'black', align: 'right' }).setOrigin(1, 0))
 
         this.credit_container.add(this.add.text(310, 157, [
             "Press Z to back",

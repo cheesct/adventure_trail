@@ -15,7 +15,7 @@ export default class Demo extends Phaser.Scene
     {
         this.load.image('trigger', 'assets/trigger.png')
 		this.load.image('star', 'assets/star.png')
-	    this.load.spritesheet('key', 'assets/key.png', { frameWidth: 9, frameHeight: 18 })
+		this.load.spritesheet('key', 'assets/key.png', { frameWidth: 13, frameHeight: 28 })
 	    this.load.spritesheet('bee', 'assets/bee.png', { frameWidth: 29, frameHeight: 30 })
 	    this.load.spritesheet('door', 'assets/door.png', { frameWidth: 12, frameHeight: 36 })
 	    this.load.spritesheet('hero', 'assets/hero.png', { frameWidth: 50, frameHeight: 37 })
@@ -38,9 +38,10 @@ export default class Demo extends Phaser.Scene
 	    this.load.atlas('flares', 'assets/fx_flares.png', 'assets/fx_flares.json')
 
 		this.load.audio('snd_jump', 'assets/audio/jump.mp3')
-		this.load.audio('snd_hurt', 'assets/audio/hurt.mp3')
+		this.load.audio('snd_slap', 'assets/audio/slap.ogg')
 		this.load.audio('snd_dead', 'assets/audio/dead.mp3')
 		this.load.audio('snd_slide', 'assets/audio/slide.mp3')
+		this.load.audio('snd_bounce', 'assets/audio/bounce.ogg')
 		this.load.audio('snd_key', 'assets/audio/key.mp3')
 		this.load.audio('snd_food', 'assets/audio/food.mp3')
 		this.load.audio('snd_door', 'assets/audio/door.mp3')
@@ -117,7 +118,7 @@ export default class Demo extends Phaser.Scene
 		
 	    //
 	    this.anims.create({ key: 'cherry', frames: this.anims.generateFrameNumbers('cherry', { start: 0, end: 4 }), frameRate: 10, yoyo: true, repeat: -1 })
-		this.anims.create({ key: 'key', frames: this.anims.generateFrameNumbers('key', { start: 0, end: 7 }), frameRate: 10, repeat: -1 })
+		this.anims.create({ key: 'key', frames: this.anims.generateFrameNumbers('key', { start: 0, end: 11 }), frameRate: 10, repeat: -1 })
 		this.anims.create({ key: 'door', frames: this.anims.generateFrameNumbers('door', { start: 0, end: 4 }), frameRate: 10 })
 		this.anims.create({ key: 'door_close', frames: this.anims.generateFrameNumbers('door', { start: 4, end: 0 }), frameRate: 10 })
 		this.anims.create({ key: 'bounce_shroom', frames: this.anims.generateFrameNumbers('bounce_shroom', { start: 0, end: 7 }), duration: 500 })

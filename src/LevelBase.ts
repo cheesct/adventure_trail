@@ -40,6 +40,7 @@ export default class LevelBase extends Phaser.Scene
 	    this.cameras.main.scrollY = Helper.clamp(this.player.y - this.cameras.main.height/2, 0, this.physics.world.bounds.height - this.cameras.main.height)
 	    this.Enemies.getChildren().forEach((x) => { x.update(delta) })
 		this.EnemyAttacks.getChildren().forEach((x) => { x.update(delta) })
+		this.EnemyBullets.getChildren().forEach((x) => { x.update(delta) })
 	    this.ParallaxStatic.getChildren().forEach((x) => { x.update(this.cameras.main.scrollX) })
 		this.ParallaxScrolling.getChildren().forEach((x) => { x.update(this.cameras.main.scrollX, delta) })
 	}

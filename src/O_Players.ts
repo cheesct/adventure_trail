@@ -1,6 +1,7 @@
 
 import * as Phaser from 'phaser'
 import { HP } from './O_StatsGUI'
+import Helper from './helper'
 
 export class Player extends Phaser.Physics.Arcade.Sprite 
 {
@@ -31,6 +32,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite
     private X: Phaser.Input.Keyboard.Key
     private C: Phaser.Input.Keyboard.Key
     private Space: Phaser.Input.Keyboard.Key
+
+    private blood_emitter: Phaser.GameObjects.Particles.ParticleEmitter
 
     private current_jumpPad: any
     private is_jumpPad_jump: boolean
@@ -71,6 +74,17 @@ export class Player extends Phaser.Physics.Arcade.Sprite
         this.setCollideWorldBounds(true)
         this.body.setSize(16, 24)
         this.body.offset.y = 10 + this.offset
+
+        
+        this.blood_emitter = this.scene.add.particles(this.x, this.y, 'flares', {
+            frame: 'white',
+            blendMode: 'ADD',
+            emitting: false,
+            lifespan: { min: 300, max: 500 } ,
+            scale: { start: 0.2, end: 0, random: true },
+            speed: { min: 50, max: 125 },
+            tint: 0xFF0000
+        })
     }
 
     update(delta)
@@ -301,7 +315,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                         case 2:
                             if (this.body.blocked.down)
                             {
-                                (this.attack_area.body as Phaser.Physics.Arcade.StaticBody).setSize(64, 32, true)
+                                //(this.attack_area.body as Phaser.Physics.Arcade.StaticBody).setSize(64, 32, true)
+                                (this.attack_area.body as Phaser.Physics.Arcade.StaticBody).setSize(200, 32, true)
                                 this.anims.play('hero_attack_air_down_land', true)
                                 this.scene.cameras.main.shake(40, 0.02)
                                 this.flag += 1
@@ -359,7 +374,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                     case 0:
                         this.body.setSize(16, 16)
                         this.body.offset.y = 18 + this.offset
-                        this.scene.sound.play('snd_slide', { rate: 1.5, volume: 0.8 })
+                        this.scene.sound.play('snd_slide', { rate: Helper.randomRange(1.3, 1.6), volume: 0.8 })
                         this.anims.play({ key: 'hero_slide', repeat: -1 }, true)
                         this.setVelocityX(this.flipX ? -this.slide_speed : this.slide_speed)
                         this.flag = 1
@@ -413,7 +428,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                         this.flag = 1
                         this.hurt = -1
                         this.anims.play('hero_hurt', true)
-                        this.scene.sound.play('snd_hurt', { volume: 0.6 })
+                        this.scene.sound.play('snd_slap', { volume: 0.7, rate: Helper.randomRange(0.8, 1.0) })
                         this.setVelocityX((this.flipX ? 1 : -1)*90)
                         this.setVelocityY(-100)
                         this.setTint(0xff0000)
@@ -569,6 +584,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                             this.anims.play('hero_up', true)
                             this.setVelocityY(this.current_jumpPad.get_boost())
                             this.current_jumpPad.play_animation()
+                            this.scene.sound.play('snd_bounce', { volume: 0.2, rate: Helper.randomRange(0.8, 1) } )
                             this.is_jumpPad_jump = true
                         }
                         else if (this.anims.getName() != 'hero_fall')
@@ -613,16 +629,16 @@ export class Player extends Phaser.Physics.Arcade.Sprite
         if (this.attacked_entities.includes(object))
             return
         
-        let impact_x = (Math.max(attack.body.x, object.body.x) + Math.min(attack.body.x + attack.body.width, attack.body.x + attack.body.width)) * 0.5
-        let impact_y = (Math.max(attack.body.x, object.body.x) + Math.min(attack.body.x + attack.body.width, attack.body.x + attack.body.width)) * 0.5
+        let impact_x = Helper.middleIntersectRange(attack.body.x, attack.body.right, object.body.x, object.body.right)
+        let impact_y = Helper.middleIntersectRange(attack.body.y, attack.body.bottom, object.body.y, object.body.bottom)
 
         this.scene.cameras.main.shake(40, 0.02)
         this.scene.sound.play('snd_sword_hit', { rate: Phaser.Math.FloatBetween(1, 1.25) })
 
-        var effect = this.scene.add.sprite(attack.body.center.x, attack.body.center.y, 'fx_attack').setAngle(Math.random() * 360).setScale(0.5)
+        var effect = this.scene.add.sprite(impact_x, impact_y, 'fx_attack').setAngle(Math.random() * 360).setScale(0.5)
         effect.anims.play("fx_attack").on('animationcomplete', () => { effect.destroy() })
         
-        var slash = this.scene.add.sprite(attack.body.center.x, attack.body.center.y, 'fx_slash', 5).setAngle(Math.random() * 360).setScale(2, 1)
+        var slash = this.scene.add.sprite(impact_x, impact_y, 'fx_slash', 5).setAngle(Math.random() * 360).setScale(2, 1)
         this.scene.tweens.add({ targets: slash, 
             scaleY: { value: 0, ease: 'Sine.easeOut', duration: 250}, 
             scaleX: { value: 0, ease: 'Linear', duration: 250},
@@ -668,6 +684,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
 
     player_get_hurt()
     {
+        this.blood_emitter.explode(25, this.x, this.y)
         if(!this.HP.add(-1))
         {
             this.change_state("Hurt")
