@@ -34,9 +34,12 @@ export class Player extends Phaser.Physics.Arcade.Sprite
     private Space: Phaser.Input.Keyboard.Key
 
     private blood_emitter: Phaser.GameObjects.Particles.ParticleEmitter
+    private run_dust_emitter: Phaser.GameObjects.Particles.ParticleEmitter
+    private jump_dust_emitter: Phaser.GameObjects.Particles.ParticleEmitter
 
     private current_jumpPad: any
     private is_jumpPad_jump: boolean
+    private previous_direction: number
 
     constructor(scene, x, y) 
     {
@@ -61,6 +64,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
         this.slide_cooldown = 0
 
         this.is_jumpPad_jump = false
+        this.previous_direction = 0
 
         this.knock_y = 0
         this.attack_cooldown = 0
@@ -75,7 +79,6 @@ export class Player extends Phaser.Physics.Arcade.Sprite
         this.body.setSize(16, 24)
         this.body.offset.y = 10 + this.offset
 
-        
         this.blood_emitter = this.scene.add.particles(this.x, this.y, 'flares', {
             frame: 'white',
             blendMode: 'ADD',
@@ -84,6 +87,20 @@ export class Player extends Phaser.Physics.Arcade.Sprite
             scale: { start: 0.2, end: 0, random: true },
             speed: { min: 50, max: 125 },
             tint: 0xFF0000
+        })
+        this.run_dust_emitter = this.scene.add.particles(this.x, this.y, 'fx_dust_run', {
+            blendMode: 'COLOR',
+            emitting: false,
+            anim: 'fx_dust_run',
+            quantity: 1,
+            lifespan: 350,
+        })
+        this.jump_dust_emitter = this.scene.add.particles(this.x, this.y, 'fx_dust_jump', {
+            blendMode: 'COLOR',
+            emitting: false,
+            anim: 'fx_dust_jump',
+            quantity: 1,
+            lifespan: 420,
         })
     }
 
@@ -527,12 +544,17 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                         this.setVelocityY(-200)
                         this.anims.play('hero_up', true)
                         this.scene.sound.play('snd_jump', { rate: 2, volume: 0.6 })
+                        this.emit_jump_dust()
                     }
                     else if (direction != 0)
                     {
                         this.setVelocityX(direction*this.speed_walk)
                         this.anims.play('hero_walk', true)
                         this.flipX = direction < 0
+                        if (this.previous_direction != direction)
+                        {
+                            this.emit_run_dust()
+                        }
                     }
                     else
                     {
@@ -572,11 +594,13 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                     }
                     else if (direction != 0)
                     {
-                        this.setVelocityX(direction*this.speed_walk)
                         this.flipX = direction < 0
+                        this.setVelocityX(direction*this.speed_walk)
                     }
                     else
+                    {
                         this.setVelocityX(0)
+                    }
                     if (this.body.velocity.y > 0)
                     {
                         if (this.current_jumpPad != null)
@@ -595,6 +619,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                     else if (this.body.velocity.y < 0 && this.Z.isUp && !this.is_jumpPad_jump)
                             this.body.velocity.y *= 0.8
                 }
+                this.previous_direction = direction
                 break
         }
         this.can_stand = true
@@ -729,5 +754,31 @@ export class Player extends Phaser.Physics.Arcade.Sprite
             this.knock_y = 0
         }
         this.attacked_entities = []
+    }
+
+    emit_run_dust()
+    {
+        if (this.flipX)
+        {
+            const h = this.run_dust_emitter.explode(1, this.body.center.x, this.body.bottom - 4)
+            h.scaleX = -1
+        }
+        else
+        {
+            this.run_dust_emitter.explode(1, this.body.center.x, this.body.bottom - 4)
+        }
+    }
+    
+    emit_jump_dust()
+    {
+        if (this.flipX)
+        {
+            const h = this.jump_dust_emitter.explode(1, this.body.center.x, this.body.bottom - 10)
+            h.scaleX = -1
+        }
+        else
+        {
+            this.jump_dust_emitter.explode(1, this.body.center.x, this.body.bottom - 10)
+        }
     }
 }

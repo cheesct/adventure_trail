@@ -97,7 +97,6 @@
         {
          "draworder":"topdown",
          "id":13,
-         "locked":true,
          "name":"Objects",
          "objects":[
                 {
@@ -291,6 +290,18 @@
                  "width":0,
                  "x":448,
                  "y":720
+                }, 
+                {
+                 "height":0,
+                 "id":50,
+                 "name":"Cherry",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":432,
+                 "y":608
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -299,7 +310,7 @@
          "y":0
         }],
  "nextlayerid":28,
- "nextobjectid":50,
+ "nextobjectid":51,
  "orientation":"orthogonal",
  "properties":[
         {

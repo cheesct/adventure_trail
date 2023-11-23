@@ -25,6 +25,8 @@ export default class Demo extends Phaser.Scene
 	    this.load.spritesheet('fx_ring', 'assets/fx_ring.png', { frameWidth: 192, frameHeight: 192 })
 	    this.load.spritesheet('fx_slash', 'assets/fx_slash.png', { frameWidth: 96, frameHeight: 96 })
 		this.load.spritesheet('fx_attack', 'assets/fx_attack.png', { frameWidth: 192, frameHeight: 192 })
+		this.load.spritesheet('fx_dust_run', 'assets/fx_dust_run.png', { frameWidth: 14, frameHeight: 8 })
+		this.load.spritesheet('fx_dust_jump', 'assets/fx_dust_jump.png', { frameWidth: 17, frameHeight: 20 })
 	    this.load.spritesheet('enemy_death', 'assets/enemy_death.png', { frameWidth: 37, frameHeight: 39 })
 	    this.load.spritesheet('bounce_shroom', 'assets/bounce_shroom.png', { frameWidth: 56, frameHeight: 42 })
 		this.load.spritesheet('piranha_plant', 'assets/piranha_plant.png', { frameWidth: 61, frameHeight: 35 })
@@ -98,6 +100,8 @@ export default class Demo extends Phaser.Scene
 	    this.anims.create({ key: 'fx_item', frames: this.anims.generateFrameNumbers('fx_item', { start: 0, end: 3 }), frameRate: 10 })
 	    this.anims.create({ key: 'fx_ring', frames: this.anims.generateFrameNumbers('fx_ring', { start: 0, end: 19 }), duration: 250, })
 	    this.anims.create({ key: 'fx_attack', frames: this.anims.generateFrameNumbers('fx_attack', { start: 0, end: 3 }), duration: 125, })
+		this.anims.create({ key: 'fx_dust_run', frames: this.anims.generateFrameNumbers('fx_dust_run', { start: 0, end: 4 }), duration: 300, })
+		this.anims.create({ key: 'fx_dust_jump', frames: this.anims.generateFrameNumbers('fx_dust_jump', { start: 0, end: 5 }), duration: 360, })
 
 	    //enemy animations
 	    this.anims.create({ key: 'bee', frames: this.anims.generateFrameNumbers('bee', { start: 0, end: 7 }), frameRate: 10, repeat: -1 })
