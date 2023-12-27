@@ -8,6 +8,7 @@
          "encoding":"base64",
          "height":10,
          "id":11,
+         "locked":true,
          "name":"Background",
          "opacity":1,
          "type":"tilelayer",
@@ -81,6 +82,7 @@
         {
          "draworder":"topdown",
          "id":13,
+         "locked":true,
          "name":"Objects",
          "objects":[
                 {
@@ -353,7 +355,7 @@
                         {
                          "name":"To",
                          "type":"string",
-                         "value":"Scene_Menu"
+                         "value":"Scene_Level1b"
                         }],
                  "rotation":0,
                  "type":"",

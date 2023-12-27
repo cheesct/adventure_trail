@@ -5,7 +5,7 @@ import Waypoint from './O_Waypoint'
 import { Door } from './O_Doors'
 import { Player } from './O_Players'
 import { JumpPad } from './O_JumpPads'
-import { Bee, Slime, PiranhaPlant } from './O_Enemies'
+import { Bee, Slime, Grenadier, PiranhaPlant } from './O_Enemies'
 import { Key, Cherry } from './O_Pickups'
 
 export default class LevelBase extends Phaser.Scene
@@ -15,8 +15,8 @@ export default class LevelBase extends Phaser.Scene
 	protected Enemies: Phaser.GameObjects.Group
 	protected JumpPads: Phaser.GameObjects.Group
 	protected Waypoints: Phaser.GameObjects.Group
-	protected ParallaxStatic: Phaser.GameObjects.Layer
-	protected ParallaxScrolling: Phaser.GameObjects.Layer
+	//protected ParallaxStatic: Phaser.GameObjects.Layer
+	//protected ParallaxScrolling: Phaser.GameObjects.Layer
 
 	protected transition: Phaser.GameObjects.Shader
 	protected player: Player
@@ -41,8 +41,8 @@ export default class LevelBase extends Phaser.Scene
 	    this.Enemies.getChildren().forEach((x) => { x.update(delta) })
 		this.EnemyAttacks.getChildren().forEach((x) => { x.update(delta) })
 		this.EnemyBullets.getChildren().forEach((x) => { x.update(delta) })
-	    this.ParallaxStatic.getChildren().forEach((x) => { x.update(this.cameras.main.scrollX) })
-		this.ParallaxScrolling.getChildren().forEach((x) => { x.update(this.cameras.main.scrollX, delta) })
+	    //this.ParallaxStatic.getChildren().forEach((x) => { x.update(this.cameras.main.scrollX) })
+		//this.ParallaxScrolling.getChildren().forEach((x) => { x.update(this.cameras.main.scrollX, delta) })
 	}
 
 	initialize_map(map_key, tileset_walls, tileset_props, tileset_backs)
@@ -53,8 +53,8 @@ export default class LevelBase extends Phaser.Scene
 	    this.Enemies = this.add.group()
 		this.JumpPads = this.add.group()
 		this.Waypoints = this.add.group()
-	    this.ParallaxStatic = this.add.layer()
-		this.ParallaxScrolling = this.add.layer()
+	    //this.ParallaxStatic = this.add.layer()
+		//this.ParallaxScrolling = this.add.layer()
 		this.PlayerAttacks = this.physics.add.staticGroup()
 		this.EnemyAttacks = this.physics.add.staticGroup()
 		this.EnemySensors = this.physics.add.staticGroup()
@@ -93,7 +93,8 @@ export default class LevelBase extends Phaser.Scene
 		map.createFromObjects('Objects', { name : "Player", classType: Player }).forEach((object: Player) => { this.player = object; this.Players.add(object) })
 	    
 		map.createFromObjects('Objects', { name : "PiranhaPlant", classType: PiranhaPlant }).forEach((object) => { this.Enemies.add(object) })
-	    map.createFromObjects('Objects', { name : "Slime", classType: Slime }).forEach((object) => { this.Enemies.add(object) })
+	    map.createFromObjects('Objects', { name : "Grenadier", classType: Grenadier }).forEach((object) => { this.Enemies.add(object) })
+		map.createFromObjects('Objects', { name : "Slime", classType: Slime }).forEach((object) => { this.Enemies.add(object) })
 	    map.createFromObjects('Objects', { name : "Bee", classType: Bee }).forEach((object) => { this.Enemies.add(object) })
 
 		map.createFromObjects('Objects', { name : "Cherry", classType: Cherry }).forEach((object) => { this.Items.add(object) })
@@ -158,16 +159,16 @@ export default class LevelBase extends Phaser.Scene
 
 	fade_out(to: string, flag: number = 0)
     {
-        if (this.game.config.renderType == Phaser.WEBGL)
+        if (this.transition)
         {
+            Singleton.transition_name = "1"
+            Singleton.transition_flag = flag
 			this.transition.uniforms.flag.value = flag
 			this.transition.uniforms.progress.value = 0
             this.transition.uniforms.inversion.value = false
             this.tweens.add({ targets: this.transition.uniforms.progress, value: 1.0, ease: 'Linear', duration: 1000,
                 onComplete: () => { this.scene.start(to) }
             })
-            Singleton.transition_name = "1"
-            Singleton.transition_flag = flag
         }
         else
         {

@@ -24,6 +24,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
     private knock_y: number
     private attack_area: Phaser.GameObjects.Zone
     private attack_group: Phaser.Physics.Arcade.StaticGroup
+    private attack_timer: number
     private attack_cooldown: number
     private attacked_entities: Array<any>
 
@@ -67,6 +68,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
         this.previous_direction = 0
 
         this.knock_y = 0
+        this.attack_timer = 0
         this.attack_cooldown = 0
         this.attack_group = scene.PlayerAttacks
 
@@ -125,6 +127,14 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                 this.alpha = Phaser.Math.FloatBetween(0.6, 1)
             }
         }
+        if (this.attack_timer > 0)
+        {
+            this.attack_timer = Math.max(this.attack_timer - delta, 0)
+            if (!this.hurt)
+            {
+                this.stop_attacking()
+            }
+        }
         if (this.slide_time > 0)
         {
             this.slide_time = Math.max(this.slide_time - delta, 0)
@@ -163,6 +173,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                             this.anims.play('hero_attack_1_2', true)
                             this.flag = 2
                             this.start_attacking(this.flipX ? -20 : 20, 0)
+                            this.attack_timer = 0.05
                         }
                         break
 
@@ -199,7 +210,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                             this.scene.sound.play('snd_sword_slash')
                             this.anims.play('hero_attack_2_2', true)
                             this.flag = 2
-                            this.attack_area = this.attack_group.create(this.x + (this.flipX ? -20 : 20), this.y, "", "", false)
+                            this.start_attacking(this.flipX ? -20 : 20, 0)
+                            this.attack_timer = 0.05
                         }
                         break
 
@@ -235,7 +247,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                             this.scene.sound.play('snd_sword_slash', { rate: 0.8 })
                             this.anims.play('hero_attack_3_2', true)
                             this.setVelocityX(0)
-                            this.attack_area = this.attack_group.create(this.x + (this.flipX ? -20 : 20), this.y, "", "", false)
+                            this.start_attacking(this.flipX ? -20 : 20, 0)
+                            this.attack_timer = 0.05
                             this.flag = 2
                         }
                         break
@@ -257,7 +270,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                 {
                     case 0:
                         this.combo = 0
-                        this.attack_area = this.attack_group.create(this.x + (this.flipX ? -20 : 20), this.y, "", "", false)
+                        this.start_attacking(this.flipX ? -20 : 20, 0)
+                        this.attack_timer = 0.05
                         this.anims.play('hero_attack_air', true)
                         this.scene.sound.play('snd_sword_slash')
                         this.flag = 1
@@ -291,7 +305,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                 {
                     case 0:
                         this.combo = 0
-                        this.attack_area = this.attack_group.create(this.x + (this.flipX ? -20 : 20), this.y, "", "", false)
+                        this.start_attacking(this.flipX ? -20 : 20, 0)
+                        this.attack_timer = 0.05
                         this.anims.play('hero_attack_air_2', true)
                         this.scene.sound.play('snd_sword_slash')
                         this.flag = 1
@@ -332,8 +347,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                         case 2:
                             if (this.body.blocked.down)
                             {
-                                //(this.attack_area.body as Phaser.Physics.Arcade.StaticBody).setSize(64, 32, true)
-                                (this.attack_area.body as Phaser.Physics.Arcade.StaticBody).setSize(200, 32, true)
+                                (this.attack_area.body as Phaser.Physics.Arcade.StaticBody).setSize(64, 32, true)
                                 this.anims.play('hero_attack_air_down_land', true)
                                 this.scene.cameras.main.shake(40, 0.02)
                                 this.flag += 1
@@ -363,7 +377,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                         {
                             case 0:
                                 this.knock_y = -200
-                                this.attack_area = this.attack_group.create(this.x + (this.flipX ? -16 : 16), this.y, "", "", false)
+                                this.start_attacking(this.flipX ? -16 : 16, 0)
                                 this.anims.play('hero_attack_rise')
                                 this.body.velocity.y = Math.min(this.body.velocity.y, -200)
                                 this.body.velocity.x *= 0.5
@@ -544,7 +558,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                         this.setVelocityY(-200)
                         this.anims.play('hero_up', true)
                         this.scene.sound.play('snd_jump', { rate: 2, volume: 0.6 })
-                        this.emit_jump_dust()
+                        this.emit_run_dust()
                     }
                     else if (direction != 0)
                     {
@@ -553,7 +567,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                         this.flipX = direction < 0
                         if (this.previous_direction != direction)
                         {
-                            this.emit_run_dust()
+                            //this.emit_run_dust()
                         }
                     }
                     else
@@ -742,6 +756,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite
 
     start_attacking(x: number, y: number, w: number = 32, h: number = 32)
     {
+        this.attacked_entities = []
+        this.attack_timer = 0
         this.attack_area = this.scene.add.zone(this.x + x, this.y + y, w, h)
         this.attack_group.add(this.attack_area)
     }
@@ -753,19 +769,18 @@ export class Player extends Phaser.Physics.Arcade.Sprite
             this.attack_area.destroy()
             this.knock_y = 0
         }
-        this.attacked_entities = []
     }
 
     emit_run_dust()
     {
         if (this.flipX)
         {
-            const h = this.run_dust_emitter.explode(1, this.body.center.x, this.body.bottom - 4)
+            const h = this.run_dust_emitter.explode(1, this.body.right, this.body.bottom - 4)
             h.scaleX = -1
         }
         else
         {
-            this.run_dust_emitter.explode(1, this.body.center.x, this.body.bottom - 4)
+            this.run_dust_emitter.explode(1, this.body.left, this.body.bottom - 4)
         }
     }
     

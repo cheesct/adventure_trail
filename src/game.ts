@@ -2,6 +2,7 @@ import * as Phaser from 'phaser'
 import Scene_Menu from './Scene_Menu'
 import Scene_Level1 from './Scene_Level1'
 import Scene_Level1b from './Scene_Level1b'
+import Scene_Level1c from './Scene_Level1c'
 import Scene_Level2 from './Scene_Level2'
 
 export default class Demo extends Phaser.Scene
@@ -30,6 +31,7 @@ export default class Demo extends Phaser.Scene
 	    this.load.spritesheet('enemy_death', 'assets/enemy_death.png', { frameWidth: 37, frameHeight: 39 })
 	    this.load.spritesheet('bounce_shroom', 'assets/bounce_shroom.png', { frameWidth: 56, frameHeight: 42 })
 		this.load.spritesheet('piranha_plant', 'assets/piranha_plant.png', { frameWidth: 61, frameHeight: 35 })
+		this.load.spritesheet('piranha_plant2', 'assets/piranha_plant2.png', { frameWidth: 61, frameHeight: 40 })
 		this.load.spritesheet('piranha_plant_projectile', 'assets/piranha_plant_projectile.png', { frameWidth: 16, frameHeight: 8 })
 		this.load.spritesheet('piranha_plant_projectile_blast', 'assets/piranha_plant_projectile_blast.png', { frameWidth: 16, frameHeight: 16 })
 	    this.load.spritesheet('hp_bar', 'assets/hp_bar.png', { frameWidth: 71, frameHeight: 16 })
@@ -115,6 +117,9 @@ export default class Demo extends Phaser.Scene
 		this.anims.create({ key: 'piranha_plant_idle', frames: this.anims.generateFrameNumbers('piranha_plant', { start: 0, end: 4 }), frameRate: 10, repeat: -1 })
 		this.anims.create({ key: 'piranha_plant_attack', frames: this.anims.generateFrameNumbers('piranha_plant', { frames: [ 6 ] }), duration: 200 })
 		this.anims.create({ key: 'piranha_plant_warning', frames: this.anims.generateFrameNumbers('piranha_plant', { frames: [ 5 ] }), duration: 300 })
+		this.anims.create({ key: 'piranha_plant2_idle', frames: this.anims.generateFrameNumbers('piranha_plant2', { start: 0, end: 4 }), frameRate: 10, repeat: -1 })
+		this.anims.create({ key: 'piranha_plant2_attack', frames: this.anims.generateFrameNumbers('piranha_plant2', { frames: [ 6 ] }), duration: 200 })
+		this.anims.create({ key: 'piranha_plant2_warning', frames: this.anims.generateFrameNumbers('piranha_plant2', { frames: [ 5 ] }), duration: 300 })
 		this.anims.create({ key: 'piranha_plant_projectile', frames: this.anims.generateFrameNumbers('piranha_plant_projectile', { start: 0, end: 7 } ), duration: 800, repeat: -1 })
 		this.anims.create({ key: 'piranha_plant_projectile_blast', frames: this.anims.generateFrameNumbers('piranha_plant_projectile_blast', { start: 0, end: 3 } ), duration: 300, })
 
@@ -131,6 +136,7 @@ export default class Demo extends Phaser.Scene
 		this.anims.create({ key: 'level2_lava', frames: this.anims.generateFrameNumbers('level2_lava', { start: 0, end: 2 }), repeat: -1, frameRate: 8 })
 		this.anims.create({ key: 'level2_water', frames: this.anims.generateFrameNumbers('level2_water', { start: 0, end: 2 }), repeat: -1, frameRate: 8 })
 		this.anims.create({ key: 'level2_waterfall', frames: this.anims.generateFrameNumbers('level2_waterfall', { start: 0, end: 2 }), repeat: -1, frameRate: 8 })
+		//game.plugins.install()
 	}
 }
 
@@ -155,6 +161,7 @@ const config = {
 		Scene_Menu,
 		Scene_Level1,
 		Scene_Level1b,
+		Scene_Level1c,
 		Scene_Level2,
 	],
     scale: {

@@ -97,6 +97,7 @@
         {
          "draworder":"topdown",
          "id":13,
+         "locked":true,
          "name":"Objects",
          "objects":[
                 {
@@ -245,6 +246,18 @@
                 }, 
                 {
                  "height":0,
+                 "id":51,
+                 "name":"Door",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":512,
+                 "y":80
+                }, 
+                {
+                 "height":0,
                  "id":44,
                  "name":"PiranhaPlant",
                  "point":true,
@@ -302,6 +315,33 @@
                  "width":0,
                  "x":432,
                  "y":608
+                }, 
+                {
+                 "height":32,
+                 "id":52,
+                 "name":"Waypoint",
+                 "properties":[
+                        {
+                         "name":"ArriveX",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"ArriveY",
+                         "type":"int",
+                         "value":0
+                        }, 
+                        {
+                         "name":"To",
+                         "type":"string",
+                         "value":"Scene_Menu"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":559,
+                 "y":64
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -310,7 +350,7 @@
          "y":0
         }],
  "nextlayerid":28,
- "nextobjectid":51,
+ "nextobjectid":54,
  "orientation":"orthogonal",
  "properties":[
         {

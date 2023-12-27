@@ -43,6 +43,7 @@ export class Key extends O_PickupBase
         super(scene, x, y, 'key')
         this.y -= 4
         scene.tweens.add({ targets: this, y: '+=4', ease: 'Sine.easeInOut', duration: 1000, yoyo: true, repeat: -1 })
+        this.scale = 0.5
         this.particles = this.scene.add.particles(this.x, this.y, 'flares', {
             frame: 'white',
             blendMode: 'SCREEN',
