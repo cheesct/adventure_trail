@@ -5,7 +5,7 @@ import Waypoint from './O_Waypoint'
 import { Door } from './O_Doors'
 import { Player } from './O_Players'
 import { JumpPad } from './O_JumpPads'
-import { Bee, Slime, Grenadier, PiranhaPlant } from './O_Enemies'
+import { Bee, Slime, GrenadierPlant, PiranhaPlant } from './O_Enemies'
 import { Key, Cherry } from './O_Pickups'
 
 export default class LevelBase extends Phaser.Scene
@@ -93,7 +93,7 @@ export default class LevelBase extends Phaser.Scene
 		map.createFromObjects('Objects', { name : "Player", classType: Player }).forEach((object: Player) => { this.player = object; this.Players.add(object) })
 	    
 		map.createFromObjects('Objects', { name : "PiranhaPlant", classType: PiranhaPlant }).forEach((object) => { this.Enemies.add(object) })
-	    map.createFromObjects('Objects', { name : "Grenadier", classType: Grenadier }).forEach((object) => { this.Enemies.add(object) })
+	    map.createFromObjects('Objects', { name : "Grenadier", classType: GrenadierPlant }).forEach((object) => { this.Enemies.add(object) })
 		map.createFromObjects('Objects', { name : "Slime", classType: Slime }).forEach((object) => { this.Enemies.add(object) })
 	    map.createFromObjects('Objects', { name : "Bee", classType: Bee }).forEach((object) => { this.Enemies.add(object) })
 
@@ -115,7 +115,7 @@ export default class LevelBase extends Phaser.Scene
 		this.physics.add.collider(this.Enemies, turners)
 		this.physics.add.collider(this.Enemies, walls)
 		this.physics.add.collider(this.EnemyBullets, walls, (bullet, wall) => { bullet.destroy() })
-		this.physics.add.collider(this.EnemyBullets, this.Doors, (bullet, door) => { door.destroy() })
+		this.physics.add.collider(this.EnemyBullets, this.Doors, (bullet, door) => { bullet.destroy() })
 		if (spikes)
 		{
 			this.physics.add.overlap(this.Players, spikes, (player, tile) => { (player as Player).player_get_spiked(tile) })

@@ -1,5 +1,4 @@
 import * as Phaser from 'phaser'
-import Helper from './helper'
 import LevelBase from './LevelBase'
 
 export default class Scene_Level2 extends LevelBase

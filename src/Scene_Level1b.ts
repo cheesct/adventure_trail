@@ -1,5 +1,4 @@
 import LevelBase from './LevelBase'
-import Singleton from './singleton'
 import { ParallaxStaticTileSprite } from './O_ParallaxComponents'
 
 export default class Scene_Level1b extends LevelBase

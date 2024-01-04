@@ -1,5 +1,4 @@
 import LevelBase from './LevelBase'
-import Singleton from './singleton'
 import { ParallaxScrollingImage, ParallaxStaticTileSprite } from './O_ParallaxComponents'
 
 export default class Scene_Level1 extends LevelBase

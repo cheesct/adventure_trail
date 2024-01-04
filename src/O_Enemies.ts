@@ -1,6 +1,5 @@
 import * as Phaser from 'phaser'
 import LevelBase from './LevelBase'
-import { Vector } from 'matter'
 
 class O_EnemyBase extends Phaser.Physics.Arcade.Sprite
 {
@@ -268,15 +267,15 @@ export class PiranhaPlant extends O_EnemyBase
                         {
                             this.flag = 2
                             const bullet = new O_PiranhaPlantProjectile(this.scene, this.x, this.y, "")
-                            bullet.fired(this.flipX ? 0 : 180, 80)
+                            bullet.fired_from_angle(this.flipX ? 0 : 180, 80)
                             this.anims.play('piranha_plant_attack')
+                            this.attack_countdown = 1.2
                         }
                         break
                     
                     case 2:
                         if (!this.anims.isPlaying)
                         {
-                            this.attack_countdown = 1
                             this.change_state("")
                         }
                         break
@@ -299,7 +298,7 @@ export class PiranhaPlant extends O_EnemyBase
                             this.clearTint()
                             this.anims.resume()
                             this.change_state("")
-                            this.attack_countdown = 0.05
+                            this.attack_countdown = Math.max(this.attack_countdown, 0.1)
                         }
                         break
                 }
@@ -333,7 +332,7 @@ export class PiranhaPlant extends O_EnemyBase
     }
 }
 
-export class Grenadier extends O_EnemyBase 
+export class GrenadierPlant extends O_EnemyBase 
 {
     private sensor_track: Phaser.GameObjects.Zone
     private sensor_attack: Phaser.GameObjects.Zone
@@ -395,7 +394,7 @@ export class Grenadier extends O_EnemyBase
                         if (!this.anims.isPlaying)
                         {
                             this.flag = 2
-                            this.aim((this.flipX ? 200 : -200), 0)
+                            this.fire(this.target.x - this.x, 0)
                             this.anims.play('piranha_plant2_attack')
                         }
                         break
@@ -426,7 +425,7 @@ export class Grenadier extends O_EnemyBase
                             this.clearTint()
                             this.anims.resume()
                             this.change_state("")
-                            this.attack_countdown = 0.05
+                            this.attack_countdown = Math.max(this.attack_countdown, 0.1)
                         }
                         break
                 }
@@ -459,26 +458,28 @@ export class Grenadier extends O_EnemyBase
         super.death()
     }
 
-    aim(x: number, y: number)
+    fire(x: number, y: number)
     {
-        const height = 160
-        const time_to_peak = 1
+        const height = 56
+        const time_to_peak = 0.5
 
         const velocity_x = (x / time_to_peak) / 2
         const velocity_y = ((2.0 * height) / time_to_peak) * -1.0
         const gravity = (2.0 * height) / (time_to_peak * time_to_peak)
 
-        const bullet = new O_Grenade(this.scene, this.x, this.y, "")
-        let vec2 = new Phaser.Math.Vector2(velocity_x, velocity_y)
-        bullet.fired(vec2.angle(), vec2.length());
-        (bullet.body as Phaser.Physics.Arcade.Body).setGravityY(gravity)
+        const bullet = new O_GrenadePlantProjectile(this.scene, this.x, this.y, "")
+        bullet.set_velocity(velocity_x, velocity_y)
+        bullet.set_gravity(gravity)
     }
 }
 
 class O_EnemyAttackProjectile extends Phaser.Physics.Arcade.Sprite
 {
-    private life: number
+    protected life: number
+    protected gravity: number
+
     private fading: boolean
+    public angle_updating: number
 
     constructor(scene, x: number, y: number, texture: string)
     {
@@ -488,6 +489,8 @@ class O_EnemyAttackProjectile extends Phaser.Physics.Arcade.Sprite
         scene.EnemyBullets.add(this)
         this.life = 2
         this.fading = false
+        this.gravity = 0
+        this.angle_updating = 0
     }
 
     update(delta: number)
@@ -507,6 +510,12 @@ class O_EnemyAttackProjectile extends Phaser.Physics.Arcade.Sprite
             return
         }
         this.life -= delta
+        this.body.velocity.y += this.gravity * delta
+        if (this.angle_updating > 0)
+        {
+            this.angle_updating -= delta
+            this.angle = Phaser.Math.RadToDeg(this.body.velocity.angle())
+        }
     }
 
     impact()
@@ -514,9 +523,20 @@ class O_EnemyAttackProjectile extends Phaser.Physics.Arcade.Sprite
         this.destroy()
     }
 
-    fired(angle: number, speed: number)
+    fired_from_angle(angle: number, speed: number)
     {
         this.scene.physics.velocityFromAngle(angle, speed, this.body.velocity)
+    }
+
+    set_velocity(x: number, y: number)
+    {
+        this.body.velocity.x = x
+        this.body.velocity.y = y
+    }
+
+    set_gravity(g: number)
+    {
+        this.gravity = g
     }
 }
 
@@ -526,12 +546,7 @@ class O_PiranhaPlantProjectile extends O_EnemyAttackProjectile
     {
         super(scene, x, y, 'piranha_plant_projectile')
         this.anims.play('piranha_plant_projectile')
-    }
-
-    fired(angle: number, speed: number)
-    {
-        super.fired(angle, speed)
-        this.angle = angle
+        this.angle_updating = 0.1
     }
 
     impact()
@@ -543,39 +558,25 @@ class O_PiranhaPlantProjectile extends O_EnemyAttackProjectile
     }
 }
 
-class O_Grenade extends O_EnemyAttackProjectile
+class O_GrenadePlantProjectile extends O_EnemyAttackProjectile
 {
-    private gravity: number
-
+    private start: number
     constructor(scene, x: number, y: number, texture: string)
     {
         super(scene, x, y, 'piranha_plant_projectile')
-        this.gravity = 60
+        this.life = 3
+        this.angle_updating = 3
         this.anims.play('piranha_plant_projectile');
-        (this.body as Phaser.Physics.Arcade.Body).setAllowGravity(true).setGravityY(this.gravity)
-    }
-
-    fired(angle: number, speed: number, gravity: number = 0)
-    {
-        super.fired(angle, speed);
-        (this.body as Phaser.Physics.Arcade.Body).setGravityY(gravity)
-        this.angle = angle
+        (this.body as Phaser.Physics.Arcade.Body).setSize(8, 8)
+        this.start = this.scene.game.getTime()
     }
 
     impact()
     {
+        console.log(this.scene.game.getTime() - this.start)
         var dying = this.scene.add.sprite(this.x, this.y, "piranha_plant_projectile_blast")
         dying.anims.play('piranha_plant_projectile_blast')
         dying.on('animationcomplete', () => { dying.destroy() })
         super.impact()
-    }
-
-    update(delta: number)
-    {
-        if (!this.scene.physics.world.bounds.contains(this.x, this.y))
-        {
-            this.destroy()
-            return
-        }
     }
 }
