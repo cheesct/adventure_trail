@@ -298,7 +298,7 @@ export class PiranhaPlant extends O_EnemyBase
                             this.clearTint()
                             this.anims.resume()
                             this.change_state("")
-                            this.attack_countdown = Math.max(this.attack_countdown, 0.1)
+                            this.attack_countdown = Math.max(this.attack_countdown, 0.05)
                         }
                         break
                 }
@@ -425,7 +425,7 @@ export class GrenadierPlant extends O_EnemyBase
                             this.clearTint()
                             this.anims.resume()
                             this.change_state("")
-                            this.attack_countdown = Math.max(this.attack_countdown, 0.1)
+                            this.attack_countdown = Math.max(this.attack_countdown, 0.05)
                         }
                         break
                 }

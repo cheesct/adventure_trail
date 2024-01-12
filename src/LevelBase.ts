@@ -68,7 +68,7 @@ export default class LevelBase extends Phaser.Scene
 		const tile_backs = map.addTilesetImage("backs", tileset_backs)
 		const tile_trigger = map.addTilesetImage("trigger", "trigger")
 
-		map.createLayer("Background", tile_backs)
+		map.createLayer("Background", tile_backs).setPipeline("Light2D")
 		map.createLayer("Props", tile_props)
 
 		let spikes
