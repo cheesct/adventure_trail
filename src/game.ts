@@ -3,6 +3,7 @@ import Scene_Menu from './Scene_Menu'
 import Scene_Level1 from './Scene_Level1'
 import Scene_Level1b from './Scene_Level1b'
 import Scene_Level1c from './Scene_Level1c'
+import Scene_Level1d from './Scene_Level1d'
 import Scene_Level2 from './Scene_Level2'
 
 export default class Demo extends Phaser.Scene
@@ -22,6 +23,7 @@ export default class Demo extends Phaser.Scene
 	    this.load.spritesheet('hero', 'assets/hero.png', { frameWidth: 50, frameHeight: 37 })
 	    this.load.spritesheet('slime', 'assets/slime.png', { frameWidth: 32, frameHeight: 25 })
 	    this.load.spritesheet('cherry', 'assets/cherry.png', { frameWidth: 19, frameHeight: 16 })
+		this.load.spritesheet('firepit', 'assets/firepit.png', { frameWidth: 32, frameHeight: 32 })
 	    this.load.spritesheet('fx_item', 'assets/fx_item.png', { frameWidth: 32, frameHeight: 32 })
 	    this.load.spritesheet('fx_ring', 'assets/fx_ring.png', { frameWidth: 192, frameHeight: 192 })
 	    this.load.spritesheet('fx_slash', 'assets/fx_slash.png', { frameWidth: 96, frameHeight: 96 })
@@ -35,6 +37,7 @@ export default class Demo extends Phaser.Scene
 		this.load.spritesheet('piranha_plant_projectile', 'assets/piranha_plant_projectile.png', { frameWidth: 16, frameHeight: 8 })
 		this.load.spritesheet('piranha_plant_projectile_blast', 'assets/piranha_plant_projectile_blast.png', { frameWidth: 16, frameHeight: 16 })
 	    this.load.spritesheet('hp_bar', 'assets/hp_bar.png', { frameWidth: 71, frameHeight: 16 })
+		this.load.spritesheet('popup_notice', 'assets/popup_notice.png', { frameWidth: 18, frameHeight: 18 })
 	    this.load.spritesheet('level2_lava', 'assets/level2/lava.png', { frameWidth: 32, frameHeight: 32 })
 		this.load.spritesheet('level2_water', 'assets/level2/water.png', { frameWidth: 32, frameHeight: 32 })
 		this.load.spritesheet('level2_waterfall', 'assets/level2/waterfall.png', { frameWidth: 16, frameHeight: 16 })
@@ -66,7 +69,18 @@ export default class Demo extends Phaser.Scene
         this.load.glsl('starfield', 'assets/starfield.glsl.js')
 		this.load.glsl('transition_diamond', 'assets/transition_diamond.glsl.js')
 		this.load.glsl('transition_smooth', 'assets/transition_smooth.glsl.js')
-
+		this.load.bitmapFont('fn_l', 'assets/font/lame_0.png', 'assets/font/lame.fnt')
+		this.load.bitmapFont('fn_l_g', 'assets/font/l_glow_0.png', 'assets/font/l_glow.fnt')
+		this.load.bitmapFont('fn_l_h', 'assets/font/l_hard_0.png', 'assets/font/l_hard.fnt')
+		this.load.bitmapFont('fn_b', 'assets/font/bold_0.png', 'assets/font/bold.fnt')
+		this.load.bitmapFont('fn_b_g', 'assets/font/b_glow_0.png', 'assets/font/b_glow.fnt')
+		this.load.bitmapFont('fn_b_h', 'assets/font/b_hard_0.png', 'assets/font/b_hard.fnt')
+		this.load.bitmapFont('fn_i', 'assets/font/italic_0.png', 'assets/font/italic.fnt')
+		this.load.bitmapFont('fn_i_g', 'assets/font/i_glow_0.png', 'assets/font/i_glow.fnt')
+		this.load.bitmapFont('fn_i_h', 'assets/font/i_hard_0.png', 'assets/font/i_hard.fnt')
+		this.load.bitmapFont('fn_bi', 'assets/font/bold_italic_0.png', 'assets/font/bold_italic.fnt')
+		this.load.bitmapFont('fn_bi_g', 'assets/font/bi_glow_0.png', 'assets/font/bi_glow.fnt')
+		this.load.bitmapFont('fn_bi_h', 'assets/font/bi_hard_0.png', 'assets/font/bi_hard.fnt')
         this.load.on("progress", (percent) => { this.add.graphics({ fillStyle: { color: 0xffffff }}).fillRect(0, this.cameras.main.height / 2 - 10, this.cameras.main.width * percent, 20) })
 		this.load.on("complete", () => { this.scene.start("Scene_Menu") })
 	}
@@ -126,8 +140,9 @@ export default class Demo extends Phaser.Scene
 	    this.anims.create({ key: 'enemy_death', frames: this.anims.generateFrameNumbers('enemy_death', { start: 0, end: 5 }), frameRate: 10 })
 		
 	    //
-	    this.anims.create({ key: 'cherry', frames: this.anims.generateFrameNumbers('cherry', { start: 0, end: 4 }), frameRate: 10, yoyo: true, repeat: -1 })
 		this.anims.create({ key: 'key', frames: this.anims.generateFrameNumbers('key', { start: 0, end: 11 }), frameRate: 10, repeat: -1 })
+	    this.anims.create({ key: 'cherry', frames: this.anims.generateFrameNumbers('cherry', { start: 0, end: 4 }), frameRate: 10, yoyo: true, repeat: -1 })
+		this.anims.create({ key: 'firepit', frames: this.anims.generateFrameNumbers('firepit', { start: 0, end: 7 }), duration: 800, repeat: -1  })
 		this.anims.create({ key: 'door', frames: this.anims.generateFrameNumbers('door', { start: 0, end: 4 }), frameRate: 10 })
 		this.anims.create({ key: 'door_close', frames: this.anims.generateFrameNumbers('door', { start: 4, end: 0 }), frameRate: 10 })
 		this.anims.create({ key: 'bounce_shroom', frames: this.anims.generateFrameNumbers('bounce_shroom', { start: 0, end: 7 }), duration: 500 })
@@ -162,6 +177,7 @@ const config = {
 		Scene_Level1,
 		Scene_Level1b,
 		Scene_Level1c,
+		Scene_Level1d,
 		Scene_Level2,
 	],
     scale: {

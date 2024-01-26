@@ -21,7 +21,7 @@ export class Door extends Phaser.GameObjects.Sprite
         if(player.key.includes(this.open_key))
         {
             this.scene.sound.play('snd_door');
-            this.scene.add.sprite(this.x, this.y, this.texture).anims.play(this.open_animation, true);
+            this.anims.play(this.open_animation, true);
             let particles = this.scene.add.particles(this.x, this.y, 'flares', {
                 frame: 'yellow',
                 blendMode: 'SCREEN',
@@ -37,7 +37,7 @@ export class Door extends Phaser.GameObjects.Sprite
             })
             particles.explode();
             this.scene.time.addEvent({ delay: 2500, callback: () => { particles.destroy() }});
-            this.destroy();
+            this.scene.physics.world.disable(this)
         }
     }
 }

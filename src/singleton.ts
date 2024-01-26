@@ -11,6 +11,10 @@ export default class Singleton
     public static waypoint_landing_x: number = 0
     public static waypoint_landing_y: number = 0
 
+    public static checkpoint_level: string = null
+    public static checkpoint_x: number = 0
+    public static checkpoint_y: number = 0
+
     public static readonly DEPTH_BACK_DROP: number = -10
     public static readonly DEPTH_BACK_LONG: number = -5
     public static readonly DEPTH_BACK_NEAR: number = -2

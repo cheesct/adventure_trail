@@ -1,26 +1,31 @@
 import * as Phaser from 'phaser'
 import Helper from './helper'
 import Singleton from './singleton'
-import Waypoint from './O_Waypoint'
 import { Door } from './O_Doors'
 import { Player } from './O_Players'
 import { JumpPad } from './O_JumpPads'
-import { Bee, Slime, GrenadierPlant, PiranhaPlant } from './O_Enemies'
 import { Key, Cherry } from './O_Pickups'
+import { Bee, Slime, GrenadierPlant, PiranhaPlant } from './O_Enemies'
+import { PopupNotice }  from './O_MenuComponents'
+import { Waypoint, Checkpoint }  from './O_ProgressionComponents'
 
 export default class LevelBase extends Phaser.Scene
 {
+	private transition: Phaser.GameObjects.Shader
+	private notice: PopupNotice
+
 	protected Doors: Phaser.GameObjects.Group
 	protected Items: Phaser.GameObjects.Group
 	protected Enemies: Phaser.GameObjects.Group
 	protected JumpPads: Phaser.GameObjects.Group
 	protected Waypoints: Phaser.GameObjects.Group
+	protected Checkpoints: Phaser.GameObjects.Group
 	//protected ParallaxStatic: Phaser.GameObjects.Layer
 	//protected ParallaxScrolling: Phaser.GameObjects.Layer
 
-	protected transition: Phaser.GameObjects.Shader
 	protected player: Player
 
+	public Lights: Phaser.GameObjects.Group
 	public Players: Phaser.GameObjects.Group
 	public EnemyBullets: Phaser.Physics.Arcade.Group
 	public EnemySensors: Phaser.Physics.Arcade.StaticGroup
@@ -53,6 +58,7 @@ export default class LevelBase extends Phaser.Scene
 	    this.Enemies = this.add.group()
 		this.JumpPads = this.add.group()
 		this.Waypoints = this.add.group()
+		this.Checkpoints = this.add.group()
 	    //this.ParallaxStatic = this.add.layer()
 		//this.ParallaxScrolling = this.add.layer()
 		this.PlayerAttacks = this.physics.add.staticGroup()
@@ -68,7 +74,7 @@ export default class LevelBase extends Phaser.Scene
 		const tile_backs = map.addTilesetImage("backs", tileset_backs)
 		const tile_trigger = map.addTilesetImage("trigger", "trigger")
 
-		map.createLayer("Background", tile_backs).setPipeline("Light2D")
+		map.createLayer("Background", tile_backs)//.setPipeline("Light2D")
 		map.createLayer("Props", tile_props)
 
 		let spikes
@@ -87,6 +93,7 @@ export default class LevelBase extends Phaser.Scene
 		}
         const walls = map.createLayer("Walls", tile_walls).setCollisionByExclusion([-1])
 
+		map.createFromObjects('Objects', { name : "Checkpoint", classType: Checkpoint }).forEach((object) => { this.Checkpoints.add(object) })
 		map.createFromObjects('Objects', { name : "Waypoint", classType: Waypoint }).forEach((object) => { this.Waypoints.add(object) })
 		map.createFromObjects('Objects', { name : "JumpPad", classType: JumpPad }).forEach((object) => { this.JumpPads.add(object) })
 		map.createFromObjects('Objects', { name : "Door", classType: Door }).forEach((object) => { this.Doors.add(object) })
@@ -104,6 +111,7 @@ export default class LevelBase extends Phaser.Scene
 	    this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels, true, true, true, false)
 
 		this.physics.add.overlap(this.Enemies, this.PlayerAttacks, (enemy, attack) => { this.player.attack_hit(attack, enemy) })
+		this.physics.add.overlap(this.Players, this.Checkpoints, (player, checkpoint) => { this.check_point(checkpoint) })
 		this.physics.add.overlap(this.Players, this.Waypoints, (player, waypoint) => { this.change_scene(waypoint) })
 		this.physics.add.overlap(this.Players, this.JumpPads, (player, pad) => { (player as Player).set_jumpPad(pad) })
 		this.physics.add.overlap(this.Players, this.Enemies, (player, enemy) => { (player as Player).player_get_hit(enemy) })
@@ -135,7 +143,7 @@ export default class LevelBase extends Phaser.Scene
 				collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
 			})
 		}
-
+		this.notice = new PopupNotice(this)
 		this.fade_in()
 		return map
 	}
@@ -194,5 +202,15 @@ export default class LevelBase extends Phaser.Scene
 			this.fade_out(destination, 0)
         }
 		waypoint.destroy()
+	}
+
+	check_point(checkpoint)
+	{
+		Singleton.checkpoint_level = (this.sys.config as Phaser.Types.Scenes.SettingsConfig).key
+		Singleton.checkpoint_x = checkpoint.x
+		Singleton.checkpoint_y = checkpoint.y
+		checkpoint.activate()
+		this.notice.notice("Checkpoint")
+		this.cameras.main.flash(250, 0, 204, 204)
 	}
 }
