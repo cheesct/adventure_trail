@@ -43,14 +43,5 @@ export default class Scene_Level1d extends LevelBase
             angle: { min: 0, max: 360 },
             emitZone: { source: new Phaser.Geom.Rectangle(0, 0, map.widthInPixels, map.heightInPixels), type: 'random' }
         })
-		this.lights.enable()
-		//this.lights.disable()
-        this.lights.setAmbientColor(0xFFFFFF)
-		this.lights.addLight(100, 100, 200);
   	}
-
-	  update(time, delta)
-  	{
-		super.update(time, delta)
-	}
 }

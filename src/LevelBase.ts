@@ -14,6 +14,8 @@ export default class LevelBase extends Phaser.Scene
 	private transition: Phaser.GameObjects.Shader
 	private notice: PopupNotice
 
+	protected FogCanvas: Phaser.Textures.CanvasTexture
+
 	protected Doors: Phaser.GameObjects.Group
 	protected Items: Phaser.GameObjects.Group
 	protected Enemies: Phaser.GameObjects.Group
@@ -48,12 +50,42 @@ export default class LevelBase extends Phaser.Scene
 		this.EnemyBullets.getChildren().forEach((x) => { x.update(delta) })
 	    //this.ParallaxStatic.getChildren().forEach((x) => { x.update(this.cameras.main.scrollX) })
 		//this.ParallaxScrolling.getChildren().forEach((x) => { x.update(this.cameras.main.scrollX, delta) })
+		if (this.FogCanvas)
+		{
+			this.FogCanvas.context.globalCompositeOperation = "copy"
+			this.FogCanvas.context.fillStyle = "#000"
+			this.FogCanvas.context.fillRect(0, 0, this.FogCanvas.width, this.FogCanvas.height)
+			this.FogCanvas.context.globalCompositeOperation = "destination-out"
+			this.FogCanvas.context.fillStyle = "#88888888"
+			let tau = 2*Math.PI
+			if(this.player.state != "DeathSpike")
+			{
+				const pos_x = this.player.x + 32 - this.cameras.main.scrollX
+				const pos_y = this.player.y + 32 - this.cameras.main.scrollY
+				let flicker = Phaser.Math.FloatBetween(-1, 1)
+				this.FogCanvas.context.beginPath()
+				this.FogCanvas.context.arc(pos_x, pos_y, 40, 0, tau)
+				this.FogCanvas.context.fill()
+				this.FogCanvas.context.arc(pos_x, pos_y, 60 + flicker * 0.5, 0, tau)
+				this.FogCanvas.context.fill()
+				this.FogCanvas.context.arc(pos_x, pos_y, 70 + flicker, 0, tau)
+				this.FogCanvas.context.fill()
+			}
+			// this.lighting.context.fillStyle = '#ffffff11';
+			// for (let i = 0; i < 15; i++)
+			// {
+			// 	let rand = Phaser.Math.FloatBetween(-1, 1);
+			// 	this.lighting.context.fillRect(1472 - i*4 + rand, 0, 336 + 8*i - 2*rand, 160);
+			// }
+			this.FogCanvas.refresh()
+		}
 	}
 
 	initialize_map(map_key, tileset_walls, tileset_props, tileset_backs)
 	{
 	    this.Doors = this.add.group()
 	    this.Items = this.add.group()
+		this.Lights = this.add.group()
 	    this.Players = this.add.group()
 	    this.Enemies = this.add.group()
 		this.JumpPads = this.add.group()
@@ -68,13 +100,12 @@ export default class LevelBase extends Phaser.Scene
 
 		const is_debug = this.game.config.physics.arcade.debug
 		const map = this.make.tilemap({key: map_key})
-
 	    const tile_walls = map.addTilesetImage("walls", tileset_walls)
 		const tile_props = map.addTilesetImage("props", tileset_props)
 		const tile_backs = map.addTilesetImage("backs", tileset_backs)
 		const tile_trigger = map.addTilesetImage("trigger", "trigger")
 
-		map.createLayer("Background", tile_backs)//.setPipeline("Light2D")
+		map.createLayer("Background", tile_backs)
 		map.createLayer("Props", tile_props)
 
 		let spikes
@@ -97,7 +128,7 @@ export default class LevelBase extends Phaser.Scene
 		map.createFromObjects('Objects', { name : "Waypoint", classType: Waypoint }).forEach((object) => { this.Waypoints.add(object) })
 		map.createFromObjects('Objects', { name : "JumpPad", classType: JumpPad }).forEach((object) => { this.JumpPads.add(object) })
 		map.createFromObjects('Objects', { name : "Door", classType: Door }).forEach((object) => { this.Doors.add(object) })
-		map.createFromObjects('Objects', { name : "Player", classType: Player }).forEach((object: Player) => { this.player = object; this.Players.add(object) })
+		map.createFromObjects('Objects', { name : "Player", classType: Player }).forEach((object: Player) => { this.player = object; this.Players.add(object); this.Lights.add(object) })
 	    
 		map.createFromObjects('Objects', { name : "PiranhaPlant", classType: PiranhaPlant }).forEach((object) => { this.Enemies.add(object) })
 	    map.createFromObjects('Objects', { name : "Grenadier", classType: GrenadierPlant }).forEach((object) => { this.Enemies.add(object) })
@@ -143,7 +174,23 @@ export default class LevelBase extends Phaser.Scene
 				collidingTileColor: new Phaser.Display.Color(243, 134, 48, 255), // Color of colliding tiles
 			})
 		}
+
 		this.notice = new PopupNotice(this)
+		console.log(map.properties)
+		var map_properties = map.properties as any
+		if (Array.isArray(map_properties))
+		{
+			var map_fog = map_properties.find(e => e.name === "Fog")
+			if (map_fog)
+			{
+				this.FogCanvas = this.textures.createCanvas("fog", this.cameras.main.width + 64, this.cameras.main.height + 64)
+				if(!this.FogCanvas)
+					this.FogCanvas = this.textures.get("fog") as Phaser.Textures.CanvasTexture
+				const fog = this.add.image(-32, -32, "fog").setOrigin(0).setDepth(1).setScrollFactor(0)
+				fog.alpha = map_fog.value
+			}
+		}
+
 		this.fade_in()
 		return map
 	}

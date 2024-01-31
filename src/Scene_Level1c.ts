@@ -31,14 +31,5 @@ export default class Scene_Level1c extends LevelBase
 		this.ParallaxStatic.add(new ParallaxStaticTileSprite(this, 0, 88, 320, 32, "mountains1", 0.25))
 		this.ParallaxStatic.add(new ParallaxStaticTileSprite(this, 0, 112, 320, 64, "grass", 0.5))
 		const map = this.initialize_map('level1c', 'level1_walls2', 'level1_props', 'level1_backs')
-		this.lights.enable()
-		//this.lights.disable()
-        this.lights.setAmbientColor(0xFFFFFF)
-		this.lights.addLight(100, 100, 200);
   	}
-
-	  update(time, delta)
-  	{
-		super.update(time, delta)
-	}
 }

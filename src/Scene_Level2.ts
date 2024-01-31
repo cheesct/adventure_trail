@@ -4,7 +4,6 @@ import LevelBase from './LevelBase'
 export default class Scene_Level2 extends LevelBase
 {
     private lighting: any
-    private darkness: any
 
 	constructor() 
 	{
@@ -34,7 +33,7 @@ export default class Scene_Level2 extends LevelBase
         this.lighting = this.textures.createCanvas('lights', map.widthInPixels, map.heightInPixels)
 	    if(!this.lighting)
 	    	this.lighting = this.textures.get('lights')
-	    this.darkness = this.add.image(0, 0, "lights").setOrigin(0).setDepth(1)
+	    this.add.image(0, 0, "lights").setOrigin(0).setDepth(1)
   	}
 
   	update(time, delta)

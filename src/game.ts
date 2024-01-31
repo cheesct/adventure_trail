@@ -161,7 +161,7 @@ const config = {
     zoom: 1,
 	width: 320,
 	height: 160,
-	pixelArt: true,
+	pixelArt: true,	//else tiles would break
 	antialias: false,
 	roundPixels: false,
 	physics: {
