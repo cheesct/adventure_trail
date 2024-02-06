@@ -228,6 +228,12 @@
  "nextlayerid":28,
  "nextobjectid":39,
  "orientation":"orthogonal",
+ "properties":[
+        {
+         "name":"Fog",
+         "type":"float",
+         "value":1
+        }],
  "renderorder":"right-down",
  "tiledversion":"1.10.2",
  "tileheight":16,

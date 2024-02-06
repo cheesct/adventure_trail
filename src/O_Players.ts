@@ -34,6 +34,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
     private C: Phaser.Input.Keyboard.Key
     private Space: Phaser.Input.Keyboard.Key
 
+    private heal_emitter: Phaser.GameObjects.Particles.ParticleEmitter
     private blood_emitter: Phaser.GameObjects.Particles.ParticleEmitter
     private run_dust_emitter: Phaser.GameObjects.Particles.ParticleEmitter
     private jump_dust_emitter: Phaser.GameObjects.Particles.ParticleEmitter
@@ -81,9 +82,18 @@ export class Player extends Phaser.Physics.Arcade.Sprite
         this.body.setSize(16, 24)
         this.body.offset.y = 10 + this.offset
 
+        this.heal_emitter = this.scene.add.particles(this.x, this.y, 'flares', {
+            frame: 'white',
+            emitting: false,
+            lifespan: { min: 300, max: 500 } ,
+            scale: { start: 0.2, end: 0, random: true },
+            speed: { min: 50, max: 125 },
+            tint: 0x00FF00,
+            angle: -90
+        })
         this.blood_emitter = this.scene.add.particles(this.x, this.y, 'flares', {
             frame: 'white',
-            blendMode: 'ADD',
+            blendMode: Phaser.BlendModes.ADD,
             emitting: false,
             lifespan: { min: 300, max: 500 } ,
             scale: { start: 0.2, end: 0, random: true },
@@ -91,14 +101,12 @@ export class Player extends Phaser.Physics.Arcade.Sprite
             tint: 0xFF0000
         })
         this.run_dust_emitter = this.scene.add.particles(this.x, this.y, 'fx_dust_run', {
-            blendMode: 'COLOR',
             emitting: false,
             anim: 'fx_dust_run',
             quantity: 1,
             lifespan: 350,
         })
         this.jump_dust_emitter = this.scene.add.particles(this.x, this.y, 'fx_dust_jump', {
-            blendMode: 'COLOR',
             emitting: false,
             anim: 'fx_dust_jump',
             quantity: 1,
@@ -142,6 +150,11 @@ export class Player extends Phaser.Physics.Arcade.Sprite
         if (this.slide_cooldown > 0)
         {
             this.slide_cooldown = Math.max(this.slide_cooldown - delta, 0)
+        }
+        if (this.heal_emitter)
+        {
+            this.heal_emitter.x = this.x
+            this.heal_emitter.y = this.y
         }
         switch(this.state)
         {
@@ -732,6 +745,19 @@ export class Player extends Phaser.Physics.Arcade.Sprite
         {
             this.change_state("Death")
         }
+    }
+
+    player_heal_one()
+    {
+        this.HP.add(1)
+        this.tint = 0x00ff00
+        this.scene.tweens.add({ targets: this, tint: 0xffffff, ease: 'Power1', duration: 500, delay: 100 })
+    }
+
+    player_heal_full()
+    {
+        this.HP.add(5)
+        this.heal_emitter.start(0, 1000)
     }
 
     change_state(state: string = "", force = false)

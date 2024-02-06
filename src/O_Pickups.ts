@@ -28,7 +28,7 @@ export class Cherry extends O_PickupBase
 
     pickup(player)
     {
-        player.HP.add(1)
+        player.player_heal_one()
         this.scene.sound.play('snd_food')
         super.pickup(player)
     }

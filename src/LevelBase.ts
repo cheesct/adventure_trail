@@ -57,26 +57,32 @@ export default class LevelBase extends Phaser.Scene
 			this.FogCanvas.context.fillRect(0, 0, this.FogCanvas.width, this.FogCanvas.height)
 			this.FogCanvas.context.globalCompositeOperation = "destination-out"
 			this.FogCanvas.context.fillStyle = "#88888888"
-			let tau = 2*Math.PI
+			const tau = 2*Math.PI
+			const flicker = Phaser.Math.FloatBetween(-1, 1)
+			const offsetX = 32 - this.cameras.main.scrollX
+			const offsetY = 32 - this.cameras.main.scrollY
+			this.Checkpoints.getChildren().forEach((x: Phaser.GameObjects.Sprite) => { 
+				this.FogCanvas.context.beginPath();
+				this.FogCanvas.context.arc(x.x + offsetX, x.y + offsetY, 30, 0, tau);
+				this.FogCanvas.context.fill();
+				this.FogCanvas.context.arc(x.x + offsetX, x.y + offsetY, 45 + flicker, 0, tau);
+				this.FogCanvas.context.fill()
+			})
+			this.EnemyBullets.getChildren().forEach((x: Phaser.GameObjects.Sprite) => { 
+				this.FogCanvas.context.beginPath();
+				this.FogCanvas.context.arc(x.x + offsetX, x.y + offsetY, 20, 0, tau);
+				this.FogCanvas.context.fill();
+				this.FogCanvas.context.arc(x.x + offsetX, x.y + offsetY, 25, 0, tau);
+				this.FogCanvas.context.fill()
+			})
 			if(this.player.state != "DeathSpike")
 			{
-				const pos_x = this.player.x + 32 - this.cameras.main.scrollX
-				const pos_y = this.player.y + 32 - this.cameras.main.scrollY
-				let flicker = Phaser.Math.FloatBetween(-1, 1)
 				this.FogCanvas.context.beginPath()
-				this.FogCanvas.context.arc(pos_x, pos_y, 40, 0, tau)
+				this.FogCanvas.context.arc(this.player.x + offsetX, this.player.y + offsetY, 40, 0, tau)
 				this.FogCanvas.context.fill()
-				this.FogCanvas.context.arc(pos_x, pos_y, 60 + flicker * 0.5, 0, tau)
-				this.FogCanvas.context.fill()
-				this.FogCanvas.context.arc(pos_x, pos_y, 70 + flicker, 0, tau)
+				this.FogCanvas.context.arc(this.player.x + offsetX, this.player.y + offsetY, 60 + flicker, 0, tau)
 				this.FogCanvas.context.fill()
 			}
-			// this.lighting.context.fillStyle = '#ffffff11';
-			// for (let i = 0; i < 15; i++)
-			// {
-			// 	let rand = Phaser.Math.FloatBetween(-1, 1);
-			// 	this.lighting.context.fillRect(1472 - i*4 + rand, 0, 336 + 8*i - 2*rand, 160);
-			// }
 			this.FogCanvas.refresh()
 		}
 	}
@@ -259,5 +265,6 @@ export default class LevelBase extends Phaser.Scene
 		checkpoint.activate()
 		this.notice.notice("Checkpoint")
 		this.cameras.main.flash(250, 0, 204, 204)
+		this.player.player_heal_full()
 	}
 }
