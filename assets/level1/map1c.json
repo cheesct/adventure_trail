@@ -82,7 +82,6 @@
         {
          "draworder":"topdown",
          "id":13,
-         "locked":true,
          "name":"Objects",
          "objects":[
                 {
@@ -127,7 +126,7 @@
                         {
                          "name":"To",
                          "type":"string",
-                         "value":"Scene_Menu"
+                         "value":"Scene_Level1d"
                         }],
                  "rotation":0,
                  "type":"",
@@ -149,7 +148,7 @@
         {
          "name":"Fog",
          "type":"float",
-         "value":1
+         "value":0.3
         }],
  "renderorder":"right-down",
  "tiledversion":"1.10.2",
