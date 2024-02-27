@@ -210,7 +210,7 @@
                         {
                          "name":"To",
                          "type":"string",
-                         "value":"Scene_Menu"
+                         "value":"Scene_Level1e"
                         }],
                  "rotation":0,
                  "type":"",

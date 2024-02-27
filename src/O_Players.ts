@@ -39,6 +39,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite
     private run_dust_emitter: Phaser.GameObjects.Particles.ParticleEmitter
     private jump_dust_emitter: Phaser.GameObjects.Particles.ParticleEmitter
 
+    private heal_emitter_zone: Phaser.Geom.Line
+
     private current_jumpPad: any
     private is_jumpPad_jump: boolean
     private previous_direction: number
@@ -81,7 +83,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
         this.setCollideWorldBounds(true)
         this.body.setSize(16, 24)
         this.body.offset.y = 10 + this.offset
-
+        this.heal_emitter_zone = new Phaser.Geom.Line()
         this.heal_emitter = this.scene.add.particles(this.x, this.y, 'flares', {
             frame: 'white',
             emitting: false,
@@ -89,7 +91,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite
             scale: { start: 0.2, end: 0, random: true },
             speed: { min: 50, max: 125 },
             tint: 0x00FF00,
-            angle: -90
+            angle: -90,
+            emitZone: { source: this.heal_emitter_zone }
         })
         this.blood_emitter = this.scene.add.particles(this.x, this.y, 'flares', {
             frame: 'white',
@@ -118,6 +121,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
     {
         if(!this.death)
         {
+            this.heal_emitter_zone.setTo(this.body.center.x - 8, this.body.bottom, this.body.center.x + 8, this.body.bottom)
             if(this.y > this.scene.physics.world.bounds.height)
             {
                 this.change_state("DeathSpike")

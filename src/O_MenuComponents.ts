@@ -46,7 +46,7 @@ export class PopupNotice extends Phaser.GameObjects.NineSlice
         super(scene, 0, 160, 'popup_notice', 0, 320, 15, 7, 7, 7, 7)
         scene.add.existing(this)
         this.setOrigin(0, 0).setScrollFactor(0).setDepth(2)
-        this.text = this.scene.add.bitmapText(0, 0, "fn_bi_h", "ứ ứ Ứ X x Checkpoint Game Saved Gained Trolling Sword").setScrollFactor(0).setDepth(2)
+        this.text = this.scene.add.bitmapText(0, 0, "fn_l_h", "ứ ứ Ứ X x Checkpoint Game Saved Gained Trolling Sword").setScrollFactor(0).setDepth(2)
         this.text.visible = false
     }
 
