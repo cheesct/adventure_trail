@@ -4,6 +4,7 @@ import Scene_Level1 from './Scene_Level1'
 import Scene_Level1b from './Scene_Level1b'
 import Scene_Level1c from './Scene_Level1c'
 import Scene_Level1d from './Scene_Level1d'
+import Scene_Level1e from './Scene_Level1e'
 import Scene_Level2 from './Scene_Level2'
 
 export default class Demo extends Phaser.Scene
@@ -178,6 +179,7 @@ const config = {
 		Scene_Level1b,
 		Scene_Level1c,
 		Scene_Level1d,
+		Scene_Level1e,
 		Scene_Level2,
 	],
     scale: {

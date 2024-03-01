@@ -1,6 +1,5 @@
 import * as Phaser from 'phaser'
 import LevelBase from './LevelBase'
-import { ParallaxStaticTileSprite } from './O_ParallaxComponents'
 
 export default class Scene_Level1d extends LevelBase
 {
@@ -16,20 +15,11 @@ export default class Scene_Level1d extends LevelBase
 	    this.load.image('level1_walls2', 'assets/level1/walls2.png')
 	    this.load.image('level1_props', 'assets/level1/props.png')
 		this.load.image('level1_backs', 'assets/level1/backs.png')
-	    this.load.image('sky', 'assets/level1/background.png')
-	    this.load.image('grass', 'assets/level1/grass.png')
-	    this.load.image('mountains1', 'assets/level1/mountains1.png')
-	    this.load.image('mountains2', 'assets/level1/mountains2.png')
 	    this.load.tilemapTiledJSON('level1d', 'assets/level1/map1d.json')
   	}
 
   	create() 
   	{
-		this.add.tileSprite(0, 0, 320, 112, "sky").setOrigin(0).setScrollFactor(0)
-		this.ParallaxStatic = this.add.container()
-		this.ParallaxStatic.add(new ParallaxStaticTileSprite(this, 0, 82, 320, 32, "mountains2", 0.125))
-		this.ParallaxStatic.add(new ParallaxStaticTileSprite(this, 0, 88, 320, 32, "mountains1", 0.25))
-		this.ParallaxStatic.add(new ParallaxStaticTileSprite(this, 0, 112, 320, 64, "grass", 0.5))
 		const map = this.initialize_map('level1d', 'level1_walls2', 'level1_props', 'level1_backs')
 		const emitter = this.add.particles(0, 0, 'flares', {
             frame: 'white',

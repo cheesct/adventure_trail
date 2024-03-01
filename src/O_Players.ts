@@ -648,7 +648,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                         }
                     }
                     else if (this.body.velocity.y < 0 && this.Z.isUp && !this.is_jumpPad_jump)
-                            this.body.velocity.y *= 0.8
+                        this.body.velocity.y *= 0.8
                 }
                 this.previous_direction = direction
                 break
