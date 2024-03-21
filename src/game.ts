@@ -22,6 +22,7 @@ export default class Demo extends Phaser.Scene
 	    this.load.spritesheet('bee', 'assets/bee.png', { frameWidth: 29, frameHeight: 30 })
 	    this.load.spritesheet('door', 'assets/door.png', { frameWidth: 12, frameHeight: 36 })
 	    this.load.spritesheet('hero', 'assets/hero.png', { frameWidth: 50, frameHeight: 37 })
+		this.load.spritesheet('frog', 'assets/frog.png', { frameWidth: 35, frameHeight: 32 })
 	    this.load.spritesheet('slime', 'assets/slime.png', { frameWidth: 32, frameHeight: 25 })
 	    this.load.spritesheet('cherry', 'assets/cherry.png', { frameWidth: 19, frameHeight: 16 })
 		this.load.spritesheet('firepit', 'assets/firepit.png', { frameWidth: 32, frameHeight: 32 })
@@ -121,11 +122,16 @@ export default class Demo extends Phaser.Scene
 		this.anims.create({ key: 'fx_dust_jump', frames: this.anims.generateFrameNumbers('fx_dust_jump', { start: 0, end: 5 }), duration: 360, })
 
 	    //enemy animations
-	    this.anims.create({ key: 'bee', frames: this.anims.generateFrameNumbers('bee', { start: 0, end: 7 }), frameRate: 10, repeat: -1 })
+		this.anims.create({ key: 'bee', frames: this.anims.generateFrameNumbers('bee', { start: 0, end: 7 }), frameRate: 10, repeat: -1 })
 
-	    this.anims.create({ key: 'slime_idle', frames: this.anims.generateFrameNumbers('slime', { start: 0, end: 3 }), frameRate: 10, repeat: -1 })
-	    this.anims.create({ key: 'slime_move', frames: this.anims.generateFrameNumbers('slime', { start: 4, end: 7 }), frameRate: 10, repeat: -1 })
-	    this.anims.create({ key: 'slime_hurt', frames: this.anims.generateFrameNumbers('slime', { start: 13, end: 16 }), duration: 300, })
+		this.anims.create({ key: 'frog_sit', frames: this.anims.generateFrameNumbers('frog', { frames: [ 0 ] }), duration: 100 })
+		this.anims.create({ key: 'frog_idle', frames: this.anims.generateFrameNumbers('frog', { frames: [ 0, 0, 1, 2, 3, 0, 0 ] }), duration: 1000 })
+		this.anims.create({ key: 'frog_jump', frames: this.anims.generateFrameNumbers('frog', { frames: [ 4 ] }), duration: 2000 })
+		this.anims.create({ key: 'frog_fall', frames: this.anims.generateFrameNumbers('frog', { frames: [ 5 ] }), duration: 2000 })
+
+		this.anims.create({ key: 'slime_idle', frames: this.anims.generateFrameNumbers('slime', { start: 0, end: 3 }), frameRate: 10, repeat: -1 })
+		this.anims.create({ key: 'slime_move', frames: this.anims.generateFrameNumbers('slime', { start: 4, end: 7 }), frameRate: 10, repeat: -1 })
+		this.anims.create({ key: 'slime_hurt', frames: this.anims.generateFrameNumbers('slime', { start: 13, end: 16 }), duration: 300, })
 		this.anims.create({ key: 'slime_death', frames: this.anims.generateFrameNumbers('slime', { start: 17, end: 20 }), frameRate: 8, })
 	    this.anims.create({ key: 'slime_attack', frames: this.anims.generateFrameNumbers('slime', { start: 8, end: 12 }), frameRate: 10, })
 		
@@ -169,7 +175,7 @@ const config = {
 		default: 'arcade',
 		arcade: {
 			gravity: { y: 500 },
-			debug: false,
+			debug: true,
 		}
 	},
     scene: [ 

@@ -5,7 +5,7 @@ import { Door } from './O_Doors'
 import { Player } from './O_Players'
 import { JumpPad } from './O_JumpPads'
 import { Key, Cherry } from './O_Pickups'
-import { Bee, Slime, GrenadierPlant, PiranhaPlant } from './O_Enemies'
+import { Bee, Frog, Slime, GrenadierPlant, PiranhaPlant } from './O_Enemies'
 import { PopupNotice }  from './O_MenuComponents'
 import { Waypoint, Checkpoint }  from './O_ProgressionComponents'
 
@@ -139,6 +139,7 @@ export default class LevelBase extends Phaser.Scene
 		map.createFromObjects('Objects', { name : "PiranhaPlant", classType: PiranhaPlant }).forEach((object) => { this.Enemies.add(object) })
 	    map.createFromObjects('Objects', { name : "Grenadier", classType: GrenadierPlant }).forEach((object) => { this.Enemies.add(object) })
 		map.createFromObjects('Objects', { name : "Slime", classType: Slime }).forEach((object) => { this.Enemies.add(object) })
+		map.createFromObjects('Objects', { name : "Frog", classType: Frog }).forEach((object) => { this.Enemies.add(object) })
 	    map.createFromObjects('Objects', { name : "Bee", classType: Bee }).forEach((object) => { this.Enemies.add(object) })
 
 		map.createFromObjects('Objects', { name : "Cherry", classType: Cherry }).forEach((object) => { this.Items.add(object) })

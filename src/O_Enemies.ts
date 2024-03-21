@@ -54,7 +54,7 @@ class O_EnemyBase extends Phaser.Physics.Arcade.Sprite
         }
         else
         {
-            this.change_state("Hurt")
+            this.change_state('Hurt')
         }
     }
 
@@ -75,20 +75,18 @@ class O_EnemyBase extends Phaser.Physics.Arcade.Sprite
 
 export class Slime extends O_EnemyBase
 {
-    private hurt_countdown: number
     constructor(scene: Phaser.Scene, x: number, y: number)
     {
         super(scene, x, y, 'slime')
         scene.add.existing(this)
         scene.physics.world.enable(this)
         this.HP = 3
-        this.state = ""
+        this.state = ''
         this.flipX = Phaser.Math.Between(0, 1) == 0
         this.speed = 15
         this.body.setSize(16, 10)
         this.body.offset.y = 10
         this.setCollideWorldBounds(true)
-        this.hurt_countdown = 0
     }
 
     update(delta: number)
@@ -96,10 +94,6 @@ export class Slime extends O_EnemyBase
         if (this.stagger_countdown >= 0)
         {
             this.stagger_countdown -= delta
-        }
-        if (this.hurt_countdown >= 0)
-        {
-            this.hurt_countdown -= delta
         }
         if (this.knocked_y != 0)
         {
@@ -109,21 +103,21 @@ export class Slime extends O_EnemyBase
         }
         switch(this.state)
         {
-            case "Hurt":
+            case 'Hurt':
                 this.setVelocityX(0)
                 switch(this.flag)
                 {
                     case 0:
                         this.scene.sound.play('snd_slime_splat', { rate: 0.8 })
                         this.anims.play({ key: 'slime_hurt', repeat: -1 })
-                        this.hurt_countdown = 0.5
+                        this.stagger_countdown = 0.5
                         this.flag = 1
                         break
 
                     case 1:
-                        if (this.hurt_countdown <= 0)
+                        if (this.stagger_countdown <= 0)
                         {
-                            this.change_state("")
+                            this.change_state('')
                         }
                 }
                 break
@@ -136,7 +130,7 @@ export class Slime extends O_EnemyBase
                 }
                 if (this.body.velocity.x === 0)
                 {
-                    this.body.velocity.x = this.flipX ? this.speed : -this.speed
+                    this.body.velocity.x = this.flipX ? -this.speed : this.speed
                 }
                 break
         }
@@ -163,7 +157,7 @@ export class Slime extends O_EnemyBase
         }
         else
         {
-            this.change_state("Hurt", true)
+            this.change_state('Hurt', true)
         }
     }
 }
@@ -176,7 +170,7 @@ export class Bee extends O_EnemyBase
         scene.add.existing(this)
         scene.physics.world.enable(this)
         this.HP = 3
-        this.state = ""
+        this.state = ''
         this.speed = Phaser.Math.Between(0, 1) == 0 ? 25 : -25;
         (this.body as Phaser.Physics.Arcade.Body).setAllowGravity(false)
         this.body.setSize(24, 24)
@@ -196,11 +190,184 @@ export class Bee extends O_EnemyBase
 
     death()
     {
-        var dying = this.scene.add.sprite(this.x, this.y, "enemy_death")
+        var dying = this.scene.add.sprite(this.x, this.y, 'enemy_death')
         dying.anims.play('enemy_death')
         dying.on('animationcomplete', () => { dying.destroy() })
         this.scene.sound.play('snd_insect_death')
         super.death()
+    }
+}
+
+export class Frog extends O_EnemyBase
+{
+    private hop_count: number
+    private blocked: boolean
+
+    constructor(scene: Phaser.Scene, x: number, y: number)
+    {
+        super(scene, x, y, 'frog')
+        scene.add.existing(this)
+        scene.physics.world.enable(this)
+        this.HP = 3
+        this.state = ''
+        this.flipX = Phaser.Math.Between(0, 1) == 0
+        this.speed = 75
+        this.hop_count = 0
+        this.blocked = false
+        this.body.setSize(16, 16)
+        this.body.offset.y = 10
+        this.setCollideWorldBounds(true)
+    }
+
+    update(delta: number)
+    {
+        if (this.stagger_countdown >= 0)
+        {
+            this.stagger_countdown -= delta
+            if (this.stagger_countdown <= 0)
+            {
+                this.clearTint()
+            }
+        }
+        if (this.knocked_y != 0)
+        {
+            this.stagger_countdown = 1
+            this.body.velocity.y = this.knocked_y
+            this.knocked_y = 0
+        }
+        switch(this.state)
+        {
+            case 'Sit':
+                this.setVelocityX(0)
+                switch(this.flag)
+                {
+                    case 0:
+                        this.anims.play('frog_sit')
+                        this.flag = 1
+                        break
+
+                    case 1:
+                        if (!this.anims.isPlaying)
+                        {
+                            this.change_state('Move')
+                        }
+                }
+                break
+            
+            case 'Move':
+                switch(this.flag)
+                {
+                    case 0:
+                        this.hop_count -= 1
+                        this.anims.play('frog_jump')
+                        this.setVelocityX(this.flipX ? -this.speed : this.speed)
+                        this.setVelocityY(-175)
+                        this.blocked = false
+                        this.flag = 1
+                        break
+
+                    case 1:
+                        if (this.body.blocked.left || this.body.blocked.right)
+                        {
+                            this.blocked = true
+                        }
+                        if (this.body.velocity.y > 0)
+                        {
+                            this.anims.play('frog_fall')
+                        }
+                        if (this.body.blocked.down)
+                        {
+                            if (this.hop_count > 0 && !this.blocked)
+                            {
+                                this.change_state('Sit')
+                            }
+                            else
+                            {
+                                this.change_state('')
+                            }
+                        }
+                }
+                break
+            
+            case 'Hurt':
+                this.setVelocityX(0)
+                switch(this.flag)
+                {
+                    case 0:
+                        this.anims.play('slime_jump')
+                        this.flag = 1
+                        break
+
+                    case 1:
+                        if (this.body.blocked.down)
+                        {
+                            this.change_state('')
+                        }
+                }
+
+            default:
+                this.setVelocityX(0)
+                switch(this.flag)
+                {
+                    case 0:
+                        this.anims.play('frog_idle')
+                        this.flag = 1
+                        break
+
+                    case 1:
+                        if (!this.anims.isPlaying)
+                        {
+                            if (this.blocked)
+                            {
+                                this.flipX = !this.flipX
+                            }
+                            else
+                            {
+                                this.flipX = Phaser.Math.Between(0, 1) == 0
+                                this.anims.play('frog_idle')
+                            }
+                            this.flag += 1
+                        }
+                        break
+                    
+                    case 2:
+                        if (!this.anims.isPlaying)
+                        {
+                            this.hop_count = Phaser.Math.Between(1, 2)
+                            this.change_state('Move')
+                        }
+                }
+        }
+    }
+
+    death()
+    {
+        const corpse = this.scene.add.sprite(this.x, this.y, 'slime').anims.play('slime_death')
+        this.scene.physics.world.enable(corpse)
+        this.scene.tweens.add({ targets: corpse, alpha: 0, duration: 1000, delay: 1000,
+                onComplete: () => { corpse.destroy() }
+            })
+        this.scene.sound.play('snd_slime_death')
+        super.death()
+    }
+
+    hurt(damage: number): void 
+    {
+        this.body.velocity.y = Math.min(this.body.velocity.y, -75)
+        this.HP -= damage
+        if (this.HP < 1)
+        {
+            this.death()
+        }
+        else
+        {
+            this.setTintFill()
+            this.stagger_countdown = 0.3
+            if (this.knocked_y != 0)
+            {
+                this.change_state('Hurt')
+            }
+        }
     }
 }
 
@@ -220,7 +387,7 @@ export class PiranhaPlant extends O_EnemyBase
         scene.add.existing(this)
         scene.physics.world.enable(this)
         this.HP = 5
-        this.state = "";
+        this.state = '';
         (this.body as Phaser.Physics.Arcade.Body).setAllowGravity(false)
         this.body.setSize(24, 32)
         this.setCollideWorldBounds(true)
@@ -254,7 +421,7 @@ export class PiranhaPlant extends O_EnemyBase
         }
         switch (this.state)
         {
-            case "Attack":
+            case 'Attack':
                 switch (this.flag)
                 {
                     case 0:
@@ -266,8 +433,8 @@ export class PiranhaPlant extends O_EnemyBase
                         if (!this.anims.isPlaying)
                         {
                             this.flag = 2
-                            const bullet = new O_PiranhaPlantProjectile(this.scene, this.x, this.y, "")
-                            bullet.fired_from_angle(this.flipX ? 0 : 180, 80)
+                            const bullet = new O_PiranhaPlantProjectile(this.scene, this.x, this.y, '')
+                            bullet.fired_from_angle(this.flipX ? 180 : 0, 80)
                             this.anims.play('piranha_plant_attack')
                             this.attack_countdown = 1.2
                         }
@@ -276,13 +443,13 @@ export class PiranhaPlant extends O_EnemyBase
                     case 2:
                         if (!this.anims.isPlaying)
                         {
-                            this.change_state("")
+                            this.change_state('')
                         }
                         break
                 }
                 break
             
-            case "Hurt":
+            case 'Hurt':
                 switch (this.flag)
                 {
                     case 0:
@@ -297,7 +464,7 @@ export class PiranhaPlant extends O_EnemyBase
                         {
                             this.clearTint()
                             this.anims.resume()
-                            this.change_state("")
+                            this.change_state('')
                             this.attack_countdown = Math.max(this.attack_countdown, 0.05)
                         }
                         break
@@ -312,8 +479,8 @@ export class PiranhaPlant extends O_EnemyBase
                 }
                 if (this.should_attack && this.attack_countdown <= 0)
                 {
-                    this.change_state("Attack")
-                    this.flipX = this.target.x > this.x
+                    this.change_state('Attack')
+                    this.flipX = this.target.x < this.x
                 }
                 break
         }
@@ -322,7 +489,7 @@ export class PiranhaPlant extends O_EnemyBase
 
     death()
     {
-        var dying = this.scene.add.sprite(this.x, this.y, "enemy_death")
+        var dying = this.scene.add.sprite(this.x, this.y, 'enemy_death')
         dying.anims.play('enemy_death')
         dying.on('animationcomplete', () => {dying.destroy()})
         this.scene.sound.play('snd_insect_death')
@@ -348,7 +515,7 @@ export class GrenadierPlant extends O_EnemyBase
         scene.add.existing(this)
         scene.physics.world.enable(this)
         this.HP = 5
-        this.state = "";
+        this.state = '';
         (this.body as Phaser.Physics.Arcade.Body).setAllowGravity(false)
         this.body.setSize(24, 32)
         this.setCollideWorldBounds(true)
@@ -367,7 +534,7 @@ export class GrenadierPlant extends O_EnemyBase
             this.sensor_track = this.scene.add.zone(this.x, this.y, 320, 160);
             level_base.EnemySensors.add(this.sensor_track)
             this.scene.physics.add.overlap(this.sensor_track, level_base.Players, (zone, player) => { this.target = player })
-            this.sensor_attack = this.scene.add.zone(this.x, this.y, 240, 32);
+            this.sensor_attack = this.scene.add.zone(this.x, this.y + 4, 240, 80);
             level_base.EnemySensors.add(this.sensor_attack)
             this.scene.physics.add.overlap(this.sensor_attack, level_base.Players, (zone, player) => { this.should_attack = true })
             this.need_initialize = false
@@ -382,7 +549,7 @@ export class GrenadierPlant extends O_EnemyBase
         }
         switch (this.state)
         {
-            case "Attack":
+            case 'Attack':
                 switch (this.flag)
                 {
                     case 0:
@@ -403,13 +570,13 @@ export class GrenadierPlant extends O_EnemyBase
                         if (!this.anims.isPlaying)
                         {
                             this.attack_countdown = 1
-                            this.change_state("")
+                            this.change_state('')
                         }
                         break
                 }
                 break
             
-            case "Hurt":
+            case 'Hurt':
                 switch (this.flag)
                 {
                     case 0:
@@ -424,7 +591,7 @@ export class GrenadierPlant extends O_EnemyBase
                         {
                             this.clearTint()
                             this.anims.resume()
-                            this.change_state("")
+                            this.change_state('')
                             this.attack_countdown = Math.max(this.attack_countdown, 0.05)
                         }
                         break
@@ -439,8 +606,8 @@ export class GrenadierPlant extends O_EnemyBase
                 }
                 if (this.should_attack && this.attack_countdown <= 0)
                 {
-                    this.change_state("Attack")
-                    this.flipX = this.target.x > this.x
+                    this.change_state('Attack')
+                    this.flipX = this.target.x < this.x
                 }
                 break
         }
@@ -449,7 +616,7 @@ export class GrenadierPlant extends O_EnemyBase
 
     death()
     {
-        var dying = this.scene.add.sprite(this.x, this.y, "enemy_death")
+        var dying = this.scene.add.sprite(this.x, this.y, 'enemy_death')
         dying.anims.play('enemy_death')
         dying.on('animationcomplete', () => {dying.destroy()})
         this.scene.sound.play('snd_insect_death')
@@ -467,7 +634,7 @@ export class GrenadierPlant extends O_EnemyBase
         const velocity_y = ((2.0 * height) / time_to_peak) * -1.0
         const gravity = (2.0 * height) / (time_to_peak * time_to_peak)
 
-        const bullet = new O_GrenadePlantProjectile(this.scene, this.x, this.y, "")
+        const bullet = new O_GrenadePlantProjectile(this.scene, this.x, this.y, '')
         bullet.set_velocity(velocity_x, velocity_y)
         bullet.set_gravity(gravity)
     }
@@ -551,7 +718,7 @@ class O_PiranhaPlantProjectile extends O_EnemyAttackProjectile
 
     impact()
     {
-        var dying = this.scene.add.sprite(this.x, this.y, "piranha_plant_projectile_blast")
+        var dying = this.scene.add.sprite(this.x, this.y, 'piranha_plant_projectile_blast')
         dying.anims.play('piranha_plant_projectile_blast')
         dying.on('animationcomplete', () => { dying.destroy() })
         super.impact()
@@ -574,7 +741,7 @@ class O_GrenadePlantProjectile extends O_EnemyAttackProjectile
     impact()
     {
         console.log(this.scene.game.getTime() - this.start)
-        var dying = this.scene.add.sprite(this.x, this.y, "piranha_plant_projectile_blast")
+        var dying = this.scene.add.sprite(this.x, this.y, 'piranha_plant_projectile_blast')
         dying.anims.play('piranha_plant_projectile_blast')
         dying.on('animationcomplete', () => { dying.destroy() })
         super.impact()
