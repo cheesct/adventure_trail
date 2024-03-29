@@ -200,6 +200,7 @@ export class Bee extends O_EnemyBase
 
 export class Frog extends O_EnemyBase
 {
+    private hop_force: number
     private hop_count: number
     private blocked: boolean
 
@@ -213,9 +214,10 @@ export class Frog extends O_EnemyBase
         this.flipX = Phaser.Math.Between(0, 1) == 0
         this.speed = 75
         this.hop_count = 0
+        this.hop_force = -175
         this.blocked = false
-        this.body.setSize(16, 16)
-        this.body.offset.y = 10
+        this.body.setSize(20, 16)
+        this.body.offset.y = 8
         this.setCollideWorldBounds(true)
     }
 
@@ -260,13 +262,13 @@ export class Frog extends O_EnemyBase
                     case 0:
                         this.hop_count -= 1
                         this.anims.play('frog_jump')
-                        this.setVelocityX(this.flipX ? -this.speed : this.speed)
-                        this.setVelocityY(-175)
+                        this.setVelocityY(this.hop_force)
                         this.blocked = false
                         this.flag = 1
                         break
 
                     case 1:
+                        this.setVelocityX(this.flipX ? -this.speed : this.speed)
                         if (this.body.blocked.left || this.body.blocked.right)
                         {
                             this.blocked = true
@@ -294,13 +296,15 @@ export class Frog extends O_EnemyBase
                 switch(this.flag)
                 {
                     case 0:
-                        this.anims.play('slime_jump')
+                        this.anims.play('frog_fall')
+                        this.angle = this.flipX ? 120 : -120
                         this.flag = 1
                         break
 
                     case 1:
                         if (this.body.blocked.down)
                         {
+                            this.angle = 0
                             this.change_state('')
                         }
                 }
@@ -342,12 +346,10 @@ export class Frog extends O_EnemyBase
 
     death()
     {
-        const corpse = this.scene.add.sprite(this.x, this.y, 'slime').anims.play('slime_death')
-        this.scene.physics.world.enable(corpse)
-        this.scene.tweens.add({ targets: corpse, alpha: 0, duration: 1000, delay: 1000,
-                onComplete: () => { corpse.destroy() }
-            })
-        this.scene.sound.play('snd_slime_death')
+        var dying = this.scene.add.sprite(this.x, this.y, 'enemy_death')
+        dying.anims.play('enemy_death')
+        dying.on('animationcomplete', () => { dying.destroy() })
+        this.scene.sound.play('snd_insect_death')
         super.death()
     }
 
@@ -361,8 +363,8 @@ export class Frog extends O_EnemyBase
         }
         else
         {
-            this.setTintFill()
-            this.stagger_countdown = 0.3
+            //this.setTintFill()
+            this.stagger_countdown = 0.2
             if (this.knocked_y != 0)
             {
                 this.change_state('Hurt')
@@ -727,7 +729,6 @@ class O_PiranhaPlantProjectile extends O_EnemyAttackProjectile
 
 class O_GrenadePlantProjectile extends O_EnemyAttackProjectile
 {
-    private start: number
     constructor(scene, x: number, y: number, texture: string)
     {
         super(scene, x, y, 'piranha_plant_projectile')
@@ -735,12 +736,10 @@ class O_GrenadePlantProjectile extends O_EnemyAttackProjectile
         this.angle_updating = 3
         this.anims.play('piranha_plant_projectile');
         (this.body as Phaser.Physics.Arcade.Body).setSize(8, 8)
-        this.start = this.scene.game.getTime()
     }
 
     impact()
     {
-        console.log(this.scene.game.getTime() - this.start)
         var dying = this.scene.add.sprite(this.x, this.y, 'piranha_plant_projectile_blast')
         dying.anims.play('piranha_plant_projectile_blast')
         dying.on('animationcomplete', () => { dying.destroy() })
