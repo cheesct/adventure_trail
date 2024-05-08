@@ -96,7 +96,6 @@
         {
          "draworder":"topdown",
          "id":13,
-         "locked":true,
          "name":"Objects",
          "objects":[
                 {
@@ -290,9 +289,42 @@
          "visible":true,
          "x":0,
          "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":29,
+         "name":"Slopes",
+         "objects":[
+                {
+                 "height":32,
+                 "id":54,
+                 "name":"Slope",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":112,
+                 "y":720
+                }, 
+                {
+                 "height":32,
+                 "id":53,
+                 "name":"Slope",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":-32,
+                 "x":288,
+                 "y":720
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
         }],
- "nextlayerid":29,
- "nextobjectid":52,
+ "nextlayerid":30,
+ "nextobjectid":55,
  "orientation":"orthogonal",
  "properties":[
         {

@@ -41,9 +41,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite
 
     private heal_emitter_zone: Phaser.Geom.Line
 
+    private current_slope: any
     private current_jumpPad: any
     private is_jumpPad_jump: boolean
-    private previous_direction: number
+
 
     constructor(scene, x, y) 
     {
@@ -68,7 +69,6 @@ export class Player extends Phaser.Physics.Arcade.Sprite
         this.slide_cooldown = 0
 
         this.is_jumpPad_jump = false
-        this.previous_direction = 0
 
         this.knock_y = 0
         this.attack_timer = 0
@@ -160,6 +160,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
             this.heal_emitter.x = this.x
             this.heal_emitter.y = this.y
         }
+        let isOnGround = this.body.blocked.down || (this.current_slope && this.body.velocity.y >= 0)
         switch(this.state)
         {
             case "Attack":
@@ -362,7 +363,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                             break
                         
                         case 2:
-                            if (this.body.blocked.down)
+                            if (isOnGround)
                             {
                                 (this.attack_area.body as Phaser.Physics.Arcade.StaticBody).setSize(64, 32, true)
                                 this.anims.play('hero_attack_air_down_land', true)
@@ -417,6 +418,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                         break
 
             case "Slide":
+                this.setVelocityX(this.flipX ? -this.slide_speed : this.slide_speed)
                 switch(this.flag)
                 {
                     case 0:
@@ -424,7 +426,6 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                         this.body.offset.y = 18 + this.offset
                         this.scene.sound.play('snd_slide', { rate: Helper.randomRange(1.3, 1.6), volume: 0.8 })
                         this.anims.play({ key: 'hero_slide', repeat: -1 }, true)
-                        this.setVelocityX(this.flipX ? -this.slide_speed : this.slide_speed)
                         this.flag = 1
                         this.slide_time = 0.3
                         break
@@ -463,7 +464,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                         break
 
                     case 1:
-                        if (!this.anims.isPlaying || this.body.blocked.down)
+                        if (!this.anims.isPlaying || isOnGround)
                             this.change_state("")
                         break
                 }
@@ -487,7 +488,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                         break
 
                     case 1:
-                        if (this.body.blocked.down)
+                        if (isOnGround)
                             this.body.velocity.x *= 0.95
                         if (!this.anims.isPlaying)
                         {
@@ -499,7 +500,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                 break
 
             case "Death":
-                if (this.body.blocked.down)
+                if (isOnGround)
                     this.body.velocity.x *= 0.9
                 switch(this.flag)
                 {
@@ -551,7 +552,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
             default:
                 var direction = Number(this.Cursors.right.isDown) - Number(this.Cursors.left.isDown)
                 this.flag = 0
-                if (this.body.blocked.down)
+                if (isOnGround)
                 {
                     this.jump = 1
                     this.is_jumpPad_jump = false
@@ -582,10 +583,6 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                         this.setVelocityX(direction*this.speed_walk)
                         this.anims.play('hero_walk', true)
                         this.flipX = direction < 0
-                        if (this.previous_direction != direction)
-                        {
-                            //this.emit_run_dust()
-                        }
                     }
                     else
                     {
@@ -650,10 +647,24 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                     else if (this.body.velocity.y < 0 && this.Z.isUp && !this.is_jumpPad_jump)
                         this.body.velocity.y *= 0.8
                 }
-                this.previous_direction = direction
                 break
         }
+        if (this.current_slope != null && isOnGround)
+        {
+            let dX = 1
+            if (this.current_slope.width > 0)
+            {
+                dX = Phaser.Math.Clamp(this.body.position.x + this.body.width - this.current_slope.x, 0, this.current_slope.width) / this.current_slope.width
+            }
+            else
+            {
+                dX = Phaser.Math.Clamp(this.body.position.x - this.current_slope.x, this.current_slope.width, 0) / this.current_slope.width
+            }
+            this.body.position.y = this.current_slope.y + this.current_slope.height * (1 - dX) - this.body.height
+            this.body.velocity.y = Math.min(this.body.velocity.y, 0)
+        }
         this.can_stand = true
+        this.current_slope = null
         this.current_jumpPad = null
     }
 
@@ -677,6 +688,14 @@ export class Player extends Phaser.Physics.Arcade.Sprite
     set_jumpPad(pad)
     {
         this.current_jumpPad = pad
+    }
+
+    set_slope(slope)
+    {
+        if (slope.width != 0)
+        {
+            this.current_slope = slope
+        }
     }
 
 

@@ -3,8 +3,6 @@ import LevelBase from './LevelBase'
 
 export default class Scene_Level1e extends LevelBase
 {
-	private ParallaxStatic: Phaser.GameObjects.Container
-
 	constructor() 
 	{
     	super({ key: "Scene_Level1e" })

@@ -306,6 +306,7 @@ export class Frog extends O_EnemyBase
                         {
                             this.angle = 0
                             this.change_state('')
+                            this.clearTint()
                         }
                 }
 
@@ -363,7 +364,7 @@ export class Frog extends O_EnemyBase
         }
         else
         {
-            //this.setTintFill()
+            this.setTintFill()
             this.stagger_countdown = 0.2
             if (this.knocked_y != 0)
             {

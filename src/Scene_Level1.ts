@@ -30,11 +30,6 @@ export default class Scene_Level1 extends LevelBase
   	{
 		//this.sound.stopAll()
 		//this.sound.play('mus_level1', { loop: true, volume: 0.8 })
-		this.load.scenePlugin({
-            key: 'slope',
-            url: 'plugins/phaser-arcade-slopes.min.js',
-            sceneKey: 'slope'
-        });
 	    this.add.tileSprite(0, 0, 320, 112, "sky").setOrigin(0).setScrollFactor(0)
 		this.ParallaxStatic = this.add.container()
         this.ParallaxScrolling = this.add.container()

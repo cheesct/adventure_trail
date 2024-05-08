@@ -2,6 +2,7 @@ import * as Phaser from 'phaser'
 import Helper from './helper'
 import Singleton from './singleton'
 import { Door } from './O_Doors'
+import { Slope } from './O_Slope'
 import { Player } from './O_Players'
 import { JumpPad } from './O_JumpPads'
 import { Key, Cherry } from './O_Pickups'
@@ -18,6 +19,7 @@ export default class LevelBase extends Phaser.Scene
 
 	protected Doors: Phaser.GameObjects.Group
 	protected Items: Phaser.GameObjects.Group
+	protected Slopes: Phaser.GameObjects.Group
 	protected Enemies: Phaser.GameObjects.Group
 	protected JumpPads: Phaser.GameObjects.Group
 	protected Waypoints: Phaser.GameObjects.Group
@@ -27,13 +29,14 @@ export default class LevelBase extends Phaser.Scene
 
 	protected player: Player
 
-	public Lights: Phaser.GameObjects.Group
 	public Players: Phaser.GameObjects.Group
 	public EnemyBullets: Phaser.Physics.Arcade.Group
 	public EnemySensors: Phaser.Physics.Arcade.StaticGroup
 	public EnemyAttacks: Phaser.Physics.Arcade.StaticGroup
     public PlayerAttacks: Phaser.Physics.Arcade.StaticGroup
 	public ObjectOffset: number = 0
+	
+	private graphics: any
 
   	create() 
   	{
@@ -50,6 +53,27 @@ export default class LevelBase extends Phaser.Scene
 		this.EnemyBullets.getChildren().forEach((x) => { x.update(delta) })
 	    //this.ParallaxStatic.getChildren().forEach((x) => { x.update(this.cameras.main.scrollX) })
 		//this.ParallaxScrolling.getChildren().forEach((x) => { x.update(this.cameras.main.scrollX, delta) })
+
+		//manually handle slope logic
+		let bound = this.player.body.getBounds(new Phaser.Geom.Rectangle()) as Phaser.Geom.Rectangle
+		for (var i = 0; i < this.Slopes.getChildren().length; i++)
+        {
+			var slope = this.Slopes.getChildren()[i] as Slope
+			if (Phaser.Geom.Intersects.RectangleToTriangle(bound, slope.triangle))
+			{
+				this.player.set_slope(slope)
+				this.graphics.lineStyle(2, 0xff0000)
+			}
+			else
+			{
+				this.graphics.lineStyle(2, 0xffff00)
+			}
+			if (this.game.config.physics.arcade.debug)
+			{
+				slope.render(this.graphics)
+			}
+		}
+
 		if (this.FogCanvas)
 		{
 			this.FogCanvas.context.globalCompositeOperation = "copy"
@@ -91,7 +115,7 @@ export default class LevelBase extends Phaser.Scene
 	{
 	    this.Doors = this.add.group()
 	    this.Items = this.add.group()
-		this.Lights = this.add.group()
+	    this.Slopes = this.add.group()
 	    this.Players = this.add.group()
 	    this.Enemies = this.add.group()
 		this.JumpPads = this.add.group()
@@ -134,7 +158,8 @@ export default class LevelBase extends Phaser.Scene
 		map.createFromObjects('Objects', { name : "Waypoint", classType: Waypoint }).forEach((object) => { this.Waypoints.add(object) })
 		map.createFromObjects('Objects', { name : "JumpPad", classType: JumpPad }).forEach((object) => { this.JumpPads.add(object) })
 		map.createFromObjects('Objects', { name : "Door", classType: Door }).forEach((object) => { this.Doors.add(object) })
-		map.createFromObjects('Objects', { name : "Player", classType: Player }).forEach((object: Player) => { this.player = object; this.Players.add(object); this.Lights.add(object) })
+
+		map.createFromObjects('Objects', { name : "Player", classType: Player }).forEach((object: Player) => { this.player = object; this.Players.add(object) })
 	    
 		map.createFromObjects('Objects', { name : "PiranhaPlant", classType: PiranhaPlant }).forEach((object) => { this.Enemies.add(object) })
 	    map.createFromObjects('Objects', { name : "Grenadier", classType: GrenadierPlant }).forEach((object) => { this.Enemies.add(object) })
@@ -144,6 +169,16 @@ export default class LevelBase extends Phaser.Scene
 
 		map.createFromObjects('Objects', { name : "Cherry", classType: Cherry }).forEach((object) => { this.Items.add(object) })
 	    map.createFromObjects('Objects', { name : "Key", classType: Key }).forEach((object) => { this.Items.add(object) })
+
+		let slopes = map.getObjectLayer('Slopes')
+		if (slopes)
+		{
+			for (let i = 0; i < slopes.objects.length; i++)
+			{
+				let slope = slopes.objects[i]
+				this.Slopes.add(new Slope(this, slope.x, slope.y, slope.width, slope.height))
+			}
+		}
 
 	    this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels)
 	    this.physics.world.setBounds(0, 0, map.widthInPixels, map.heightInPixels, true, true, true, false)
@@ -162,6 +197,7 @@ export default class LevelBase extends Phaser.Scene
 		this.physics.add.collider(this.Enemies, walls)
 		this.physics.add.collider(this.EnemyBullets, walls, (bullet, wall) => { bullet.destroy() })
 		this.physics.add.collider(this.EnemyBullets, this.Doors, (bullet, door) => { bullet.destroy() })
+
 		if (spikes)
 		{
 			this.physics.add.overlap(this.Players, spikes, (player, tile) => { (player as Player).player_get_spiked(tile) })
@@ -182,8 +218,12 @@ export default class LevelBase extends Phaser.Scene
 			})
 		}
 
+		
+		this.graphics = this.add.graphics({ lineStyle: { width: 2, color: 0x00aa00 } });
+
 		this.notice = new PopupNotice(this)
-		console.log(map.properties)
+
+		//check if this level has fog effect
 		var map_properties = map.properties as any
 		if (Array.isArray(map_properties))
 		{
@@ -192,7 +232,9 @@ export default class LevelBase extends Phaser.Scene
 			{
 				this.FogCanvas = this.textures.createCanvas("fog", this.cameras.main.width + 64, this.cameras.main.height + 64)
 				if(!this.FogCanvas)
+				{
 					this.FogCanvas = this.textures.get("fog") as Phaser.Textures.CanvasTexture
+				}
 				const fog = this.add.image(-32, -32, "fog").setOrigin(0).setDepth(1).setScrollFactor(0)
 				fog.alpha = map_fog.value
 			}
