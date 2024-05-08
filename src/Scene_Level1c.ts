@@ -3,8 +3,6 @@ import LevelBase from './LevelBase'
 
 export default class Scene_Level1c extends LevelBase
 {
-	private ParallaxStatic: Phaser.GameObjects.Container
-
 	constructor() 
 	{
     	super({ key: "Scene_Level1c" })
@@ -20,6 +18,7 @@ export default class Scene_Level1c extends LevelBase
 
   	create() 
   	{
+		super.create()
 		const map = this.initialize_map('level1c', 'level1_walls2', 'level1_props', 'level1_backs')
   	}
 }

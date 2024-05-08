@@ -3,8 +3,6 @@ import { ParallaxStaticTileSprite } from './O_ParallaxComponents'
 
 export default class Scene_Level1b extends LevelBase
 {
-	private ParallaxStatic: Phaser.GameObjects.Container
-
 	constructor() 
 	{
     	super({ key: "Scene_Level1b" })
@@ -25,7 +23,7 @@ export default class Scene_Level1b extends LevelBase
   	create() 
   	{
 		this.add.tileSprite(0, 0, 320, 112, "sky").setOrigin(0).setScrollFactor(0)
-		this.ParallaxStatic = this.add.container()
+		super.create()
 		this.ParallaxStatic.add(new ParallaxStaticTileSprite(this, 0, 82, 320, 32, "mountains2", 0.125))
 		this.ParallaxStatic.add(new ParallaxStaticTileSprite(this, 0, 88, 320, 32, "mountains1", 0.25))
 		this.ParallaxStatic.add(new ParallaxStaticTileSprite(this, 0, 112, 320, 64, "grass", 0.5))

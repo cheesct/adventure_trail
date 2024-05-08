@@ -3,9 +3,6 @@ import { ParallaxScrollingImage, ParallaxStaticTileSprite } from './O_ParallaxCo
 
 export default class Scene_Level1 extends LevelBase
 {
-	private ParallaxStatic: Phaser.GameObjects.Container
-	private ParallaxScrolling: Phaser.GameObjects.Container
-
 	constructor() 
 	{
     	super({ key: "Scene_Level1" })
@@ -31,8 +28,7 @@ export default class Scene_Level1 extends LevelBase
 		//this.sound.stopAll()
 		//this.sound.play('mus_level1', { loop: true, volume: 0.8 })
 	    this.add.tileSprite(0, 0, 320, 112, "sky").setOrigin(0).setScrollFactor(0)
-		this.ParallaxStatic = this.add.container()
-        this.ParallaxScrolling = this.add.container()
+		super.create()
 		this.ParallaxStatic.add(new ParallaxStaticTileSprite(this, 0, 82, 320, 32, "mountains2", 0.125))
 		this.ParallaxStatic.add(new ParallaxStaticTileSprite(this, 0, 88, 320, 32, "mountains1", 0.25))
 		this.ParallaxStatic.add(new ParallaxStaticTileSprite(this, 0, 112, 320, 64, "grass", 0.5))
@@ -48,12 +44,4 @@ export default class Scene_Level1 extends LevelBase
 	    this.ParallaxScrolling.add(new ParallaxScrollingImage(this, 280, 32, "cloud3", -10, 100, 420))
 		this.initialize_map('level1', 'level1_walls', 'level1_props', 'level1_backs')
   	}
-
-	  update(time, delta)
-  	{
-		super.update(time, delta)
-		delta = delta / 1000
-	    this.ParallaxStatic.list.forEach((x) => { x.update(this.cameras.main.scrollX) })
-		this.ParallaxScrolling.list.forEach((x) => { x.update(this.cameras.main.scrollX, delta) })
-	}
 }

@@ -20,6 +20,7 @@ export default class Scene_Level2 extends LevelBase
 
   	create() 
   	{
+		super.create()
 		const map = this.initialize_map('level2', 'level2_walls', 'level2_props', 'level2_backs')
 		
         for(let i = 8; i <= 136; i += 16)

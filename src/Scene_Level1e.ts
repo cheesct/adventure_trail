@@ -18,6 +18,7 @@ export default class Scene_Level1e extends LevelBase
 
   	create() 
   	{
+		super.create()
 		const map = this.initialize_map('level1e', 'level1_walls3', 'level1_props', 'level1_backs')
   	}
 }

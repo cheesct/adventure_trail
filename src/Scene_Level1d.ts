@@ -3,8 +3,6 @@ import LevelBase from './LevelBase'
 
 export default class Scene_Level1d extends LevelBase
 {
-	private ParallaxStatic: Phaser.GameObjects.Container
-
 	constructor() 
 	{
     	super({ key: "Scene_Level1d" })
@@ -20,6 +18,7 @@ export default class Scene_Level1d extends LevelBase
 
   	create() 
   	{
+		super.create()
 		const map = this.initialize_map('level1d', 'level1_walls2', 'level1_props', 'level1_backs')
 		const emitter = this.add.particles(0, 0, 'flares', {
             frame: 'white',

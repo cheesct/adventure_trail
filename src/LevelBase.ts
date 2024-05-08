@@ -24,8 +24,8 @@ export default class LevelBase extends Phaser.Scene
 	protected JumpPads: Phaser.GameObjects.Group
 	protected Waypoints: Phaser.GameObjects.Group
 	protected Checkpoints: Phaser.GameObjects.Group
-	//protected ParallaxStatic: Phaser.GameObjects.Layer
-	//protected ParallaxScrolling: Phaser.GameObjects.Layer
+	protected ParallaxStatic: Phaser.GameObjects.Layer
+	protected ParallaxScrolling: Phaser.GameObjects.Layer
 
 	protected player: Player
 
@@ -40,6 +40,20 @@ export default class LevelBase extends Phaser.Scene
 
   	create() 
   	{
+	    this.Doors = this.add.group()
+	    this.Items = this.add.group()
+	    this.Slopes = this.add.group()
+	    this.Players = this.add.group()
+	    this.Enemies = this.add.group()
+		this.JumpPads = this.add.group()
+		this.Waypoints = this.add.group()
+		this.Checkpoints = this.add.group()
+	    this.ParallaxStatic = this.add.layer()
+		this.ParallaxScrolling = this.add.layer()
+		this.PlayerAttacks = this.physics.add.staticGroup()
+		this.EnemyAttacks = this.physics.add.staticGroup()
+		this.EnemySensors = this.physics.add.staticGroup()
+		this.EnemyBullets = this.physics.add.group({ allowGravity: false })
   	}
 
   	update(time, delta)
@@ -51,8 +65,8 @@ export default class LevelBase extends Phaser.Scene
 	    this.Enemies.getChildren().forEach((x) => { x.update(delta) })
 		this.EnemyAttacks.getChildren().forEach((x) => { x.update(delta) })
 		this.EnemyBullets.getChildren().forEach((x) => { x.update(delta) })
-	    //this.ParallaxStatic.getChildren().forEach((x) => { x.update(this.cameras.main.scrollX) })
-		//this.ParallaxScrolling.getChildren().forEach((x) => { x.update(this.cameras.main.scrollX, delta) })
+	    this.ParallaxStatic.getChildren().forEach((x) => { x.update(this.cameras.main.scrollX) })
+		this.ParallaxScrolling.getChildren().forEach((x) => { x.update(this.cameras.main.scrollX, delta) })
 
 		//manually handle slope logic
 		let bound = this.player.body.getBounds(new Phaser.Geom.Rectangle()) as Phaser.Geom.Rectangle
@@ -113,21 +127,6 @@ export default class LevelBase extends Phaser.Scene
 
 	initialize_map(map_key, tileset_walls, tileset_props, tileset_backs)
 	{
-	    this.Doors = this.add.group()
-	    this.Items = this.add.group()
-	    this.Slopes = this.add.group()
-	    this.Players = this.add.group()
-	    this.Enemies = this.add.group()
-		this.JumpPads = this.add.group()
-		this.Waypoints = this.add.group()
-		this.Checkpoints = this.add.group()
-	    //this.ParallaxStatic = this.add.layer()
-		//this.ParallaxScrolling = this.add.layer()
-		this.PlayerAttacks = this.physics.add.staticGroup()
-		this.EnemyAttacks = this.physics.add.staticGroup()
-		this.EnemySensors = this.physics.add.staticGroup()
-		this.EnemyBullets = this.physics.add.group({ allowGravity: false })
-
 		const is_debug = this.game.config.physics.arcade.debug
 		const map = this.make.tilemap({key: map_key})
 	    const tile_walls = map.addTilesetImage("walls", tileset_walls)
