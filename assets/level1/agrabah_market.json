@@ -14,7 +14,7 @@
          "image":"..\/..\/..\/..\/Downloads\/Sprite-0001.png",
          "locked":true,
          "name":"bg",
-         "opacity":1,
+         "opacity":0.2,
          "type":"imagelayer",
          "visible":true,
          "x":0,
@@ -177,7 +177,7 @@
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":776,
+                 "width":768,
                  "x":3056,
                  "y":480
                 }, 
@@ -335,7 +335,6 @@
          "color":"#00ff00",
          "draworder":"topdown",
          "id":7,
-         "locked":true,
          "name":"rope",
          "objects":[
                 {
@@ -345,7 +344,7 @@
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":6,
+                 "width":0,
                  "x":2696,
                  "y":96
                 }, 
@@ -356,7 +355,7 @@
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":6,
+                 "width":0,
                  "x":4712,
                  "y":368
                 }, 
@@ -367,7 +366,7 @@
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":6,
+                 "width":0,
                  "x":1544,
                  "y":176
                 }, 
@@ -378,7 +377,7 @@
                  "rotation":0,
                  "type":"",
                  "visible":true,
-                 "width":6,
+                 "width":0,
                  "x":2088,
                  "y":366
                 }],
@@ -477,7 +476,7 @@
                  "visible":true,
                  "width":0,
                  "x":1552,
-                 "y":640
+                 "y":656
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -694,8 +693,33 @@
          "color":"#ffff00",
          "draworder":"topdown",
          "id":10,
+         "locked":true,
          "name":"pickup",
          "objects":[
+                {
+                 "height":0,
+                 "id":210,
+                 "name":"heal",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":3232,
+                 "y":400
+                }, 
+                {
+                 "height":0,
+                 "id":209,
+                 "name":"heal",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":2384,
+                 "y":656
+                }, 
                 {
                  "height":0,
                  "id":169,
@@ -863,7 +887,8 @@
                  "width":0,
                  "x":3360,
                  "y":400
-                }, 
+                },
+            
                 {
                  "height":0,
                  "id":155,
@@ -887,8 +912,7 @@
                  "width":0,
                  "x":3424,
                  "y":400
-                },
-            
+                }, 
                 {
                  "height":0,
                  "id":153,
@@ -1056,7 +1080,8 @@
                  "width":0,
                  "x":4128,
                  "y":560
-                }, 
+                },
+            
                 {
                  "height":0,
                  "id":139,
@@ -1080,8 +1105,7 @@
                  "width":0,
                  "x":3904,
                  "y":576
-                },
-            
+                }, 
                 {
                  "height":0,
                  "id":137,
@@ -1249,7 +1273,8 @@
                  "width":0,
                  "x":2880,
                  "y":480
-                }, 
+                },
+            
                 {
                  "height":0,
                  "id":124,
@@ -1273,8 +1298,7 @@
                  "width":0,
                  "x":2288,
                  "y":528
-                },
-            
+                }, 
                 {
                  "height":0,
                  "id":121,
@@ -1442,7 +1466,8 @@
                  "width":0,
                  "x":2048,
                  "y":192
-                }, 
+                },
+            
                 {
                  "height":0,
                  "id":108,
@@ -1466,8 +1491,7 @@
                  "width":0,
                  "x":1808,
                  "y":176
-                },
-            
+                }, 
                 {
                  "height":0,
                  "id":106,
@@ -1635,7 +1659,8 @@
                  "width":0,
                  "x":2000,
                  "y":544
-                }, 
+                },
+            
                 {
                  "height":0,
                  "id":92,
@@ -1659,8 +1684,7 @@
                  "width":0,
                  "x":1744,
                  "y":544
-                },
-            
+                }, 
                 {
                  "height":0,
                  "id":89,
@@ -1828,7 +1852,8 @@
                  "width":0,
                  "x":512,
                  "y":528
-                }, 
+                },
+            
                 {
                  "height":0,
                  "id":73,
@@ -1840,6 +1865,477 @@
                  "width":0,
                  "x":480,
                  "y":544
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "color":"#ff0000",
+         "draworder":"topdown",
+         "id":13,
+         "locked":true,
+         "name":"enemy",
+         "objects":[
+                {
+                 "height":0,
+                 "id":208,
+                 "name":"guard_knife",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":4640,
+                 "y":208
+                }, 
+                {
+                 "height":0,
+                 "id":207,
+                 "name":"guard_knife",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":3424,
+                 "y":320
+                }, 
+                {
+                 "height":0,
+                 "id":206,
+                 "name":"guard_knife",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":2976,
+                 "y":416
+                }, 
+                {
+                 "height":0,
+                 "id":205,
+                 "name":"guard_knife",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":3232,
+                 "y":480
+                }, 
+                {
+                 "height":0,
+                 "id":204,
+                 "name":"guard_knife",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":3888,
+                 "y":456
+                }, 
+                {
+                 "height":0,
+                 "id":203,
+                 "name":"guard_knife",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":4600,
+                 "y":616
+                }, 
+                {
+                 "height":0,
+                 "id":202,
+                 "name":"guard_knife",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":3504,
+                 "y":656
+                }, 
+                {
+                 "height":0,
+                 "id":201,
+                 "name":"guard_knife",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":2800,
+                 "y":560
+                }, 
+                {
+                 "height":0,
+                 "id":200,
+                 "name":"guard_knife",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":2064,
+                 "y":272
+                }, 
+                {
+                 "height":0,
+                 "id":199,
+                 "name":"guard_knife",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1904,
+                 "y":432
+                }, 
+                {
+                 "height":0,
+                 "id":198,
+                 "name":"guard_knife",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1712,
+                 "y":656
+                }, 
+                {
+                 "height":0,
+                 "id":197,
+                 "name":"guard_sword",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":4464,
+                 "y":208
+                }, 
+                {
+                 "height":0,
+                 "id":196,
+                 "name":"guard_sword",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":3008,
+                 "y":288
+                }, 
+                {
+                 "height":0,
+                 "id":195,
+                 "name":"guard_sword",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":3696,
+                 "y":480
+                }, 
+                {
+                 "height":0,
+                 "id":194,
+                 "name":"guard_sword",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":4288,
+                 "y":656
+                }, 
+                {
+                 "height":0,
+                 "id":193,
+                 "name":"guard_sword",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":3744,
+                 "y":656
+                },
+            
+                {
+                 "height":0,
+                 "id":192,
+                 "name":"guard_sword",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":3264,
+                 "y":656
+                }, 
+                {
+                 "height":0,
+                 "id":191,
+                 "name":"guard_sword",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1664,
+                 "y":272
+                }, 
+                {
+                 "height":0,
+                 "id":190,
+                 "name":"guard_sword",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":976,
+                 "y":624
+                }, 
+                {
+                 "height":0,
+                 "id":189,
+                 "name":"guard_staff",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":2720,
+                 "y":400
+                }, 
+                {
+                 "height":0,
+                 "id":188,
+                 "name":"guard_staff",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":704,
+                 "y":624
+                }, 
+                {
+                 "height":0,
+                 "id":187,
+                 "name":"thief",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":2864,
+                 "y":416
+                }, 
+                {
+                 "height":0,
+                 "id":186,
+                 "name":"knife_juggler",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":2992,
+                 "y":160
+                }, 
+                {
+                 "height":0,
+                 "id":185,
+                 "name":"knife_juggler",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":2544,
+                 "y":160
+                }, 
+                {
+                 "height":0,
+                 "id":184,
+                 "name":"knife_juggler",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":4352,
+                 "y":464
+                }, 
+                {
+                 "height":0,
+                 "id":183,
+                 "name":"knife_juggler",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":2528,
+                 "y":520
+                }, 
+                {
+                 "height":0,
+                 "id":182,
+                 "name":"knife_juggler",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1328,
+                 "y":576
+                }, 
+                {
+                 "height":0,
+                 "id":181,
+                 "name":"pot_tosser",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":3312,
+                 "y":384
+                }, 
+                {
+                 "height":0,
+                 "id":180,
+                 "name":"pot_tosser",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":4016,
+                 "y":528
+                }, 
+                {
+                 "height":0,
+                 "id":179,
+                 "name":"pot_tosser",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":3952,
+                 "y":560
+                }, 
+                {
+                 "height":0,
+                 "id":178,
+                 "name":"pot_tosser",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":3776,
+                 "y":560
+                }, 
+                {
+                 "height":0,
+                 "id":177,
+                 "name":"pot_tosser",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":2112,
+                 "y":176
+                },
+            
+                {
+                 "height":0,
+                 "id":176,
+                 "name":"pot_tosser",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1952,
+                 "y":176
+                }, 
+                {
+                 "height":0,
+                 "id":175,
+                 "name":"pot_tosser",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1744,
+                 "y":176
+                }, 
+                {
+                 "height":0,
+                 "id":174,
+                 "name":"pot_tosser",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1840,
+                 "y":352
+                }, 
+                {
+                 "height":0,
+                 "id":173,
+                 "name":"pot_tosser",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1952,
+                 "y":352
+                }, 
+                {
+                 "height":0,
+                 "id":172,
+                 "name":"pot_tosser",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1840,
+                 "y":528
+                }, 
+                {
+                 "height":0,
+                 "id":170,
+                 "name":"pot_tosser",
+                 "point":true,
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1792,
+                 "y":496
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -1997,10 +2493,10 @@
          "draworder":"topdown",
          "id":11,
          "locked":true,
-         "name":"hanging bar",
+         "name":"bar",
          "objects":[
                 {
-                 "height":4,
+                 "height":0,
                  "id":69,
                  "name":"",
                  "rotation":0,
@@ -2008,10 +2504,10 @@
                  "visible":true,
                  "width":176,
                  "x":4368,
-                 "y":84
+                 "y":88
                 }, 
                 {
-                 "height":4,
+                 "height":0,
                  "id":70,
                  "name":"",
                  "rotation":0,
@@ -2019,7 +2515,320 @@
                  "visible":true,
                  "width":384,
                  "x":4368,
-                 "y":308
+                 "y":312
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "color":"#5500ff",
+         "draworder":"topdown",
+         "id":14,
+         "locked":true,
+         "name":"wall_for_enemy",
+         "objects":[
+                {
+                 "height":32,
+                 "id":224,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":3184,
+                 "y":272
+                }, 
+                {
+                 "height":32,
+                 "id":223,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":2800,
+                 "y":384
+                }, 
+                {
+                 "height":32,
+                 "id":222,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":3072,
+                 "y":384
+                }, 
+                {
+                 "height":32,
+                 "id":221,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":3824,
+                 "y":448
+                }, 
+                {
+                 "height":32,
+                 "id":219,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":4464,
+                 "y":576
+                }, 
+                {
+                 "height":32,
+                 "id":218,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":4336,
+                 "y":624
+                }, 
+                {
+                 "height":32,
+                 "id":217,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":2832,
+                 "y":528
+                }, 
+                {
+                 "height":32,
+                 "id":216,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":2720,
+                 "y":528
+                }, 
+                {
+                 "height":32,
+                 "id":215,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":2272,
+                 "y":240
+                }, 
+                {
+                 "height":32,
+                 "id":214,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":1584,
+                 "y":240
+                }, 
+                {
+                 "height":32,
+                 "id":212,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":1744,
+                 "y":400
+                }, 
+                {
+                 "height":32,
+                 "id":213,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":2032,
+                 "y":400
+                }, 
+                {
+                 "height":32,
+                 "id":211,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":1152,
+                 "y":592
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "color":"#55aaff",
+         "draworder":"topdown",
+         "id":15,
+         "locked":true,
+         "name":"stair",
+         "objects":[
+                {
+                 "height":-48,
+                 "id":234,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":96,
+                 "x":3840,
+                 "y":480
+                }, 
+                {
+                 "height":-40,
+                 "id":228,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":144,
+                 "x":4336,
+                 "y":656
+                }, 
+                {
+                 "height":-64,
+                 "id":227,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":272,
+                 "x":2288,
+                 "y":576
+                }, 
+                {
+                 "height":-96,
+                 "id":226,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":-336,
+                 "x":2624,
+                 "y":672
+                }, 
+                {
+                 "height":-64,
+                 "id":225,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":240,
+                 "x":1152,
+                 "y":624
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":16,
+         "locked":true,
+         "name":"trigger",
+         "objects":[
+                {
+                 "height":80,
+                 "id":231,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"air",
+                         "type":"int",
+                         "value":226
+                        }, 
+                        {
+                         "name":"air2",
+                         "type":"int",
+                         "value":227
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":272,
+                 "x":2240,
+                 "y":304
+                }, 
+                {
+                 "height":64,
+                 "id":230,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"stair",
+                         "type":"int",
+                         "value":226
+                        }, 
+                        {
+                         "name":"stair1",
+                         "type":"int",
+                         "value":227
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":16,
+                 "x":2240,
+                 "y":512
+                }, 
+                {
+                 "height":80,
+                 "id":229,
+                 "name":"",
+                 "properties":[
+                        {
+                         "name":"air",
+                         "type":"int",
+                         "value":227
+                        }, 
+                        {
+                         "name":"stair",
+                         "type":"int",
+                         "value":226
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":96,
+                 "x":2656,
+                 "y":592
+                }, 
+                {
+                 "height":208,
+                 "id":232,
+                 "name":"goal",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":48,
+                 "x":4720,
+                 "y":0
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -2027,8 +2836,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":13,
- "nextobjectid":170,
+ "nextlayerid":17,
+ "nextobjectid":235,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.10.2",
