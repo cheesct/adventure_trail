@@ -5,6 +5,8 @@ import Helper from './helper'
 import InputKey from './InputKey'
 import StateMachine from './states/StateMachine'
 import DefaultState from './states/player/DefaultState'
+import GroundAttack1State from './states/player/GroundAttack1State'
+import SlideState from './states/player/SlideState'
 
 export class Player extends Phaser.Physics.Arcade.Sprite 
 {
@@ -128,9 +130,11 @@ export class Player extends Phaser.Physics.Arcade.Sprite
         })
 
         this.states = new StateMachine({
-            "idle": () => { return new DefaultState(this, scene) }
+            "": () => { return new DefaultState(this, scene) },
+            "Attack": () => { return new GroundAttack1State(this, scene) },
+            "Slide": () => { return new SlideState(this, scene) },
         })
-        this.states.change("idle")
+        this.states.change("")
     }
 
     update(delta)
@@ -179,55 +183,6 @@ export class Player extends Phaser.Physics.Arcade.Sprite
         let isOnGround = this.isOnGround()
         switch(this.state)
         {
-            case "Attack":
-                switch(this.flag)
-                {
-                    case -2:
-                        this.setVelocityX(0)
-                        this.anims.play('hero_unsealth_sword', true)
-                        this.flag = -1
-                        break
-
-                    case -1:
-                        if (!this.anims.isPlaying)
-                            this.flag = 0
-                        break
-
-                    case 0:
-                        this.combo = 0
-                        this.setVelocityX(0)
-                        this.anims.play('hero_attack_1_1', true)
-                        this.flag = 1
-                        break
-
-                    case 1:
-                        if (!this.anims.isPlaying)
-                        {
-                            this.scene.sound.play('snd_sword_slash')
-                            this.anims.play('hero_attack_1_2', true)
-                            this.flag = 2
-                            this.start_attacking(this.flipX ? -20 : 20, 0)
-                            this.attack_timer = 0.05
-                        }
-                        break
-
-                    case 2:
-                        if(this.X.pressed)
-                            this.combo = 1
-                        if (!this.anims.isPlaying)
-                        {
-                            if(this.combo)
-                                this.change_state("Attack2")
-                            else
-                            {
-                                this.change_state("")
-                                this.anims.play('hero_idle2', true)
-                            }
-                        }
-                        break
-                }
-                break
-
             case "Attack2":
                 switch(this.flag)
                 {
@@ -432,35 +387,6 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                                 break
                         }
                         break
-
-            case "Slide":
-                this.setVelocityX(this.flipX ? -this.slide_speed : this.slide_speed)
-                switch(this.flag)
-                {
-                    case 0:
-                        this.body.setSize(16, 16)
-                        this.body.offset.y = 18 + this.offset
-                        this.scene.sound.play('snd_slide', { rate: Helper.randomRange(1.3, 1.6), volume: 0.8 })
-                        this.anims.play({ key: 'hero_slide', repeat: -1 }, true)
-                        this.flag = 1
-                        this.slide_time = 0.3
-                        break
-
-                    case 1:
-                        if (!this.slide_time && this.can_stand)
-                        {
-                            this.anims.play('hero_slide_recover')
-                            this.change_state()
-                        }
-                        else
-                        {
-                            var fade = this.scene.add.image(this.x, this.y, 'hero', this.anims.currentFrame.frame.name).setAlpha(0.1).setTint(0xff0000)
-                            fade.flipX = this.flipX
-                            this.scene.tweens.add({ targets: fade, alpha: 0, ease: 'Power1', duration: 250, onComplete: () => { fade.destroy() }})
-                        }
-                        break
-                }
-                break
 
             case "Boost":
                 switch(this.flag)
@@ -707,16 +633,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
     {
         if (this.state != state || force)
         {
-            if (this.state == "Slide")
-            {
-                this.slide_cooldown = 0.1
-                this.body.setSize(16, 24)
-                this.body.offset.y = 10 + this.offset
-            }
-            else if (this.state == "AttackAirDown")
-            {
-                
-            }
+            this.states.change(state)
             this.stop_attacking()
             this.state = state
             this.flag = 0
@@ -796,7 +713,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
         return Number(this.Down.down) - Number(this.Up.down)
     }
 
-    playAnim(key: string, ignore: boolean = false)
+    playAnim(key, ignore: boolean = false)
     {
         this.anims.play(key, ignore)
     }
@@ -809,5 +726,14 @@ export class Player extends Phaser.Physics.Arcade.Sprite
     getVelocity()
     {
         return this.body.velocity
+    }
+
+    setBody(w, h, offsetY = null)
+    {
+        this.body.setSize(w, h)
+        if (offsetY)
+        {
+            this.body.offset.y = offsetY + this.offset
+        }
     }
 }
