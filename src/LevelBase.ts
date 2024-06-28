@@ -229,10 +229,13 @@ export default class LevelBase extends Phaser.Scene
 			var map_fog = map_properties.find(e => e.name === "Fog")
 			if (map_fog)
 			{
-				this.FogCanvas = this.textures.createCanvas("fog", this.cameras.main.width + 64, this.cameras.main.height + 64)
-				if(!this.FogCanvas)
+				if (this.textures.exists("fog"))
 				{
 					this.FogCanvas = this.textures.get("fog") as Phaser.Textures.CanvasTexture
+				}
+				else
+				{
+					this.FogCanvas = this.textures.createCanvas("fog", this.cameras.main.width + 64, this.cameras.main.height + 64)
 				}
 				const fog = this.add.image(-32, -32, "fog").setOrigin(0).setDepth(1).setScrollFactor(0)
 				fog.alpha = map_fog.value
@@ -256,6 +259,7 @@ export default class LevelBase extends Phaser.Scene
 		}
 		else
 		{
+			this.transition = null
 			this.cameras.main.fadeIn(1500)
 		}
     }
@@ -275,7 +279,8 @@ export default class LevelBase extends Phaser.Scene
         }
         else
         {
-            this.cameras.main.fadeOut(1500, 0, 0, 0, () => { this.scene.start(to) })
+			this.cameras.main.fadeOut()
+			this.time.addEvent({ delay: 1000, callback: () => { this.scene.start(to) } })
         }
     }
 

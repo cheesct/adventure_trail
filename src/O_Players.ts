@@ -2,6 +2,9 @@
 import * as Phaser from 'phaser'
 import { HP } from './O_StatsGUI'
 import Helper from './helper'
+import InputKey from './InputKey'
+import StateMachine from './states/StateMachine'
+import DefaultState from './states/player/DefaultState'
 
 export class Player extends Phaser.Physics.Arcade.Sprite 
 {
@@ -28,11 +31,13 @@ export class Player extends Phaser.Physics.Arcade.Sprite
     private attack_cooldown: number
     private attacked_entities: Array<any>
 
-    private Cursors: Phaser.Types.Input.Keyboard.CursorKeys
-    private Z: Phaser.Input.Keyboard.Key
-    private X: Phaser.Input.Keyboard.Key
-    private C: Phaser.Input.Keyboard.Key
-    private Space: Phaser.Input.Keyboard.Key
+    private Z: InputKey
+    private X: InputKey
+    private C: InputKey
+    private Up: InputKey
+    private Down: InputKey
+    private Left: InputKey
+    private Right: InputKey
 
     private heal_emitter: Phaser.GameObjects.Particles.ParticleEmitter
     private blood_emitter: Phaser.GameObjects.Particles.ParticleEmitter
@@ -44,6 +49,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
     private current_slope: any
     private current_jumpPad: any
     private is_jumpPad_jump: boolean
+    private states: StateMachine
 
 
     constructor(scene, x, y) 
@@ -75,14 +81,19 @@ export class Player extends Phaser.Physics.Arcade.Sprite
         this.attack_cooldown = 0
         this.attack_group = scene.PlayerAttacks
 
-        this.Space = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
-        this.Z = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z)
-        this.X = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.X)
-        this.C = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.C)
-        this.Cursors = scene.input.keyboard.createCursorKeys()
+        this.Z = new InputKey(scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z))
+        this.X = new InputKey(scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.X))
+        this.C = new InputKey(scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.C))
+        let cursor = scene.input.keyboard.createCursorKeys()
+        this.Up = new InputKey(cursor.up)
+        this.Down = new InputKey(cursor.down)
+        this.Left = new InputKey(cursor.left)
+        this.Right = new InputKey(cursor.right)
+
         this.setCollideWorldBounds(true)
         this.body.setSize(16, 24)
         this.body.offset.y = 10 + this.offset
+
         this.heal_emitter_zone = new Phaser.Geom.Line()
         this.heal_emitter = this.scene.add.particles(this.x, this.y, 'flares', {
             frame: 'white',
@@ -115,6 +126,11 @@ export class Player extends Phaser.Physics.Arcade.Sprite
             quantity: 1,
             lifespan: 420,
         })
+
+        this.states = new StateMachine({
+            "idle": () => { return new DefaultState(this, scene) }
+        })
+        this.states.change("idle")
     }
 
     update(delta)
@@ -160,7 +176,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
             this.heal_emitter.x = this.x
             this.heal_emitter.y = this.y
         }
-        let isOnGround = this.body.blocked.down || (this.current_slope && this.body.velocity.y >= 0)
+        let isOnGround = this.isOnGround()
         switch(this.state)
         {
             case "Attack":
@@ -196,7 +212,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                         break
 
                     case 2:
-                        if(Phaser.Input.Keyboard.JustDown(this.X))
+                        if(this.X.pressed)
                             this.combo = 1
                         if (!this.anims.isPlaying)
                         {
@@ -234,7 +250,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                         break
 
                     case 2:
-                        if(Phaser.Input.Keyboard.JustDown(this.X))
+                        if(this.X.pressed)
                             this.combo = 1
                         if (!this.anims.isPlaying)
                         {
@@ -296,7 +312,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                         break
 
                     case 1:
-                        if(Phaser.Input.Keyboard.JustDown(this.X))
+                        if(this.X.pressed)
                             this.combo = 1
                         if (!this.anims.isPlaying)
                         {
@@ -518,8 +534,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                         if (!this.anims.isPlaying)
                         {
                             this.flag = 2
-                            this.scene.time.addEvent({  delay: 1000, callback: () => { this.scene.cameras.main.fade(1000, 0, 0, 0)} })
-                            this.scene.time.addEvent({  delay: 2000, callback: () => { this.scene.scene.restart()} })
+                            this.scene.time.addEvent({ delay: 1000, callback: () => { this.scene.cameras.main.fadeOut()} })
+                            this.scene.time.addEvent({ delay: 2000, callback: () => { this.scene.scene.restart() } })
                         }
                         break
                 }
@@ -550,103 +566,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                 break
 
             default:
-                var direction = Number(this.Cursors.right.isDown) - Number(this.Cursors.left.isDown)
-                this.flag = 0
-                if (isOnGround)
-                {
-                    this.jump = 1
-                    this.is_jumpPad_jump = false
-                    if(Phaser.Input.Keyboard.JustDown(this.X) && !this.attack_cooldown)
-                    {
-                        if (this.Cursors.up.isDown)
-                        {
-                            this.change_state("AttackRise")
-                        }
-                        else
-                        {
-                            this.change_state("Attack")
-                        }
-                    }
-                    else if(Phaser.Input.Keyboard.JustDown(this.C) && !this.slide_cooldown)
-                    {
-                        this.change_state("Slide")
-                    }
-                    else if (Phaser.Input.Keyboard.JustDown(this.Z))
-                    {
-                        this.setVelocityY(-200)
-                        this.anims.play('hero_up', true)
-                        this.scene.sound.play('snd_jump', { rate: 2, volume: 0.6 })
-                        this.emit_run_dust()
-                    }
-                    else if (direction != 0)
-                    {
-                        this.setVelocityX(direction*this.speed_walk)
-                        this.anims.play('hero_walk', true)
-                        this.flipX = direction < 0
-                    }
-                    else
-                    {
-                        this.setVelocityX(0)
-                        let current_anim = this.anims.getName()
-                        if (current_anim == 'hero_slide_recover')
-                        {
-                            if (!this.anims.isPlaying)
-                            {
-                                this.anims.play('hero_idle', true)
-                            }
-                        }
-                        else if (current_anim != 'hero_idle2')
-                        {
-                            this.anims.play('hero_idle', true)
-                        }
-                            
-                    }
-                }
-                else
-                {
-                    if(Phaser.Input.Keyboard.JustDown(this.C) && this.jump)
-                    {
-                        this.jump--
-                        this.change_state("Boost")
-                    }
-                    else if(Phaser.Input.Keyboard.JustDown(this.X))
-                    {
-                        if (this.Cursors.down.isDown)
-                        {
-                            this.change_state("AttackAirDown")
-                        }
-                        else if (!this.attack_cooldown)
-                        {
-                            this.change_state("AttackAir")
-                        }
-                    }
-                    else if (direction != 0)
-                    {
-                        this.flipX = direction < 0
-                        this.setVelocityX(direction*this.speed_walk)
-                    }
-                    else
-                    {
-                        this.setVelocityX(0)
-                    }
-                    if (this.body.velocity.y > 0)
-                    {
-                        if (this.current_jumpPad != null)
-                        {
-                            this.anims.play('hero_up', true)
-                            this.setVelocityY(this.current_jumpPad.get_boost())
-                            this.current_jumpPad.play_animation()
-                            this.scene.sound.play('snd_bounce', { volume: 0.2, rate: Helper.randomRange(0.8, 1) } )
-                            this.is_jumpPad_jump = true
-                        }
-                        else if (this.anims.getName() != 'hero_fall')
-                        {
-                            this.anims.play('hero_fall', true)
-                        }
-                    }
-                    else if (this.body.velocity.y < 0 && this.Z.isUp && !this.is_jumpPad_jump)
-                        this.body.velocity.y *= 0.8
-                }
+                this.states.update(delta)
                 break
         }
         if (this.current_slope != null && isOnGround)
@@ -844,5 +764,50 @@ export class Player extends Phaser.Physics.Arcade.Sprite
         {
             this.jump_dust_emitter.explode(1, this.body.center.x, this.body.bottom - 10)
         }
+    }
+
+    isOnGround()
+    {
+        return this.body.blocked.down || (this.current_slope && this.body.velocity.y >= 0)
+    }
+
+    isAttackRequest()
+    {
+        return this.X.pressed && !this.attack_cooldown
+    }
+
+    isSlideRequest()
+    {
+        return this.C.pressed && (!this.slide_cooldown || !this.isOnGround())
+    }
+
+    isJumpRequest()
+    {
+        return this.Z.pressed
+    }
+
+    getHorizonInput()
+    {
+        return Number(this.Right.down) - Number(this.Left.down)
+    }
+
+    getVerticalInput()
+    {
+        return Number(this.Down.down) - Number(this.Up.down)
+    }
+
+    playAnim(key: string, ignore: boolean = false)
+    {
+        this.anims.play(key, ignore)
+    }
+    
+    isPlayingAnim(key: string)
+    {
+        return this.anims.getName() == key && this.anims.isPlaying
+    }
+    
+    getVelocity()
+    {
+        return this.body.velocity
     }
 }

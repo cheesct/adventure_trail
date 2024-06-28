@@ -39,7 +39,7 @@ export default class Demo extends Phaser.Scene
 		this.load.spritesheet('piranha_plant_projectile', 'assets/piranha_plant_projectile.png', { frameWidth: 16, frameHeight: 8 })
 		this.load.spritesheet('piranha_plant_projectile_blast', 'assets/piranha_plant_projectile_blast.png', { frameWidth: 16, frameHeight: 16 })
 	    this.load.spritesheet('hp_bar', 'assets/hp_bar.png', { frameWidth: 71, frameHeight: 16 })
-		this.load.spritesheet('popup_notice', 'assets/popup_notice.png', { frameWidth: 18, frameHeight: 18 })
+		this.load.spritesheet('popup_notice', 'assets/popup_notice.png', { frameWidth: 16, frameHeight: 16 })
 	    this.load.spritesheet('level2_lava', 'assets/level2/lava.png', { frameWidth: 32, frameHeight: 32 })
 		this.load.spritesheet('level2_water', 'assets/level2/water.png', { frameWidth: 32, frameHeight: 32 })
 		this.load.spritesheet('level2_waterfall', 'assets/level2/waterfall.png', { frameWidth: 16, frameHeight: 16 })
