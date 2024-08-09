@@ -37,5 +37,11 @@ export default class SlideState extends BaseState
     {
         this.owner.slide_cooldown = 0.1
         this.owner.setBody(16, 24, 10)
+        this.owner.invincible = false
+    }
+
+    enter(def)
+    {
+        this.owner.invincible = true
     }
 }

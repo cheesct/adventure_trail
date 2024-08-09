@@ -63,7 +63,7 @@ export default class DefaultState extends BaseState
             if(owner.isSlideRequest() && owner.jump)
             {
                 owner.jump--
-                owner.change_state("Boost")
+                owner.change_state("AirJump")
             }
             else if(owner.isAttackRequest())
             {

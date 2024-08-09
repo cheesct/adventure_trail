@@ -4,17 +4,27 @@ import { HP } from './O_StatsGUI'
 import Helper from './helper'
 import InputKey from './InputKey'
 import StateMachine from './states/StateMachine'
+
 import DefaultState from './states/player/DefaultState'
+import AirAttack1State from './states/player/AirAttack1State'
+import AirAttack2State from './states/player/AirAttack2State'
+import AirAttackDownState from './states/player/AirAttackDownState'
+import AirJumpState from './states/player/AirJumpState'
 import GroundAttack1State from './states/player/GroundAttack1State'
+import GroundAttack2State from './states/player/GroundAttack2State'
+import GroundAttack3State from './states/player/GroundAttack3State'
+import GroundAttackRiseState from './states/player/GroundAttackRiseState'
+import HurtState from './states/player/HurtState'
+import DeathState from './states/player/DeathState'
 import SlideState from './states/player/SlideState'
 
 export class Player extends Phaser.Physics.Arcade.Sprite 
 {
     private HP: HP
-    private flag: number
     private jump: number
     private hurt: number
     private death: boolean
+    private invincible: boolean
     private key: Array<string>
 
     private can_stand: boolean
@@ -24,7 +34,6 @@ export class Player extends Phaser.Physics.Arcade.Sprite
     private slide_speed: number
     private slide_cooldown: number
 
-    private combo: number
     private offset: number
     private knock_y: number
     private attack_area: Phaser.GameObjects.Zone
@@ -62,10 +71,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite
 
         this.HP = new HP(scene, 5, 5)
         this.key = []
-        this.flag = 0
         this.depth = 2
         this.state = ""
         this.death = false
+        this.invincible = false
         this.offset = scene.ObjectOffset
 
         this.jump = 0
@@ -132,6 +141,15 @@ export class Player extends Phaser.Physics.Arcade.Sprite
         this.states = new StateMachine({
             "": () => { return new DefaultState(this, scene) },
             "Attack": () => { return new GroundAttack1State(this, scene) },
+            "Attack2": () => { return new GroundAttack2State(this, scene) },
+            "Attack3": () => { return new GroundAttack3State(this, scene) },
+            "AttackRise": () => { return new GroundAttackRiseState(this, scene) },
+            "AttackAir": () => { return new AirAttack1State(this, scene) },
+            "AttackAir2": () => { return new AirAttack2State(this, scene) },
+            "AttackAirDown": () => { return new AirAttackDownState(this, scene) },
+            "AirJump": () => { return new AirJumpState(this, scene) },
+            "Hurt": () => { return new HurtState(this, scene) },
+            "Death": () => { return new DeathState(this, scene) },
             "Slide": () => { return new SlideState(this, scene) },
         })
         this.states.change("")
@@ -144,7 +162,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
             this.heal_emitter_zone.setTo(this.body.center.x - 8, this.body.bottom, this.body.center.x + 8, this.body.bottom)
             if(this.y > this.scene.physics.world.bounds.height)
             {
-                this.change_state("DeathSpike")
+                this.change_state("Death", false, true)
             }
         }
         if (this.hurt > 0)
@@ -167,6 +185,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                 this.stop_attacking()
             }
         }
+        if (this.attack_cooldown > 0)
+        {
+            this.attack_cooldown = Math.max(this.attack_cooldown - delta, 0)
+        }
         if (this.slide_time > 0)
         {
             this.slide_time = Math.max(this.slide_time - delta, 0)
@@ -181,320 +203,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite
             this.heal_emitter.y = this.y
         }
         let isOnGround = this.isOnGround()
-        switch(this.state)
-        {
-            case "Attack2":
-                switch(this.flag)
-                {
-                    case 0:
-                        this.setVelocityX(0)
-                        this.anims.play('hero_attack_2_1', true)
-                        this.combo = 0
-                        this.flag = 1
-                        break
 
-                    case 1:
-                        if (!this.anims.isPlaying)
-                        {
-                            this.scene.sound.play('snd_sword_slash')
-                            this.anims.play('hero_attack_2_2', true)
-                            this.flag = 2
-                            this.start_attacking(this.flipX ? -20 : 20, 0)
-                            this.attack_timer = 0.05
-                        }
-                        break
-
-                    case 2:
-                        if(this.X.pressed)
-                            this.combo = 1
-                        if (!this.anims.isPlaying)
-                        {
-                            if(this.combo)
-                                this.change_state("Attack3")
-                            else
-                            {
-                                this.change_state("")
-                                this.anims.play('hero_idle2', true)
-                            }
-                        }
-                        break
-                    }
-                break
-
-            case "Attack3":
-                switch(this.flag)
-                {
-                    case 0:
-                        this.anims.play('hero_attack_3_1', true)
-                        this.flag = 1
-                        this.setVelocityX((this.flipX ? -1 : 1)*50)
-                        break
-
-                    case 1:
-                        if (!this.anims.isPlaying)
-                        {
-                            this.scene.sound.play('snd_sword_slash', { rate: 0.8 })
-                            this.anims.play('hero_attack_3_2', true)
-                            this.setVelocityX(0)
-                            this.start_attacking(this.flipX ? -20 : 20, 0)
-                            this.attack_timer = 0.05
-                            this.flag = 2
-                        }
-                        break
-
-                    case 2:
-                        if (!this.anims.isPlaying)
-                        {
-                            this.change_state("")
-                            this.anims.play('hero_idle2', true)
-                        }
-                        break
-                }
-                break
-
-            case "AttackAir":
-                this.body.velocity.y = Math.min(this.body.velocity.y, 10)
-                this.body.velocity.x = 0
-                switch(this.flag)
-                {
-                    case 0:
-                        this.combo = 0
-                        this.start_attacking(this.flipX ? -20 : 20, 0)
-                        this.attack_timer = 0.05
-                        this.anims.play('hero_attack_air', true)
-                        this.scene.sound.play('snd_sword_slash')
-                        this.flag = 1
-                        break
-
-                    case 1:
-                        if(this.X.pressed)
-                            this.combo = 1
-                        if (!this.anims.isPlaying)
-                        {
-                            if (this.combo == 1 && this.attacked_entities.length > 0)
-                            {
-                                this.change_state("AttackAir2")
-                            }
-                            else
-                            {
-                                this.change_state("")
-                            }
-                            this.attack_cooldown = 1
-                            this.scene.time.addEvent({ delay: 500, callback: () => { this.attack_cooldown = 0 } })
-                            this.anims.play('hero_idle2', true)
-                        }
-                        break
-                }
-                break
-            
-            case "AttackAir2":
-                this.body.velocity.y = Math.min(this.body.velocity.y, 10)
-                this.body.velocity.x = 0
-                switch(this.flag)
-                {
-                    case 0:
-                        this.combo = 0
-                        this.start_attacking(this.flipX ? -20 : 20, 0)
-                        this.attack_timer = 0.05
-                        this.anims.play('hero_attack_air_2', true)
-                        this.scene.sound.play('snd_sword_slash')
-                        this.flag = 1
-                        break
-
-                    case 1:
-                        if (!this.anims.isPlaying)
-                        {
-                            this.change_state("")
-                            this.attack_cooldown = 1
-                            this.scene.time.addEvent({ delay: 500, callback: () => { this.attack_cooldown = 0 } })
-                            this.anims.play('hero_idle2', true)
-                        }
-                        break
-                }
-                break
-            
-                case "AttackAirDown":
-                    switch(this.flag)
-                    {
-                        case 0:
-                            this.anims.play('hero_attack_air_down_prep', true)
-                            this.body.velocity.y = Math.min(this.body.velocity.y, -150)
-                            this.flag += 1
-                            break
-    
-                        case 1:
-                            if (!this.anims.isPlaying)
-                            {
-                                this.body.velocity.y = Math.max(this.body.velocity.y, 300)
-                                this.body.velocity.x = 0
-                                this.anims.play({ key: 'hero_attack_air_down_loop', repeat: -1 }, true)
-                                this.start_attacking(this.flipX ? -16 : 16, 0)
-                                this.flag += 1
-                            }
-                            break
-                        
-                        case 2:
-                            if (isOnGround)
-                            {
-                                (this.attack_area.body as Phaser.Physics.Arcade.StaticBody).setSize(64, 32, true)
-                                this.anims.play('hero_attack_air_down_land', true)
-                                this.scene.cameras.main.shake(40, 0.02)
-                                this.flag += 1
-                            }
-                            else
-                            {
-                                (this.attack_area.body as Phaser.Physics.Arcade.StaticBody).y = this.y;
-                                (this.attack_area.body as Phaser.Physics.Arcade.StaticBody).updateCenter()
-                                var fade = this.scene.add.image(this.x, this.y, 'hero', this.anims.currentFrame.frame.name).setAlpha(0.25).setTint(0xff0000)
-                                fade.flipX = this.flipX
-                                this.scene.tweens.add({ targets: fade, alpha: 0, ease: 'Power1', duration: 400, onComplete: () => { fade.destroy() }})
-                            }
-                            break
-                        
-                        case 3:
-                            if (!this.anims.isPlaying)
-                            {
-                                this.change_state()
-                            }
-                            break
-                    }
-                    break
-
-                    case "AttackRise":
-                        this.body.velocity.y = Math.min(this.body.velocity.y, 0)
-                        switch(this.flag)
-                        {
-                            case 0:
-                                this.knock_y = -200
-                                this.start_attacking(this.flipX ? -16 : 16, 0)
-                                this.anims.play('hero_attack_rise')
-                                this.body.velocity.y = Math.min(this.body.velocity.y, -200)
-                                this.body.velocity.x *= 0.5
-                                this.flag += 1
-                                break
+        this.states.update(delta)
         
-                            case 1:
-                                if (!this.anims.isPlaying)
-                                {
-                                    this.change_state()
-                                }
-                                else
-                                {
-                                    var fade = this.scene.add.image(this.x, this.y, 'hero', this.anims.currentFrame.frame.name).setAlpha(0.3).setTint(0xff0000)
-                                    fade.flipX = this.flipX
-                                    this.scene.tweens.add({ targets: fade, alpha: 0, ease: 'Power1', duration: 200, onComplete: () => { fade.destroy() }})
-                                }
-                                break
-                        }
-                        break
-
-            case "Boost":
-                switch(this.flag)
-                {
-                    case 0:
-                        this.scene.sound.play('snd_jump', { rate: 2.5, volume: 0.75 })
-                        this.anims.play('hero_boost', true)
-                        this.setVelocityY(-200)
-                        this.flag = 1
-                        var effect = this.scene.add.sprite(this.x, this.y, 'fx_ring')
-                        effect.on('animationcomplete', () => { effect.destroy() })
-                        effect.anims.play("fx_ring")
-                        effect.setAngle(this.body.velocity.x == 0 ? 0 : (this.flipX ? -30 : 30))
-                        effect.setScale(0.5)
-                        effect.setTint(0xff0000)
-                        this.scene.tweens.add({ targets: effect, alpha: 0, ease: 'Power1', duration: 250, })
-                        break
-
-                    case 1:
-                        if (!this.anims.isPlaying || isOnGround)
-                            this.change_state("")
-                        break
-                }
-                break
-
-            case "Hurt":
-                switch(this.flag)
-                {
-                    case 0:
-                        this.flag = 1
-                        this.hurt = -1
-                        this.anims.play('hero_hurt', true)
-                        this.scene.sound.play('snd_slap', { volume: 0.7, rate: Helper.randomRange(0.8, 1.0) })
-                        this.setVelocityX((this.flipX ? 1 : -1)*90)
-                        this.setVelocityY(-100)
-                        this.setTint(0xff0000)
-                        this.scene.time.addEvent({ delay: 200, callback: () => {
-                            this.setTint(0xffffff) 
-                            this.hurt = 3
-                        }})
-                        break
-
-                    case 1:
-                        if (isOnGround)
-                            this.body.velocity.x *= 0.95
-                        if (!this.anims.isPlaying)
-                        {
-                            this.change_state("")
-                            this.anims.play('hero_idle2', true)
-                        }
-                        break
-                }
-                break
-
-            case "Death":
-                if (isOnGround)
-                    this.body.velocity.x *= 0.9
-                switch(this.flag)
-                {
-                    case 0:
-                        this.scene.sound.play('snd_dead')
-                        this.anims.play('hero_defeat', true)
-                        this.setVelocityX((this.flipX ? 1 : -1)*125)
-                        this.setVelocityY(-100)
-                        this.flag = 1
-                        this.death = true
-                        this.scene.cameras.main.flash(500, 255, 0, 0)
-                        break
-
-                    case 1:
-                        if (!this.anims.isPlaying)
-                        {
-                            this.flag = 2
-                            this.scene.time.addEvent({ delay: 1000, callback: () => { this.scene.cameras.main.fadeOut()} })
-                            this.scene.time.addEvent({ delay: 2000, callback: () => { this.scene.scene.restart() } })
-                        }
-                        break
-                }
-                break
-
-            case "DeathSpike":
-                switch(this.flag)
-                {
-                    case 0:
-                        this.HP.set(0)
-                        this.scene.sound.play('snd_dead')
-                        this.anims.play('hero_defeat', true)
-                        this.setVelocityX(0)
-                        this.flag = 1
-                        this.death = true
-                        this.scene.cameras.main.flash(500, 255, 0, 0)
-                        break
-
-                    case 1:
-                        if (!this.anims.isPlaying)
-                        {
-                            this.flag = 2
-                            this.scene.time.addEvent({  delay: 1000, callback: () => { this.scene.cameras.main.fade(1000, 0, 0, 0)} })
-                            this.scene.time.addEvent({  delay: 2000, callback: () => { this.scene.scene.restart()} })
-                        }
-                        break
-                }
-                break
-
-            default:
-                this.states.update(delta)
-                break
-        }
         if (this.current_slope != null && isOnGround)
         {
             let dX = 1
@@ -518,7 +229,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
 
     isVulnerable()
     {
-        if(this.death || this.hurt != 0 || ["AttackAirDown", "Attack3", "Boost", "Slide", "Hurt"].includes(this.state as string))
+        if(this.death || this.hurt != 0 || this.invincible)
             return false
         return true
     }
@@ -629,14 +340,13 @@ export class Player extends Phaser.Physics.Arcade.Sprite
         this.heal_emitter.start(0, 1000)
     }
 
-    change_state(state: string = "", force = false)
+    change_state(state: string = "", force = false, def = null)
     {
         if (this.state != state || force)
         {
-            this.states.change(state)
+            this.states.change(state, def)
             this.stop_attacking()
             this.state = state
-            this.flag = 0
         }
     }
 
@@ -721,6 +431,49 @@ export class Player extends Phaser.Physics.Arcade.Sprite
     isPlayingAnim(key: string)
     {
         return this.anims.getName() == key && this.anims.isPlaying
+    }
+
+    isAttackHit()
+    {
+        return this.attacked_entities.length > 0
+    }
+
+    setAttackSize(x?: number, y?: number)
+    {
+        const body = this.attack_area.body as Phaser.Physics.Arcade.StaticBody
+        body.setSize(x ? x : body.width, y ? y : body.height, true)
+    }
+
+    setAttackPos(x?: number, y?: number)
+    {
+        const body = this.attack_area.body as Phaser.Physics.Arcade.StaticBody
+        if (x)
+        {
+            body.x = x
+        }
+        if (y)
+        {
+            body.y = y
+        }
+        body.updateCenter()
+    }
+
+    createAfterImage(duration)
+    {
+        const fade = this.scene.add.image(this.x, this.y, 'hero', this.anims.currentFrame.frame.name).setAlpha(0.25).setTint(0xff0000)
+        fade.flipX = this.flipX
+        this.scene.tweens.add({ targets: fade, alpha: 0, ease: 'Power1', duration: duration, onComplete: () => { fade.destroy() }})
+    }
+
+    createAirJumpVfx()
+    {
+        var effect = this.scene.add.sprite(this.x, this.y, 'fx_ring')
+        effect.on('animationcomplete', () => { effect.destroy() })
+        effect.anims.play("fx_ring")
+        effect.setAngle(this.body.velocity.x == 0 ? 0 : (this.flipX ? -30 : 30))
+        effect.setScale(0.5)
+        effect.setTint(0xff0000)
+        this.scene.tweens.add({ targets: effect, alpha: 0, ease: 'Power1', duration: 250, })
     }
     
     getVelocity()
