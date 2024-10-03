@@ -152,6 +152,10 @@ export default class LevelBase extends Phaser.Scene
 			platforms.forEachTile((tile) => { tile.setCollision(false, false, true, false, false); })
 		}
         const walls = map.createLayer("Walls", tile_walls).setCollisionByExclusion([-1])
+		if (map.getLayerIndex("Slopes"))
+		{
+			map.createLayer("Slopes", tile_walls).setCollisionByExclusion([-1])
+		}
 
 		map.createFromObjects('Objects', { name : "Checkpoint", classType: Checkpoint }).forEach((object) => { this.Checkpoints.add(object) })
 		map.createFromObjects('Objects', { name : "Waypoint", classType: Waypoint }).forEach((object) => { this.Waypoints.add(object) })
