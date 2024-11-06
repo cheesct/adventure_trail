@@ -81,6 +81,7 @@
         {
          "draworder":"topdown",
          "id":13,
+         "locked":true,
          "name":"Objects",
          "objects":[
                 {
