@@ -63,9 +63,9 @@ export default class Demo extends Phaser.Scene
 		this.load.audio('snd_insect_death', 'assets/audio/insect_death.mp3')
 		this.load.audio('snd_menu_switch', 'assets/audio/menu_switch.mp3')
 		this.load.audio('snd_menu_select', 'assets/audio/menu_select.mp3')
-		this.load.audio('mus_menu', 'assets/audio/Title.mp3')
-		this.load.audio('mus_level1', 'assets/audio/level1.mp3')
-		this.load.audio('mus_level2', 'assets/audio/level2.mp3')
+		this.load.audio('mus_menu', 'assets/audio/Pixel 3.mp3')
+		this.load.audio('mus_level1', 'assets/audio/Pixel 4.mp3')
+		this.load.audio('mus_level2', 'assets/audio/Pixel 11.mp3')
 
         this.load.image('logo', 'assets/phaser3-logo.png')
         this.load.image('libs', 'assets/libs.png')
@@ -163,7 +163,7 @@ export default class Demo extends Phaser.Scene
 }
 
 const config = {
-    type: Phaser.AUTO,
+    type: Phaser.WEBGL,
     backgroundColor: '#000000',
     zoom: 4,
 	width: 320,

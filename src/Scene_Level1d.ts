@@ -8,6 +8,17 @@ export default class Scene_Level1d extends LevelBase
     	super({ key: "Scene_Level1d" })
   	}
 
+	init(data)
+	{
+		console.log(data)
+		if (data && (data.music != 'mus_level1' && data.music != undefined))
+		{
+			this.sound.stopAll()
+			this.sound.play('mus_level1', { loop: true, volume: 0.8 })
+			this.music = 'mus_level1'
+		}
+	}
+
   	preload() 
   	{
 	    this.load.image('level1_walls2', 'assets/level1/walls2.png')

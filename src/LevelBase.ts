@@ -28,6 +28,7 @@ export default class LevelBase extends Phaser.Scene
 	protected ParallaxScrolling: Phaser.GameObjects.Layer
 
 	protected player: Player
+	protected music: string
 
 	public Players: Phaser.GameObjects.Group
 	public EnemyBullets: Phaser.Physics.Arcade.Group
@@ -284,7 +285,7 @@ export default class LevelBase extends Phaser.Scene
         else
         {
 			this.cameras.main.fadeOut()
-			this.time.addEvent({ delay: 1000, callback: () => { this.scene.start(to) } })
+			this.time.addEvent({ delay: 1000, callback: () => { this.scene.start(to, { music: this.music }) } })
         }
     }
 
