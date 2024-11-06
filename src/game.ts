@@ -165,7 +165,7 @@ export default class Demo extends Phaser.Scene
 const config = {
     type: Phaser.AUTO,
     backgroundColor: '#000000',
-    zoom: 1,
+    zoom: 4,
 	width: 320,
 	height: 160,
 	pixelArt: true,	//else tiles would break
