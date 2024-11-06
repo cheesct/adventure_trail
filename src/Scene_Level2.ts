@@ -12,7 +12,7 @@ export default class Scene_Level2 extends LevelBase
 
 	init(data)
 	{
-		if (data && (data.music != 'mus_level2' || data.music != undefined))
+		if (data && (data.music != 'mus_level2' && data.music != undefined))
 		{
 			this.sound.stopAll()
 			this.sound.play('mus_level2', { loop: true, volume: 0.8 })

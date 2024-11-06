@@ -31,8 +31,8 @@ export default class Singleton
 
     public static sceneTransIn(scene)
     {
-        // scene.cameras.main.fadeIn(1500)
-        // return
+        scene.cameras.main.fadeIn(1500)
+        return
         scene.transition = scene.add.shader("transition_diamond", scene.cameras.main.scrollX + scene.cameras.main.centerX, scene.cameras.main.scrollY + scene.cameras.main.centerY, scene.cameras.main.width, scene.cameras.main.height).setScrollFactor(0)
         scene.transition.depth = 10
         Singleton.transition_name = null
@@ -47,9 +47,9 @@ export default class Singleton
 
     public static sceneTransOut(scene, flag: number, to: string)
     {
-        // scene.cameras.main.fadeOut()
-        // scene.time.addEvent({ delay: 1000, callback: () => { scene.scene.start(to) } })
-        // return
+        scene.cameras.main.fadeOut()
+        scene.time.addEvent({ delay: 1000, callback: () => { scene.scene.start(to) } })
+        return
         if (scene.game.config.renderType == Phaser.WEBGL)
         {
             if (scene.transition === undefined)

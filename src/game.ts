@@ -67,9 +67,6 @@ export default class Demo extends Phaser.Scene
 		this.load.audio('mus_level1', 'assets/audio/Pixel 4.mp3')
 		this.load.audio('mus_level2', 'assets/audio/Pixel 11.mp3')
 
-        this.load.image('logo', 'assets/phaser3-logo.png')
-        this.load.image('libs', 'assets/libs.png')
-        this.load.glsl('starfield', 'assets/starfield.glsl.js')
 		this.load.glsl('transition_diamond', 'assets/transition_diamond.glsl.js')
 		this.load.glsl('transition_smooth', 'assets/transition_smooth.glsl.js')
 		this.load.bitmapFont('fn_l', 'assets/font/lame_0.png', 'assets/font/lame.fnt')

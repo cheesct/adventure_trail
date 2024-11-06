@@ -100,7 +100,7 @@ export default class Scene_Menu extends Phaser.Scene
             this.button_hide()
         }))
 
-        this.title = this.add.text(this.cameras.main.width * 0.5, 40, "Adventure Trail", {fontFamily: 'monospace', fontSize: 32, fontStyle: 'bold', color: '#ffffff', align: 'center' }).setOrigin(0.5)
+        this.title = this.add.text(this.cameras.main.width * 0.5, 36, "Adventure Trail", {fontFamily: 'monospace', fontSize: 32, fontStyle: 'bold', color: '#ffffff', align: 'center', strokeThickness: 3, stroke: "#000000", shadow: { color: "#00BFFF", blur: 8 } }).setOrigin(0.5)
 
         this.cursors = this.input.keyboard.createCursorKeys()
         this.Z = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z)
