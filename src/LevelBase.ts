@@ -28,6 +28,7 @@ export default class LevelBase extends Phaser.Scene
 	protected ParallaxScrolling: Phaser.GameObjects.Layer
 
 	protected player: Player
+	protected music: string
 
 	public Players: Phaser.GameObjects.Group
 	public EnemyBullets: Phaser.Physics.Arcade.Group
@@ -252,7 +253,7 @@ export default class LevelBase extends Phaser.Scene
 
 	fade_in(force: boolean = false)
     {
-        if (this.game.config.renderType == Phaser.WEBGL && (Singleton.transition_name || force))
+        if (this.game.config.renderType == Phaser.WEBGL && (Singleton.transition_name || force) && false)
 		{
 			this.transition = this.add.shader("transition_diamond", this.cameras.main.scrollX + this.cameras.main.centerX, this.cameras.main.scrollY + this.cameras.main.centerY, this.cameras.main.width, this.cameras.main.height).setScrollFactor(0)
 			this.transition.depth = 10
@@ -284,7 +285,7 @@ export default class LevelBase extends Phaser.Scene
         else
         {
 			this.cameras.main.fadeOut()
-			this.time.addEvent({ delay: 1000, callback: () => { this.scene.start(to) } })
+			this.time.addEvent({ delay: 1000, callback: () => { this.scene.start(to, { music: this.music }) } })
         }
     }
 

@@ -8,6 +8,16 @@ export default class Scene_Level1 extends LevelBase
     	super({ key: "Scene_Level1" })
   	}
 
+	init(data)
+	{
+		if (!data || (data.music != 'mus_level1'))
+		{
+			this.sound.stopAll()
+			this.sound.play('mus_level1', { loop: true, volume: 0.8 })
+			this.music = 'mus_level1'
+		}
+	}
+  
   	preload() 
   	{
 	    this.load.image('level1_walls', 'assets/level1/walls.png')
@@ -25,8 +35,12 @@ export default class Scene_Level1 extends LevelBase
 
   	create() 
   	{
-		//this.sound.stopAll()
-		//this.sound.play('mus_level1', { loop: true, volume: 0.8 })
+		// var data
+		// if (data && (data.music != 'mus_level1' || data.music != undefined))
+		// {
+		// 	this.sound.stopAll()
+		// 	this.sound.play('mus_level1', { loop: true, volume: 0.8 })
+		// }
 	    this.add.tileSprite(0, 0, 320, 112, "sky").setOrigin(0).setScrollFactor(0)
 		super.create()
 		this.ParallaxStatic.add(new ParallaxStaticTileSprite(this, 0, 82, 320, 32, "mountains2", 0.125))

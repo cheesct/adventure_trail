@@ -10,6 +10,16 @@ export default class Scene_Level2 extends LevelBase
     	super({ key: "Scene_Level2" })
   	}
 
+	init(data)
+	{
+		if (!data || (data.music != 'mus_level2'))
+		{
+			this.sound.stopAll()
+			this.sound.play('mus_level2', { loop: true, volume: 0.8 })
+			this.music = 'mus_level2'
+		}
+	}
+
   	preload() 
   	{
 	    this.load.image('level2_walls', 'assets/level2/walls.png')

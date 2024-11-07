@@ -31,36 +31,44 @@ export default class Singleton
 
     public static sceneTransIn(scene)
     {
+        scene.cameras.main.fadeIn(1500)
+        return
         scene.transition = scene.add.shader("transition_diamond", scene.cameras.main.scrollX + scene.cameras.main.centerX, scene.cameras.main.scrollY + scene.cameras.main.centerY, scene.cameras.main.width, scene.cameras.main.height).setScrollFactor(0)
         scene.transition.depth = 10
         Singleton.transition_name = null
-        scene.transition.setUniform("flag.value", Singleton.transition_flag)
-		scene.transition.setUniform("progress.value", 0)
-        scene.transition.setUniform("inversion.value", true)
+        scene.transition.uniforms.flag.value = Singleton.transition_flag
+        scene.transition.uniforms.progress.value = 0
+        scene.transition.uniforms.inversion.value = true
         Singleton.progress = 0;
         scene.tweens.add({ targets: Singleton.progress, value: 1.0, ease: 'Linear', duration: 1000,
-            onUpdate: () =>  { scene.transition.setUniform("progress.value", Singleton.progress) },
+            onUpdate: () =>  { scene.transition.progress.value = Singleton.progress },
         })
     }
 
     public static sceneTransOut(scene, flag: number, to: string)
     {
+        scene.cameras.main.fadeOut()
+        scene.time.addEvent({ delay: 1000, callback: () => { scene.scene.start(to) } })
+        return
         if (scene.game.config.renderType == Phaser.WEBGL)
         {
+            if (scene.transition === undefined)
+            {
+                scene.transition = scene.add.shader("transition_diamond", scene.cameras.main.scrollX + scene.cameras.main.centerX, scene.cameras.main.scrollY + scene.cameras.main.centerY, scene.cameras.main.width, scene.cameras.main.height).setScrollFactor(0)
+            }
             Singleton.transition_name = "1"
             Singleton.transition_flag = flag
-            scene.transition.setUniform("flag.value", flag)
-            scene.transition.setUniform("progress.value", 0)
-            scene.transition.setUniform("inversion.value", false)
+            scene.transition.uniforms.flag.value = flag
+            scene.transition.uniforms.progress.value = 0
+            scene.transition.uniforms.inversion.value = false
             Singleton.progress = 0;
             scene.tweens.add({ targets: Singleton.progress, value: 1.0, ease: 'Linear', duration: 1000,
-                onUpdate: () =>  { scene.transition.setUniform("progress.value", Singleton.progress) },
+                onUpdate: () =>  { scene.transition.progress.value = Singleton.progress },
                 onComplete: () => { scene.scene.start(to) }
             })
         }
         else
         {
-            
         }
     }
 }

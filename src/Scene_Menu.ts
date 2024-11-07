@@ -70,8 +70,8 @@ export default class Scene_Menu extends Phaser.Scene
 
     create() 
     {
-        //this.sound.stopAll()
-        //this.sound.play('mus_menu')
+        this.sound.stopAll()
+        this.sound.play('mus_menu')
 
         this.bg_clouds = this.add.tileSprite(0, -8, this.cameras.main.width, 160, "menu_bg_clouds").setOrigin(0)
         this.bg_mountains = this.add.tileSprite(0, 80, this.cameras.main.width, 112, "menu_bg_mountains").setOrigin(0)
@@ -100,7 +100,7 @@ export default class Scene_Menu extends Phaser.Scene
             this.button_hide()
         }))
 
-        this.title = this.add.text(this.cameras.main.width * 0.5, 40, "Adventure Trail", {fontFamily: 'monospace', fontSize: 32, fontStyle: 'bold', color: '#ffffff', align: 'center' }).setOrigin(0.5)
+        this.title = this.add.text(this.cameras.main.width * 0.5, 36, "Adventure Trail", {fontFamily: 'monospace', fontSize: 32, fontStyle: 'bold', color: '#ffffff', align: 'center', strokeThickness: 3, stroke: "#000000", shadow: { color: "#00BFFF", blur: 8 } }).setOrigin(0.5)
 
         this.cursors = this.input.keyboard.createCursorKeys()
         this.Z = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.Z)
@@ -138,6 +138,10 @@ export default class Scene_Menu extends Phaser.Scene
         this.credit_container.visible = false
         this.button_show();
 
+        // if (Singleton.transition_name)
+        // {
+        //     Singleton.sceneTransIn(this)
+        // }
     }
 
     update()
