@@ -138,10 +138,7 @@ export default class Scene_Menu extends Phaser.Scene
         this.credit_container.visible = false
         this.button_show();
 
-        // if (Singleton.transition_name)
-        // {
-        //     Singleton.sceneTransIn(this)
-        // }
+        Singleton.sceneTransIn(this)
     }
 
     update()

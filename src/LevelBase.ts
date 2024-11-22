@@ -38,6 +38,8 @@ export default class LevelBase extends Phaser.Scene
 	public ObjectOffset: number = 0
 	
 	private graphics: any
+	private initData: any
+	private passData: any = {}
 
   	create() 
   	{
@@ -56,6 +58,11 @@ export default class LevelBase extends Phaser.Scene
 		this.EnemySensors = this.physics.add.staticGroup()
 		this.EnemyBullets = this.physics.add.group({ allowGravity: false })
   	}
+
+	init(data)
+	{
+		this.initData = data
+	}
 
   	update(time, delta)
   	{
@@ -245,49 +252,18 @@ export default class LevelBase extends Phaser.Scene
 				const fog = this.add.image(-32, -32, "fog").setOrigin(0).setDepth(1).setScrollFactor(0)
 				fog.alpha = map_fog.value
 			}
+			var music = map_properties.find(e => e.name === "Music")
+			if (music && this.initData?.music != music)
+			{
+				this.sound.stopAll()
+				this.sound.play(music, { loop: true, volume: 0.8 })
+				this.passData.music = music
+			}
 		}
 
-		this.fade_in()
+		Singleton.sceneTransIn(this, this.initData?.transitionFlag)
 		return map
 	}
-
-	fade_in(force: boolean = false)
-    {
-        if (this.game.config.renderType == Phaser.WEBGL && (Singleton.transition_name || force) && false)
-		{
-			this.transition = this.add.shader("transition_diamond", this.cameras.main.scrollX + this.cameras.main.centerX, this.cameras.main.scrollY + this.cameras.main.centerY, this.cameras.main.width, this.cameras.main.height).setScrollFactor(0)
-			this.transition.depth = 10
-			this.transition.uniforms.flag.value = Singleton.transition_flag
-			this.transition.uniforms.inversion.value = true
-			this.tweens.add({ targets: this.transition.uniforms.progress, value: 1.0, ease: 'Linear', duration: 1000 })
-			Singleton.transition_name = null
-		}
-		else
-		{
-			this.transition = null
-			this.cameras.main.fadeIn(1500)
-		}
-    }
-
-	fade_out(to: string, flag: number = 0)
-    {
-        if (this.transition)
-        {
-            Singleton.transition_name = "1"
-            Singleton.transition_flag = flag
-			this.transition.uniforms.flag.value = flag
-			this.transition.uniforms.progress.value = 0
-            this.transition.uniforms.inversion.value = false
-            this.tweens.add({ targets: this.transition.uniforms.progress, value: 1.0, ease: 'Linear', duration: 1000,
-                onComplete: () => { this.scene.start(to) }
-            })
-        }
-        else
-        {
-			this.cameras.main.fadeOut()
-			this.time.addEvent({ delay: 1000, callback: () => { this.scene.start(to, { music: this.music }) } })
-        }
-    }
 
 	change_scene(waypoint)
 	{
@@ -296,24 +272,19 @@ export default class LevelBase extends Phaser.Scene
         {
             if (waypoint.data.list.ArriveX && waypoint.data.list.ArriveY)
             {
-                Singleton.is_waypoint_travel = true
-                Singleton.waypoint_landing_x = waypoint.data.list.ArriveX
-                Singleton.waypoint_landing_y = waypoint.data.list.ArriveY
+				this.passData.arriveX = waypoint.data.list.ArriveX
+				this.passData.arriveX = waypoint.data.list.ArriveY
             }
-            else
-            {
-                Singleton.is_waypoint_travel = false
-            }
-			this.fade_out(destination, 0)
+			Singleton.sceneTransOut(this, 0, destination, this.passData)
         }
 		waypoint.destroy()
 	}
 
 	check_point(checkpoint)
 	{
-		Singleton.checkpoint_level = (this.sys.config as Phaser.Types.Scenes.SettingsConfig).key
-		Singleton.checkpoint_x = checkpoint.x
-		Singleton.checkpoint_y = checkpoint.y
+		this.passData.checkpointLevel = (this.sys.config as Phaser.Types.Scenes.SettingsConfig).key
+		this.passData.checkpointX = checkpoint.x
+		this.passData.checkpointY = checkpoint.y
 		checkpoint.activate()
 		this.notice.notice("Checkpoint")
 		this.cameras.main.flash(250, 0, 204, 204)
