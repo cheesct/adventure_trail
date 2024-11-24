@@ -128,8 +128,7 @@ export default class Scene_Menu extends Phaser.Scene
             "@untiedgames", ], { color: 'black'}))
 
         this.credit_container.add(this.add.text(310, 22, [
-            "Stage Music: Eric Matyas",
-            "www.soundimage.org", "ThePixel", ], { color: 'black', align: 'right' }).setOrigin(1, 0))
+            "Music: Alkakrab", ], { color: 'black', align: 'right' }).setOrigin(1, 0))
 
         this.credit_container.add(this.add.text(310, 157, [
             "Press Z to back",

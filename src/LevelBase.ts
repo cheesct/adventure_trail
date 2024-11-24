@@ -253,11 +253,11 @@ export default class LevelBase extends Phaser.Scene
 				fog.alpha = map_fog.value
 			}
 			var music = map_properties.find(e => e.name === "Music")
-			if (music && this.initData?.music != music)
+			if (music && this.initData?.music != music.value)
 			{
 				this.sound.stopAll()
-				this.sound.play(music, { loop: true, volume: 0.8 })
-				this.passData.music = music
+				this.sound.play(music.value, { loop: true, volume: 0.8 })
+				this.passData.music = music.value
 			}
 		}
 

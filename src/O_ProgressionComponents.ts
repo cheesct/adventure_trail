@@ -9,6 +9,7 @@ export class Waypoint extends Phaser.GameObjects.Sprite
         scene.physics.world.enable(this);
         (this.body as Phaser.Physics.Arcade.Body).setAllowGravity(false)
         this.setDataEnabled()
+        this.setVisible(false)
     }
 }
 

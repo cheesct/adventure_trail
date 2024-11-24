@@ -397,6 +397,12 @@
  "nextlayerid":28,
  "nextobjectid":34,
  "orientation":"orthogonal",
+ "properties":[
+        {
+         "name":"Music",
+         "type":"string",
+         "value":"mus_level1"
+        }],
  "renderorder":"right-down",
  "tiledversion":"1.11.0",
  "tileheight":16,
