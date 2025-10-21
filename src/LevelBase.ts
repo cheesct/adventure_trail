@@ -27,6 +27,8 @@ export default class LevelBase extends Phaser.Scene
 	protected ParallaxStatic: Phaser.GameObjects.Layer
 	protected ParallaxScrolling: Phaser.GameObjects.Layer
 
+	protected SlideLockLayer: Phaser.Tilemaps.TilemapLayer
+
 	protected player: Player
 	protected music: string
 
@@ -67,6 +69,7 @@ export default class LevelBase extends Phaser.Scene
   	update(time, delta)
   	{
 		delta = delta / 1000
+		this.physics.world.overlap(this.player, this.SlideLockLayer, (player, tile) => { (player as Player).slide_lock(tile) })
 	    this.player.update(delta)
 		this.cameras.main.scrollX = Helper.clamp(this.player.x - this.cameras.main.width/2, 0, this.physics.world.bounds.width - this.cameras.main.width)
 	    this.cameras.main.scrollY = Helper.clamp(this.player.y - this.cameras.main.height/2, 0, this.physics.world.bounds.height - this.cameras.main.height)
@@ -105,8 +108,8 @@ export default class LevelBase extends Phaser.Scene
 			this.FogCanvas.context.fillStyle = "#88888888"
 			const tau = 2*Math.PI
 			const flicker = Phaser.Math.FloatBetween(-1, 1)
-			const offsetX = 32 - this.cameras.main.scrollX
-			const offsetY = 32 - this.cameras.main.scrollY
+			const offsetX = 64 - this.cameras.main.scrollX
+			const offsetY = 64 - this.cameras.main.scrollY
 			this.Checkpoints.getChildren().forEach((x: Phaser.GameObjects.Sprite) => { 
 				this.FogCanvas.context.beginPath();
 				this.FogCanvas.context.arc(x.x + offsetX, x.y + offsetY, 30, 0, tau);
@@ -153,7 +156,7 @@ export default class LevelBase extends Phaser.Scene
 			spikes = map.createLayer("Spikes", tile_walls).setCollisionByExclusion([-1])
 		}
 	    const turners = map.createLayer("Turners", tile_trigger).setCollisionByExclusion([-1]).setVisible(is_debug)
-	    const slidings = map.createLayer("Slidings", tile_trigger).setCollisionByExclusion([-1]).setVisible(is_debug)
+	    this.SlideLockLayer = map.createLayer("Slidings", tile_trigger).setCollisionByExclusion([-1]).setVisible(is_debug)
 		if (map.getLayerIndex("Platforms"))
 		{
 			platforms = map.createLayer("Platforms", tile_walls).setCollisionByExclusion([-1])
@@ -201,7 +204,7 @@ export default class LevelBase extends Phaser.Scene
 		this.physics.add.overlap(this.Players, this.Enemies, (player, enemy) => { (player as Player).player_get_hit(enemy) })
 		this.physics.add.overlap(this.Players, this.EnemyBullets, (player, bullet) => { (player as Player).player_get_shot(bullet) })
 		this.physics.add.overlap(this.Players, this.Items, (picker, item) => { (item as Key).pickup(picker) })
-		this.physics.add.overlap(this.Players, slidings, (player, tile) => { (player as Player).slide_lock(tile) })
+		// this.physics.add.overlap(this.Players, slidings, (player, tile) => { (player as Player).slide_lock(tile) })
 		this.physics.add.collider(this.Players, this.Doors, (player, door) => { (door as Door).open_door(player) })
 		this.physics.add.collider(this.Players, walls)
 		this.physics.add.collider(this.Enemies, turners)
@@ -247,9 +250,9 @@ export default class LevelBase extends Phaser.Scene
 				}
 				else
 				{
-					this.FogCanvas = this.textures.createCanvas("fog", this.cameras.main.width + 64, this.cameras.main.height + 64)
+					this.FogCanvas = this.textures.createCanvas("fog", this.cameras.main.width + 128, this.cameras.main.height + 128)
 				}
-				const fog = this.add.image(-32, -32, "fog").setOrigin(0).setDepth(1).setScrollFactor(0)
+				const fog = this.add.image(-64, -64, "fog").setOrigin(0).setDepth(1).setScrollFactor(0)
 				fog.alpha = map_fog.value
 			}
 			var music = map_properties.find(e => e.name === "Music")

@@ -10,7 +10,7 @@ export default class Scene_Level1c extends LevelBase
 
   	preload() 
   	{
-	    this.load.image('level1_walls2', 'assets/level1/walls2.png')
+	    this.load.image('level1_walls2', 'assets/level1/walls3.png')
 	    this.load.image('level1_props', 'assets/level1/props.png')
 		this.load.image('level1_backs', 'assets/level1/backs.png')
 	    this.load.tilemapTiledJSON('level1c', 'assets/level1/map1c.json')
