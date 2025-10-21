@@ -128,7 +128,7 @@ export class Slime extends O_EnemyBase
                 {
                     this.flipX = !this.flipX
                 }
-                if (this.body.velocity.x === 0)
+                else if (this.body.velocity.x === 0)
                 {
                     this.body.velocity.x = this.flipX ? -this.speed : this.speed
                 }

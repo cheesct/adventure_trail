@@ -38,7 +38,6 @@ export class Player extends Phaser.Physics.Arcade.Sprite
     private knock_y: number
     private attack_area: Phaser.GameObjects.Zone
     private attack_group: Phaser.Physics.Arcade.StaticGroup
-    private attack_timer: number
     private attack_cooldown: number
     private attacked_entities: Array<any>
 
@@ -88,7 +87,6 @@ export class Player extends Phaser.Physics.Arcade.Sprite
         this.is_jumpPad_jump = false
 
         this.knock_y = 0
-        this.attack_timer = 0
         this.attack_cooldown = 0
         this.attack_group = scene.PlayerAttacks
 
@@ -177,14 +175,6 @@ export class Player extends Phaser.Physics.Arcade.Sprite
                 this.alpha = Phaser.Math.FloatBetween(0.6, 1)
             }
         }
-        if (this.attack_timer > 0)
-        {
-            this.attack_timer = Math.max(this.attack_timer - delta, 0)
-            if (!this.hurt)
-            {
-                this.stop_attacking()
-            }
-        }
         if (this.attack_cooldown > 0)
         {
             this.attack_cooldown = Math.max(this.attack_cooldown - delta, 0)
@@ -238,6 +228,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite
     {
         if (tile.index >= 0)
         {
+            console.log(tile)
             this.can_stand = false
         }
     }
@@ -353,7 +344,6 @@ export class Player extends Phaser.Physics.Arcade.Sprite
     start_attacking(x: number, y: number, w: number = 32, h: number = 32)
     {
         this.attacked_entities = []
-        this.attack_timer = 0
         this.attack_area = this.scene.add.zone(this.x + x, this.y + y, w, h)
         this.attack_group.add(this.attack_area)
     }

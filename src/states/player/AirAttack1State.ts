@@ -20,7 +20,6 @@ export default class AirAttack1State extends BaseState
                 owner.setVelocityX(0)
                 owner.playAnim('hero_attack_air', true)
                 owner.start_attacking(owner.flipX ? -20 : 20, 0)
-                owner.attack_timer = 0.05
                 this.scene.sound.play('snd_sword_slash')
                 this.flag = 1
                 break

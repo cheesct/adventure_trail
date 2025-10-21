@@ -21,7 +21,6 @@ export default class GroundAttack3State extends BaseState
                     owner.playAnim('hero_attack_3_2', true)
                     owner.setVelocityX(0)
                     owner.start_attacking(owner.flipX ? -20 : 20, 0)
-                    owner.attack_timer = 0.05
                 }
                 break
 

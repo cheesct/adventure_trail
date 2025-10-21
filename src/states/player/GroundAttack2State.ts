@@ -28,7 +28,6 @@ export default class GroundAttack2State extends BaseState
                     this.scene.sound.play('snd_sword_slash')
                     owner.playAnim('hero_attack_2_2', true)
                     owner.start_attacking(owner.flipX ? -20 : 20, 0)
-                    owner.attack_timer = 0.05
                 }
                 break
 
